@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{11da2533-7c45-460d-9290-0238ac1b44d1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>dcfg.exe</DCC_DependencyCheckOutputName>
+    <MainSource>dcfg.dpr</MainSource>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_UnitSearchPath>src</DCC_UnitSearchPath>
+    <DCC_ResourcePath>src</DCC_ResourcePath>
+    <DCC_ObjPath>src</DCC_ObjPath>
+    <DCC_IncludePath>src</DCC_IncludePath>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">7</VersionInfo><VersionInfo Name="Release">5</VersionInfo><VersionInfo Name="Build">1</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1049</VersionInfo><VersionInfo Name="CodePage">1251</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription">Конфигуратор справочников портала РЮБ</VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.7.5.1</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename">dcfg.exe</VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">dcfg.dpr</Source></Source></Delphi.Personality><ModelSupport>False</ModelSupport></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="dcfg.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="src\addRank.pas">
+      <Form>FAddRank</Form>
+    </DCCReference>
+    <DCCReference Include="src\chartEditor.pas">
+      <Form>FChartEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\chartGroupEditor.pas">
+      <Form>FChartGroupEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\childForm.pas" />
+    <DCCReference Include="src\connect.pas">
+      <Form>FConnect</Form>
+    </DCCReference>
+    <DCCReference Include="src\copyRanks.pas">
+      <Form>FCopyRanks</Form>
+    </DCCReference>
+    <DCCReference Include="src\crossEditor.pas">
+      <Form>FCrossEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\crStat.pas">
+      <Form>FCrStat</Form>
+    </DCCReference>
+    <DCCReference Include="src\dbFind.pas">
+      <Form>DBFindDialog</Form>
+    </DCCReference>
+    <DCCReference Include="src\dbUtils.pas" />
+    <DCCReference Include="src\dumpObjects.pas">
+      <Form>FDumpObjects</Form>
+    </DCCReference>
+    <DCCReference Include="src\editDict.pas">
+      <Form>FEditDict</Form>
+    </DCCReference>
+    <DCCReference Include="src\editFolder.pas">
+      <Form>FEditFolder</Form>
+    </DCCReference>
+    <DCCReference Include="src\editForm.pas">
+      <Form>FEditForm</Form>
+    </DCCReference>
+    <DCCReference Include="src\editWizard.pas">
+      <Form>FEditWizard</Form>
+    </DCCReference>
+    <DCCReference Include="src\ensFolder.pas">
+      <Form>FEditEnsFolder</Form>
+    </DCCReference>
+    <DCCReference Include="src\ensTask.pas">
+      <Form>FEnsTask</Form>
+    </DCCReference>
+    <DCCReference Include="src\ensTaskEditor.pas">
+      <Form>FEnsTaskEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\eventEditor.pas">
+      <Form>FEventEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\field.pas" />
+    <DCCReference Include="src\fieldEditor.pas">
+      <Form>FFieldEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\filter.pas">
+      <Form>fFilter</Form>
+    </DCCReference>
+    <DCCReference Include="src\filterConfigEditor.pas">
+      <Form>FFilterConfigEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\filterGroupEditor.pas">
+      <Form>FFilterGroupEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\find.pas">
+      <Form>FindDialog</Form>
+    </DCCReference>
+    <DCCReference Include="src\fixRef.pas">
+      <Form>FFixReference</Form>
+    </DCCReference>
+    <DCCReference Include="src\fmEditForm.pas">
+      <Form>frmEditForm</Form>
+      <DesignClass>TFrame</DesignClass>
+    </DCCReference>
+    <DCCReference Include="src\gridsettings.pas">
+      <Form>FGridSettings</Form>
+    </DCCReference>
+    <DCCReference Include="src\groupAction.pas">
+      <Form>FGroupAction</Form>
+    </DCCReference>
+    <DCCReference Include="src\groupedit.pas">
+      <Form>FGroupEdit</Form>
+    </DCCReference>
+    <DCCReference Include="src\groupEditor.pas">
+      <Form>FGroupEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\groups.pas">
+      <Form>FGroups</Form>
+    </DCCReference>
+    <DCCReference Include="src\hintView.pas">
+      <Form>FHint</Form>
+    </DCCReference>
+    <DCCReference Include="src\history.pas">
+      <Form>FHistory</Form>
+    </DCCReference>
+    <DCCReference Include="src\json.pas" />
+    <DCCReference Include="src\jsonReader.pas">
+      <Form>FJsonReader</Form>
+    </DCCReference>
+    <DCCReference Include="src\main.pas">
+      <Form>FMain</Form>
+    </DCCReference>
+    <DCCReference Include="src\objectEditor.pas">
+      <Form>FObjectEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\optControls.pas" />
+    <DCCReference Include="src\previewForm.pas">
+      <Form>FPreviewForm</Form>
+    </DCCReference>
+    <DCCReference Include="src\refList.pas">
+      <Form>FRefList</Form>
+    </DCCReference>
+    <DCCReference Include="src\scriptEditor.pas">
+      <Form>FScriptEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\selectRank.pas">
+      <Form>FSelectRank</Form>
+    </DCCReference>
+    <DCCReference Include="src\selObject.pas">
+      <Form>FSelObject</Form>
+    </DCCReference>
+    <DCCReference Include="src\selUser.pas">
+      <Form>FSelUser</Form>
+    </DCCReference>
+    <DCCReference Include="src\settings.pas">
+      <Form>FSettings</Form>
+    </DCCReference>
+    <DCCReference Include="src\slotEditor.pas">
+      <Form>FSlotEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\slotValEditor.pas">
+      <Form>FSlotValEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\stateEditor.pas">
+      <Form>FStateEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\task.pas">
+      <Form>FTask</Form>
+    </DCCReference>
+    <DCCReference Include="src\tmplConstructor.pas">
+      <Form>FTmplConstructor</Form>
+    </DCCReference>
+    <DCCReference Include="src\tmplEditor.pas">
+      <Form>FTmplEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\updates.pas">
+      <Form>FUpdates</Form>
+    </DCCReference>
+    <DCCReference Include="src\userEditor.pas">
+      <Form>FUserEditor</Form>
+    </DCCReference>
+    <DCCReference Include="src\UserInfo.pas">
+      <Form>FUserInfo</Form>
+    </DCCReference>
+    <DCCReference Include="src\users.pas">
+      <Form>FUsers</Form>
+    </DCCReference>
+    <DCCReference Include="src\utils.pas" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,12 @@
+sql/
+src/__history/
+dcfg.exe
+dcfg.identcache
+update.ini
+dcfg.dproj.local
+dcfg.md5
+connections.reg
+*.dcu
+keys.inc
+/задачи.txt
+/слово.txt
