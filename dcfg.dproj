@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{11da2533-7c45-460d-9290-0238ac1b44d1}</ProjectGuid>
@@ -60,9 +60,6 @@
       <Form>DBFindDialog</Form>
     </DCCReference>
     <DCCReference Include="src\dbUtils.pas" />
-    <DCCReference Include="src\dumpObjects.pas">
-      <Form>FDumpObjects</Form>
-    </DCCReference>
     <DCCReference Include="src\editDict.pas">
       <Form>FEditDict</Form>
     </DCCReference>
