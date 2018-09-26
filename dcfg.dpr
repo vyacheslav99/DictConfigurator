@@ -60,7 +60,6 @@ uses
   ensFolder in 'src\ensFolder.pas' {FEditEnsFolder},
   history in 'src\history.pas' {FHistory},
   tmplEditor in 'src\tmplEditor.pas' {FTmplEditor},
-  dumpObjects in 'src\dumpObjects.pas' {FDumpObjects},
   scriptEditor in 'src\scriptEditor.pas' {FScriptEditor};
 
 {$R *.res}
@@ -68,7 +67,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'Конфигуратор справочников';
+  Application.Title := 'РљРѕРЅС„РёРіСѓСЂР°С‚РѕСЂ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ';
   Application.CreateForm(TFMain, FMain);
   Application.Run;
 end.
