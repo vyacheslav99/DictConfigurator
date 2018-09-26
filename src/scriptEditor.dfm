@@ -2,10 +2,9 @@ object FScriptEditor: TFScriptEditor
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
-  BorderStyle = bsSingle
-  Caption = #1057#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1080#1079#1084#1077#1085#1077#1085#1080#1081
-  ClientHeight = 691
-  ClientWidth = 1094
+  Caption = #1055#1088#1086#1089#1084#1086#1090#1088' '#1089#1082#1088#1080#1087#1090#1072' '#1080#1079#1084#1077#1085#1077#1085#1080#1081
+  ClientHeight = 681
+  ClientWidth = 1084
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -55,22 +54,23 @@ object FScriptEditor: TFScriptEditor
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
   DesignSize = (
-    1094
-    691)
+    1084
+    681)
   PixelsPerInch = 96
   TextHeight = 13
   object btnExec: TBitBtn
-    Left = 900
-    Top = 658
+    Left = 890
+    Top = 648
     Width = 90
     Height = 25
     Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1080#1079#1084#1077#1085#1077#1085#1080#1103' '#1074' '#1073#1072#1079#1091' '#1076#1072#1085#1085#1099#1093
     Anchors = [akRight, akBottom]
-    Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100
+    Caption = #1054#1050
     ModalResult = 1
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
+    Visible = False
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -106,10 +106,12 @@ object FScriptEditor: TFScriptEditor
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000}
+    ExplicitLeft = 900
+    ExplicitTop = 658
   end
   object btnClose: TBitBtn
-    Left = 996
-    Top = 658
+    Left = 986
+    Top = 648
     Width = 90
     Height = 25
     Anchors = [akRight, akBottom]
@@ -151,10 +153,12 @@ object FScriptEditor: TFScriptEditor
       FF002139FF00314AFF001831FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
+    ExplicitLeft = 996
+    ExplicitTop = 658
   end
   object btnSaveToFile: TBitBtn
     Left = 8
-    Top = 658
+    Top = 648
     Width = 130
     Height = 25
     Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1089#1082#1088#1080#1087#1090' '#1074' '#1092#1072#1081#1083
@@ -199,10 +203,11 @@ object FScriptEditor: TFScriptEditor
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFEA8B8AFFFFA7A3FFA85151FFFF55FF00AD56
       56FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFAD56
       56FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFFF55FF00}
+    ExplicitTop = 658
   end
   object btnCopyToClipboard: TBitBtn
     Left = 144
-    Top = 658
+    Top = 648
     Width = 145
     Height = 25
     Hint = #1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1089#1082#1088#1080#1087#1090' '#1074' '#1073#1091#1092#1077#1088' '#1086#1073#1084#1077#1085#1072
@@ -247,12 +252,13 @@ object FScriptEditor: TFScriptEditor
       C4FFB6B6B69FFF55FF00FF55FF00FF55FF00FF55FF00FF55FF00FF55FF00B6B6
       B6FFC8C8C8FFC8C8C8FFC8C8C8FFC8C8C8FFC8C8C8FFB6B6B6FFBFBFBFFFB6B6
       B69FFF55FF00FF55FF00FF55FF00FF55FF00FF55FF00FF55FF00}
+    ExplicitTop = 658
   end
   object smScript: TSynMemo
     Left = 0
-    Top = 0
-    Width = 1094
-    Height = 652
+    Top = 29
+    Width = 1084
+    Height = 610
     Align = alTop
     Anchors = [akLeft, akTop, akRight, akBottom]
     ActiveLineColor = 16774630
@@ -274,7 +280,52 @@ object FScriptEditor: TFScriptEditor
     ReadOnly = True
     RightEdge = 120
     TabWidth = 2
-    WantTabs = True
+    ExplicitWidth = 1094
+    ExplicitHeight = 620
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1084
+    Height = 29
+    Align = alTop
+    BevelInner = bvLowered
+    BevelOuter = bvNone
+    TabOrder = 5
+    ExplicitWidth = 1094
+    DesignSize = (
+      1084
+      29)
+    object Label2: TLabel
+      Left = 14
+      Top = 9
+      Width = 255
+      Height = 13
+      Caption = #1057#1082#1088#1080#1087#1090' '#1076#1083#1103' '#1085#1072#1082#1072#1090#1072' '#1080#1079#1084#1077#1085#1077#1085#1080#1081' '#1074' '#1076#1088#1091#1075#1091#1102' '#1041#1044
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label1: TLabel
+      Left = 428
+      Top = 9
+      Width = 648
+      Height = 13
+      Anchors = [akTop, akRight]
+      Caption = 
+        #1054#1073#1088#1072#1090#1080#1090#1077' '#1074#1085#1080#1084#1072#1085#1080#1077', '#1095#1090#1086' '#1076#1072#1085#1085#1099#1081' '#1089#1082#1088#1080#1087#1090' '#1089#1077#1081#1095#1072#1089' '#1053#1045' '#1085#1072#1082#1072#1090#1099#1074#1072#1083#1089#1103', '#1089#1086#1093#1088 +
+        #1072#1085#1077#1085#1080#1077' '#1087#1088#1086#1080#1089#1093#1086#1076#1080#1090' '#1085#1072#1087#1088#1103#1084#1091#1102' '#1087#1086' '#1085#1077#1089#1082#1086#1083#1100#1082#1086' '#1080#1085#1086#1081' '#1083#1086#1075#1080#1082#1077
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsItalic]
+      ParentFont = False
+      ExplicitLeft = 438
+    end
   end
   object SynCompletionProposal: TSynCompletionProposal
     EndOfTokenChr = '()[]. '
