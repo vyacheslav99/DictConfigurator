@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Buttons, StdCtrls,
-  SynEditHighlighter, SynHighlighterSQL, SynCompletionProposal, SynEdit, SynMemo, main, ActnList;
+  SynEditHighlighter, SynHighlighterSQL, SynCompletionProposal, SynEdit, SynMemo, main, ActnList, ExtCtrls;
 
 type
   TFScriptEditor = class(TForm)
@@ -19,6 +19,9 @@ type
     ActionList: TActionList;
     ACopy: TAction;
     ASelectAll: TAction;
+    Panel1: TPanel;
+    Label2: TLabel;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnSaveToFileClick(Sender: TObject);
     procedure btnCopyToClipboardClick(Sender: TObject);
@@ -48,7 +51,7 @@ end;
 procedure TFScriptEditor.btnCopyToClipboardClick(Sender: TObject);
 begin
   CopyToClipboard;
-  Application.MessageBox('Скрипт скопирован в буфер обмена', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+  Application.MessageBox('РЎРєСЂРёРїС‚ СЃРєРѕРїРёСЂРѕРІР°РЅ РІ Р±СѓС„РµСЂ РѕР±РјРµРЅР°', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
 end;
 
 procedure TFScriptEditor.btnSaveToFileClick(Sender: TObject);
