@@ -383,16 +383,11 @@ type
     AHistory: TAction;
     N31: TMenuItem;
     N44: TMenuItem;
-    ADumpObjects: TAction;
     N45: TMenuItem;
-    N62: TMenuItem;
-    N78: TMenuItem;
     CtrlF1: TMenuItem;
     N81: TMenuItem;
     N82: TMenuItem;
     N83: TMenuItem;
-    N84: TMenuItem;
-    N85: TMenuItem;
     tmrEndSession: TTimer;
     DBGridCSVExport: TJvDBGridCSVExport;
     dsGetUpdateFILE_SIZE: TFIBIntegerField;
@@ -474,7 +469,6 @@ type
     procedure AGenBranchWizardSQLExecute(Sender: TObject);
     procedure AGenDictWizardsSQLExecute(Sender: TObject);
     procedure AHistoryExecute(Sender: TObject);
-    procedure ADumpObjectsExecute(Sender: TObject);
     procedure tmrEndSessionTimer(Sender: TObject);
     procedure AppEventsMessage(var Msg: tagMSG; var Handled: Boolean);
     procedure AGenPermissionsSQLExecute(Sender: TObject);
@@ -496,7 +490,7 @@ type
     Filtered: boolean;
     FHint: TFHint;
     FNoHistory: boolean;
-    // работа с немодальными дочерними формами
+    // СЂР°Р±РѕС‚Р° СЃ РЅРµРјРѕРґР°Р»СЊРЅС‹РјРё РґРѕС‡РµСЂРЅРёРјРё С„РѕСЂРјР°РјРё
     procedure ClearChildForms;
     procedure AddFormButton(FormIndex: integer; FCaption, FHint: string; ImageIndex: integer);
     procedure AddWindowMenuItem(FormIndex: integer; FCaption, FHint: string; ImageIndex: integer);
@@ -507,7 +501,7 @@ type
     procedure ChangeFormMenuCaption(FormIndex: integer; NewCaption, NewHint: string);
     function FindChildForm(FormType: TChildFormType; Mode: TOpenMode; Pk, Descriptor: Variant): integer; overload;
     function FindChildForm(ObjType: TConfObjectType; Pk: Variant): integer; overload;
-    // всяко-разно
+    // РІСЃСЏРєРѕ-СЂР°Р·РЅРѕ
     procedure SaveWndState;
     function GetCurrentTreeView: TJvTreeView;
     function GetTreeView(Page: TTabSheet): TJvTreeView;
@@ -540,7 +534,7 @@ type
     function GetHistoryParent(HistType: THistoryType): TTreeNode;
     procedure WMForcedTerminate(var Msg: TMessage); message U_WM_FORCED_TERMINATE;
     function GetRefLink(DictInfo: TNodeDictInfo): string;
-    // загрузка данных
+    // Р·Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С…
     procedure Connect;
     procedure ConnectToUpdate;
     procedure OpenConfiguration;
@@ -559,7 +553,7 @@ type
     procedure LoadHistory(TreeView: TJvTreeView);
     procedure LoadHistoryItems(Node: TTreeNode; HistType: THistoryType; ParentPk: Variant; Order: string);
     procedure LoadObjectInfo(NodeData: TNodeDictInfo);
-    // редактирование (и просмотр) данных
+    // СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ (Рё РїСЂРѕСЃРјРѕС‚СЂ) РґР°РЅРЅС‹С…
     procedure AddTreeNode(TreeView: TJvTreeView; ParentNode: TTreeNode);
     procedure EditTreeNode(Node: TTreeNode);
     procedure DelTreeNode(Node: TTreeNode; Recursive: boolean = false);
@@ -586,10 +580,10 @@ type
     procedure AddToHistory(Data: TNodeDictInfo; HistType: THistoryType);
     procedure DelFromHistory(Data: TNodeDictInfo; HistType: THistoryType);
     procedure ClearHistory(HistType: THistoryType);
-    // инструменты
+    // РёРЅСЃС‚СЂСѓРјРµРЅС‚С‹
     procedure OpenInstrument(InstrType: TChildFormType; InstrName: string);
-    // генерация скриптов объектов
-    // основные
+    // РіРµРЅРµСЂР°С†РёСЏ СЃРєСЂРёРїС‚РѕРІ РѕР±СЉРµРєС‚РѕРІ
+    // РѕСЃРЅРѕРІРЅС‹Рµ
     procedure GenBranchSQL(FolderPK: integer; Script, Folders: TStringList);
     procedure GenBranchWizardSQL(FolderPK: integer; Script, Wizards: TStringList);
     procedure GenFolderSQL(Pk: integer; Script, Folders: TStringList; IsMain: boolean = true);
@@ -599,7 +593,7 @@ type
     procedure GenWizardSQL(Pk: integer; Script: TStringList);
     procedure GenWizardStatesSQL(Pk: integer; StatesPk: string; Script: TStringList);
     procedure GenDictPermissionsSQL(Pk: integer; Script: TStringList);
-    // вспомогательные (вызываются только из основных)
+    // РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ (РІС‹Р·С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРєРѕ РёР· РѕСЃРЅРѕРІРЅС‹С…)
     procedure GenDictAllFieldsSQL(Pk: integer; Script: TStringList);
     procedure GenObjectTreeSQL(Pk: integer; Script: TStringList; IsMain: boolean = true);
     procedure GenFieldGroupSQL(Pk: integer; Script: TStringList; IsMain: boolean = true);
@@ -618,15 +612,15 @@ type
     procedure GenWizardSlotSQL(Pk: integer; Script: TStringList; IsScen: boolean; IsMain: boolean = true);
     procedure GetObjectTreeList(FormPk: integer; ParentPk: Variant; ObjectList: TStringList);
     procedure GetDictAllFormsPK(RefPk: integer; PkList: TStringList);
-    // методы мастера выгрузки объектов
-    // копирование объекта
+    // РјРµС‚РѕРґС‹ РјР°СЃС‚РµСЂР° РІС‹РіСЂСѓР·РєРё РѕР±СЉРµРєС‚РѕРІ
+    // РєРѕРїРёСЂРѕРІР°РЅРёРµ РѕР±СЉРµРєС‚Р°
     procedure CopyObject(Node: TTreeNode);
     function CopyFolder(ObjPk: integer; var ErrorMessage: string): boolean;
     function CopyDict(ObjPk: integer; ParentRefPk: Variant; DictList, FormList, FieldsList, ObjectList, PermTmpList, ChartGroupList: TStringList;
       IsMain: boolean; var ErrorMessage: string): boolean;
     function CopyForm(ObjPk: integer; var ErrorMessage: string): boolean;
     function CopyWizard(ObjPk: integer; var ErrorMessage: string): boolean;
-    // доп. методы для копирования объектов
+    // РґРѕРї. РјРµС‚РѕРґС‹ РґР»СЏ РєРѕРїРёСЂРѕРІР°РЅРёСЏ РѕР±СЉРµРєС‚РѕРІ
     function CopyFormInternal(FormPk: integer; SimpleMode: boolean; FieldsList, ObjectList, GroupsList, FilterGroups: TStringList): Variant;
     procedure CopyPermsInternal(RefPk, NewRefPk: integer; TableName: string; PermTmpList: TStringList);
     procedure CopyChartsInternal(RefPk, NewRefPk: integer; FieldsList, ChartGroupList: TStringList);
@@ -638,7 +632,7 @@ type
   public
     ConnectChecker: TConnectChecker;
     DbObjectList: TStringList;
-    // редактирование (и просмотр) данных
+    // СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ (Рё РїСЂРѕСЃРјРѕС‚СЂ) РґР°РЅРЅС‹С…
     function CheckGrants(Act: TGrantAction; Data: TNodeDictInfo; var Err: string): boolean;
     function CheckGrantsDepth(Act: TGrantAction; Data: TNodeDictInfo; var Err: string): boolean;
     function CreateWizard: TChildForm;
@@ -647,11 +641,11 @@ type
     procedure EditWizard(Data: TNodeDictInfo);
     function DelWizard(Data: TNodeDictInfo): boolean;
     procedure ViewWizard(Data: TNodeDictInfo);
-    // выполнение sql
+    // РІС‹РїРѕР»РЅРµРЅРёРµ sql
     function ExecSQL(SQL: string; var Err: string): boolean; overload;
     function ExecSQL(SQL, ParamName: string; var ParamValue: Variant; var Err: string): boolean; overload;
     function OpenSQL(SQL: string; Params: string = ''): TpFIBDataSet;
-    // выгрузка объектов
+    // РІС‹РіСЂСѓР·РєР° РѕР±СЉРµРєС‚РѕРІ
     procedure SaveToSQL(Node: TTreeNode; FileName: string; Target: integer = 0); overload;
     procedure SaveToSQL(Data: TNodeDictInfo; FileName: string; Target: integer = 0; AddScen: boolean = false); overload;
     procedure SaveToSQL(Data: TNodeDictInfo; PkList: TStringList; FileName: string); overload;
@@ -661,9 +655,7 @@ type
     procedure SaveBranchWizardToSQL(Data: TNodeDictInfo; FileName: string); overload;
     procedure WriteSQLHeader(Data: TNodeDictInfo; Rule: integer; Target: integer; Script: TStringList);
     procedure WriteSQLFooter(Data: TNodeDictInfo; Rule: integer; Target: integer; Script: TStringList);
-    // методы мастера выгрузки объектов
-    procedure ShowDumpObjectsMaster(Data: TNodeDictInfo);
-    // прочее
+    // РїСЂРѕС‡РµРµ
     function SelUserDialog(var UserPk: Variant; SQLQuery: string; Title: string = ''; Msg: string = ''): boolean;
     function SelGroupDialog(var GroupPk: Variant; SQLQuery: string): boolean;
     function SelDictDialog(var DictPk: Variant; SQLQuery: string): boolean;
@@ -674,7 +666,7 @@ type
     function AddToRefLog(ObjType: TConfObjectType; Descriptor: string; Action: TRefLogType; Text: string = ''): boolean;
     procedure JumpToNode(ObjType: TConfObjectType; ObjKey: Variant);
     procedure ShowObjectHistory(Data: TNodeDictInfo);
-    // работа с немодальными дочерними формами
+    // СЂР°Р±РѕС‚Р° СЃ РЅРµРјРѕРґР°Р»СЊРЅС‹РјРё РґРѕС‡РµСЂРЅРёРјРё С„РѕСЂРјР°РјРё
     procedure RegisterChildForm(Form: TChildForm);
     procedure OnChildFormClose(Index: integer; CanRefresh: boolean);
     procedure CheckFormButton(FormIndex: integer);
@@ -696,12 +688,12 @@ implementation
 
 uses UserInfo, connect, selObject, editFolder, editForm, editDict, editWizard, objectEditor, fieldEditor, groupEditor,
   chartEditor, chartGroupEditor, stateEditor, slotValEditor, slotEditor, crossEditor, selUser, users, groups, fmEditForm,
-  jsonReader, filterConfigEditor, task, refList, crStat, ensTask, ensTaskEditor, groupAction, dbFind, history, dumpObjects;
+  jsonReader, filterConfigEditor, task, refList, crStat, ensTask, ensTaskEditor, groupAction, dbFind, history;
 
 procedure TFMain.AAboutExecute(Sender: TObject);
 begin
-  Application.MessageBox(pchar('Конфигуратор справочников портала'#13#10#13#10'Версия: ' + GetVersion(Application.ExeName)),
-    'О программе', MB_OK + MB_ICONINFORMATION);
+  Application.MessageBox(pchar('РљРѕРЅС„РёРіСѓСЂР°С‚РѕСЂ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ РїРѕСЂС‚Р°Р»Р°'#13#10#13#10'Р’РµСЂСЃРёСЏ: ' + GetVersion(Application.ExeName)),
+    'Рћ РїСЂРѕРіСЂР°РјРјРµ', MB_OK + MB_ICONINFORMATION);
 end;
 
 procedure TFMain.AAddGrantOnConfigDictExecute(Sender: TObject);
@@ -750,7 +742,7 @@ end;
 
 procedure TFMain.ACloseAllExecute(Sender: TObject);
 begin
-  if Application.MessageBox('Закрыть все дочерние окна? Все несохраненные изменения будут потеряны!', 'Подтверждение',
+  if Application.MessageBox('Р—Р°РєСЂС‹С‚СЊ РІСЃРµ РґРѕС‡РµСЂРЅРёРµ РѕРєРЅР°? Р’СЃРµ РЅРµСЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ Р±СѓРґСѓС‚ РїРѕС‚РµСЂСЏРЅС‹!', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   ClearChildForms;
@@ -775,14 +767,6 @@ begin
   GetCurrentTreeView.FullCollapse;
 end;
 
-procedure TFMain.ADumpObjectsExecute(Sender: TObject);
-begin
-  if (not Assigned(GetCurrentTreeView.Selected)) or (not Assigned(GetCurrentTreeView.Selected.Data)) or
-    (TNodeDictInfo(GetCurrentTreeView.Selected.Data).ObjType = cotNone) then exit;
-
-  ShowDumpObjectsMaster(TNodeDictInfo(GetCurrentTreeView.Selected.Data));
-end;
-
 procedure TFMain.ACopyObjectExecute(Sender: TObject);
 begin
   CopyObject(GetCurrentTreeView.Selected);
@@ -799,7 +783,7 @@ begin
 
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -848,7 +832,7 @@ var
 begin
   if Data.ObjType <> cotDict then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   res := CheckGrants(gaRights, Data, err);
 
   if res then
@@ -858,16 +842,16 @@ begin
     if VarIsNull(pk) then
     begin
       res := false;
-      err := 'Не выбран пользователь!';
+      err := 'РќРµ РІС‹Р±СЂР°РЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ!';
     end else
     begin
       res := ExecSQL('update or insert into DYNAMIC_FORM_REF_USER (REF_PK, USER_PK) values (' + VarToStr(TNodeDictInfo(Data).PK) + ', ' +
         VarToStr(pk) + ') matching (REF_PK, USER_PK)', err);
-      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'Добавление прав на конфигурацию. Полюзователь ' + VarToStr(pk));
+      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'Р”РѕР±Р°РІР»РµРЅРёРµ РїСЂР°РІ РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ. РџРѕР»СЋР·РѕРІР°С‚РµР»СЊ ' + VarToStr(pk));
     end;
   end;
 
-  if not res then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  if not res then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.AddSubnodesDict(TreeView: TJvTreeView; AddChild: boolean; Parent: TTreeNode; ds: TpFIBDataSet; ImageShift: integer;
@@ -880,8 +864,8 @@ var
 begin
   if (not ds.Active) then exit;
 
-  // фильтрация будет выполняться по полностью загруженному дереву, по такой же логике, как поиск, так что тут ничего делать не надо
-  // функция фильра будет вызываться отдельно после загрузки дерева или вобще независимо от нее
+  // С„РёР»СЊС‚СЂР°С†РёСЏ Р±СѓРґРµС‚ РІС‹РїРѕР»РЅСЏС‚СЊСЃСЏ РїРѕ РїРѕР»РЅРѕСЃС‚СЊСЋ Р·Р°РіСЂСѓР¶РµРЅРЅРѕРјСѓ РґРµСЂРµРІСѓ, РїРѕ С‚Р°РєРѕР№ Р¶Рµ Р»РѕРіРёРєРµ, РєР°Рє РїРѕРёСЃРє, С‚Р°Рє С‡С‚Рѕ С‚СѓС‚ РЅРёС‡РµРіРѕ РґРµР»Р°С‚СЊ РЅРµ РЅР°РґРѕ
+  // С„СѓРЅРєС†РёСЏ С„РёР»СЊСЂР° Р±СѓРґРµС‚ РІС‹Р·С‹РІР°С‚СЊСЃСЏ РѕС‚РґРµР»СЊРЅРѕ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РґРµСЂРµРІР° РёР»Рё РІРѕР±С‰Рµ РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ РЅРµРµ
   ds.First;
   while not ds.Eof do
   begin
@@ -891,7 +875,7 @@ begin
     else n := TreeView.Items.Add(Parent, title);
     n.ImageIndex := 0 + ImageShift;
     n.SelectedIndex := 4 + ImageShift;
-    n1 := TreeView.Items.AddChild(n, '(Загрузка...)');
+    n1 := TreeView.Items.AddChild(n, '(Р—Р°РіСЂСѓР·РєР°...)');
     n1.ImageIndex := -1;
     n1.SelectedIndex := -1;
     obj := AssignNodeData(cotNone);
@@ -927,7 +911,7 @@ var
 begin
   if (not ds.Active) then exit;
 
-  // закомментировано, т.к. теперь единый механизм фильтрации
+  // Р·Р°РєРѕРјРјРµРЅС‚РёСЂРѕРІР°РЅРѕ, С‚.Рє. С‚РµРїРµСЂСЊ РµРґРёРЅС‹Р№ РјРµС…Р°РЅРёР·Рј С„РёР»СЊС‚СЂР°С†РёРё
  { if cbFilter.Text = '' then
   begin
     cbFilter.Color := clWindow;
@@ -1002,7 +986,7 @@ begin
     else n.SelectedIndex := 4 + ImageShift;
     if (HistType = htLiked) and (ObjType in [cotFolder, cotDict, cotLikedFolder]) then
     begin
-      n1 := TreeView.Items.AddChild(n, '(Загрузка...)');
+      n1 := TreeView.Items.AddChild(n, '(Р—Р°РіСЂСѓР·РєР°...)');
       n1.ImageIndex := -1;
       n1.SelectedIndex := -1;
     end;
@@ -1040,7 +1024,7 @@ var
 begin
   if (not ds.Active) then exit;
 
-  // закомментировано, т.к. теперь единый механизм фильтрации
+  // Р·Р°РєРѕРјРјРµРЅС‚РёСЂРѕРІР°РЅРѕ, С‚.Рє. С‚РµРїРµСЂСЊ РµРґРёРЅС‹Р№ РјРµС…Р°РЅРёР·Рј С„РёР»СЊС‚СЂР°С†РёРё
  { if cbFilter.Text = '' then
   begin
     cbFilter.Color := clWindow;
@@ -1110,7 +1094,7 @@ begin
   begin
     if HistType = htLiked then
     begin
-      // при обновлении избранного перезальем дерево целиком
+      // РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё РёР·Р±СЂР°РЅРЅРѕРіРѕ РїРµСЂРµР·Р°Р»СЊРµРј РґРµСЂРµРІРѕ С†РµР»РёРєРѕРј
       if Assigned(tvHistory.Selected) and (tvHistory.Selected.AbsoluteIndex <> 0) and Assigned(tvHistory.Selected.Data) then
         u := TNodeDictInfo(tvHistory.Selected.Data).PK;
 
@@ -1126,7 +1110,7 @@ begin
       end;
     end else
     begin
-      // при обновлении истории просто добавим узел
+      // РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё РёСЃС‚РѕСЂРёРё РїСЂРѕСЃС‚Рѕ РґРѕР±Р°РІРёРј СѓР·РµР»
       case Data.ObjType of
         cotFolder: ImageShift := 0;
         cotDict: ImageShift := 1;
@@ -1164,7 +1148,7 @@ begin
   if not Database.Connected then exit;
   {if Assigned(ParentNode) and (not Assigned(ParentNode.Data)) then
   begin
-    Application.MessageBox('Неверный родительский узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµРІРµСЂРЅС‹Р№ СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;}
 
@@ -1207,7 +1191,7 @@ begin
   mi.AutoCheck := true;
   mi.RadioItem := true;
   mi.Checked := true;
-  //mi.ImageIndex := ImageIndex; - не надо, а то чекбокса не видно
+  //mi.ImageIndex := ImageIndex; - РЅРµ РЅР°РґРѕ, Р° С‚Рѕ С‡РµРєР±РѕРєСЃР° РЅРµ РІРёРґРЅРѕ
   mi.OnClick := WindowMenuClick;
 end;
 
@@ -1232,8 +1216,8 @@ end;
 procedure TFMain.ADisconnectExecute(Sender: TObject);
 begin
   if FSettings.ConfirmCloseChild and (OpenedFormCount > 0) and
-    (Application.MessageBox('При отключении все открытые окна будут ЗАКРЫТЫ БЕЗ СОХРАНЕНИЯ изменений! Продолжить?',
-    'Подтверждение', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
+    (Application.MessageBox('РџСЂРё РѕС‚РєР»СЋС‡РµРЅРёРё РІСЃРµ РѕС‚РєСЂС‹С‚С‹Рµ РѕРєРЅР° Р±СѓРґСѓС‚ Р—РђРљР Р«РўР« Р‘Р•Р— РЎРћРҐР РђРќР•РќРРЇ РёР·РјРµРЅРµРЅРёР№! РџСЂРѕРґРѕР»Р¶РёС‚СЊ?',
+    'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
 
   CloseConfiguration;
 end;
@@ -1283,9 +1267,9 @@ begin
   if (Sender = ALikeObject) then
   begin
     if (GetCurrentTreeView = tvHistory) then
-      TAction(Sender).Caption := 'Переместить в избранном'
+      TAction(Sender).Caption := 'РџРµСЂРµРјРµСЃС‚РёС‚СЊ РІ РёР·Р±СЂР°РЅРЅРѕРј'
     else
-      TAction(Sender).Caption := 'Добавить в избранное';
+      TAction(Sender).Caption := 'Р”РѕР±Р°РІРёС‚СЊ РІ РёР·Р±СЂР°РЅРЅРѕРµ';
   end;
 end;
 
@@ -1350,11 +1334,11 @@ begin
   if (not Assigned(GetCurrentTreeView.Selected)) or (not Assigned(GetCurrentTreeView.Selected.Data)) or
     (TNodeDictInfo(GetCurrentTreeView.Selected.Data).ObjType = cotNone) then exit;
 
-  // предупреждение для справочников
+  // РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ РґР»СЏ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ
   if (TNodeDictInfo(GetCurrentTreeView.Selected.Data).ObjType = cotDict) and
-    (Application.MessageBox(pchar('Внимание!!! Вместе с выбранным справочником в скрипт попадут ВСЕ ЕГО ДОЧЕРНИЕ И РОДИТЕЛЬСКИЕ справочники! ' +
-      'А так же будут УДАЛЕНЫ ВСЕ ПРИВЯЗАННЫЕ СЦЕНАРИИ, которые нужно будет выгрузить и перенакатить отдельным скриптом!'#13#10 + 'Вам оно нужно???'),
-      'Предупреждение', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
+    (Application.MessageBox(pchar('Р’РЅРёРјР°РЅРёРµ!!! Р’РјРµСЃС‚Рµ СЃ РІС‹Р±СЂР°РЅРЅС‹Рј СЃРїСЂР°РІРѕС‡РЅРёРєРѕРј РІ СЃРєСЂРёРїС‚ РїРѕРїР°РґСѓС‚ Р’РЎР• Р•Р“Рћ Р”РћР§Р•Р РќРР• Р Р РћР”РРўР•Р›Р¬РЎРљРР• СЃРїСЂР°РІРѕС‡РЅРёРєРё! ' +
+      'Рђ С‚Р°Рє Р¶Рµ Р±СѓРґСѓС‚ РЈР”РђР›Р•РќР« Р’РЎР• РџР РР’РЇР—РђРќРќР«Р• РЎР¦Р•РќРђР РР, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ РІС‹РіСЂСѓР·РёС‚СЊ Рё РїРµСЂРµРЅР°РєР°С‚РёС‚СЊ РѕС‚РґРµР»СЊРЅС‹Рј СЃРєСЂРёРїС‚РѕРј!'#13#10 + 'Р’Р°Рј РѕРЅРѕ РЅСѓР¶РЅРѕ???'),
+      'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
 
   SetSaveDialogToSQL;
   if SaveDialog.Execute then SaveToSQL(GetCurrentTreeView.Selected, SaveDialog.FileName);
@@ -1372,7 +1356,7 @@ begin
   ga := TFGroupAction.Create(Self);
   try
     ga.FolderPk := TNodeDictInfo(Node.Data).PK;
-    ga.Caption := 'Мастер групповых операций - Папка ' + VarToStr(TNodeDictInfo(Node.Data).PK) + ' : ' +
+    ga.Caption := 'РњР°СЃС‚РµСЂ РіСЂСѓРїРїРѕРІС‹С… РѕРїРµСЂР°С†РёР№ - РџР°РїРєР° ' + VarToStr(TNodeDictInfo(Node.Data).PK) + ' : ' +
       VarToStr(TNodeDictInfo(Node.Data).Title);
     ga.ShowModal;
     if ga.CanRefresh then ReopenTree;
@@ -1398,7 +1382,7 @@ begin
         if not dsGetHelp.IsEmpty then dsGetHelpHELP_FILE.SaveToFile(s);
       except
         on e: Exception do
-          err := #13#10'Не удалось скачать файл справки!'#13#10 + e.Message;
+          err := #13#10'РќРµ СѓРґР°Р»РѕСЃСЊ СЃРєР°С‡Р°С‚СЊ С„Р°Р№Р» СЃРїСЂР°РІРєРё!'#13#10 + e.Message;
       end;
     finally
       dsGetHelp.Close;
@@ -1414,7 +1398,7 @@ begin
   if FileExists(s) or (Pos(LowerCase('ftp://'), s) > 0) then
     ShellExecute(Application.Handle, 'open', pchar(s), nil, nil, SW_SHOWNORMAL)
   else
-    Application.MessageBox(pchar('Не найден файл справки "' + s + '"' + err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµ РЅР°Р№РґРµРЅ С„Р°Р№Р» СЃРїСЂР°РІРєРё "' + s + '"' + err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.AHistoryExecute(Sender: TObject);
@@ -1494,7 +1478,7 @@ begin
 
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -1525,8 +1509,8 @@ end;
 procedure TFMain.AReconnectExecute(Sender: TObject);
 begin
   if FSettings.ConfirmCloseChild and (OpenedFormCount > 0) and
-    (Application.MessageBox('При переподключении все открытые окна будут ЗАКРЫТЫ БЕЗ СОХРАНЕНИЯ изменений! Продолжить?',
-    'Подтверждение', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
+    (Application.MessageBox('РџСЂРё РїРµСЂРµРїРѕРґРєР»СЋС‡РµРЅРёРё РІСЃРµ РѕС‚РєСЂС‹С‚С‹Рµ РѕРєРЅР° Р±СѓРґСѓС‚ Р—РђРљР Р«РўР« Р‘Р•Р— РЎРћРҐР РђРќР•РќРРЇ РёР·РјРµРЅРµРЅРёР№! РџСЂРѕРґРѕР»Р¶РёС‚СЊ?',
+    'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
 
   CloseConfiguration;
   OpenConfiguration;
@@ -1552,7 +1536,7 @@ begin
     SetPages(false);
     
     if (oldts <> FSettings.TreeShowDescriptor) {and
-      (Application.MessageBox('Для изменения вида отображения нужно перезагрузить деревья. Выполнить сейчас?', 'Подтверждение',
+      (Application.MessageBox('Р”Р»СЏ РёР·РјРµРЅРµРЅРёСЏ РІРёРґР° РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РЅСѓР¶РЅРѕ РїРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊ РґРµСЂРµРІСЊСЏ. Р’С‹РїРѕР»РЅРёС‚СЊ СЃРµР№С‡Р°СЃ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
         MB_YESNO + MB_ICONQUESTION) = ID_YES)} then ReopenTree;
 
     if FSettings.GridOptsChanged then SetGridsOptions;
@@ -1592,7 +1576,7 @@ var
 
 begin
   case Act of
-    //gaRights: result := IsActive and (IsAdmin or IsDeveloper); // понижаем права - данное действие разрешено админу или владельцу
+    //gaRights: result := IsActive and (IsAdmin or IsDeveloper); // РїРѕРЅРёР¶Р°РµРј РїСЂР°РІР° - РґР°РЅРЅРѕРµ РґРµР№СЃС‚РІРёРµ СЂР°Р·СЂРµС€РµРЅРѕ Р°РґРјРёРЅСѓ РёР»Рё РІР»Р°РґРµР»СЊС†Сѓ
     gaRights, gaDel: result := IsActive and (IsAdmin or IsDeveloper) and
       (IsAdmin or (VarToStr(Data.Login) = '') or (LowerCase(VarToStr(Data.Login)) = LowerCase(FSettings.PortalUser)));
     gaEdit:
@@ -1602,7 +1586,7 @@ begin
 
       if (not result) and IsActive and (Data.ObjType in [cotDict, cotForm, cotWizard]) then
       begin
-        // проверим по таблице прав юзера на справочник
+        // РїСЂРѕРІРµСЂРёРј РїРѕ С‚Р°Р±Р»РёС†Рµ РїСЂР°РІ СЋР·РµСЂР° РЅР° СЃРїСЂР°РІРѕС‡РЅРёРє
         case Data.ObjType of
           cotDict:
             sql := 'select * from DYNAMIC_FORM_REF_USER where REF_PK = ' + VarToStr(Data.PK) + ' and USER_PK = ' + dsPortalUserPK.AsString;
@@ -1631,11 +1615,11 @@ begin
 
   if not result then
   begin
-    Err := 'Действие запрещено: пользователь ' + FSettings.PortalUser;
-    if not IsActive then Err := Err + ' заблокирован!'
-    else if (Act = gaOpenInstr) and (not IsAdmin) then Err := Err + ' не является Администратором'
-    else if (not IsAdmin) and (not IsDeveloper) then Err := Err + ' не является Администратором или Разработчиком!'
-    else Err := Err + ' не является владельцем объекта или Администратором!';
+    Err := 'Р”РµР№СЃС‚РІРёРµ Р·Р°РїСЂРµС‰РµРЅРѕ: РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ ' + FSettings.PortalUser;
+    if not IsActive then Err := Err + ' Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ!'
+    else if (Act = gaOpenInstr) and (not IsAdmin) then Err := Err + ' РЅРµ СЏРІР»СЏРµС‚СЃСЏ РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј'
+    else if (not IsAdmin) and (not IsDeveloper) then Err := Err + ' РЅРµ СЏРІР»СЏРµС‚СЃСЏ РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј РёР»Рё Р Р°Р·СЂР°Р±РѕС‚С‡РёРєРѕРј!'
+    else Err := Err + ' РЅРµ СЏРІР»СЏРµС‚СЃСЏ РІР»Р°РґРµР»СЊС†РµРј РѕР±СЉРµРєС‚Р° РёР»Рё РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј!';
   end;
 end;
 
@@ -1647,16 +1631,16 @@ var
   d: TNodeDictInfo;
 
 begin
-  // проверка прав на все объекты папки рекурсивно. Если есть хоть один с запретом - результат ОТКАЗ
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ РЅР° РІСЃРµ РѕР±СЉРµРєС‚С‹ РїР°РїРєРё СЂРµРєСѓСЂСЃРёРІРЅРѕ. Р•СЃР»Рё РµСЃС‚СЊ С…РѕС‚СЊ РѕРґРёРЅ СЃ Р·Р°РїСЂРµС‚РѕРј - СЂРµР·СѓР»СЊС‚Р°С‚ РћРўРљРђР—
   Err := '';
   result := false;
-  if Data.ObjType <> cotFolder then raise Exception.Create('Проверяемый объект не является папкой!');
+  if Data.ObjType <> cotFolder then raise Exception.Create('РџСЂРѕРІРµСЂСЏРµРјС‹Р№ РѕР±СЉРµРєС‚ РЅРµ СЏРІР»СЏРµС‚СЃСЏ РїР°РїРєРѕР№!');
 
-  // сначала права на саму папку
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР° РЅР° СЃР°РјСѓ РїР°РїРєСѓ
   result := CheckGrants(Act, Data, err);
   if not result then exit;
 
-  // выберем вложенные папки и главные справочники папки
+  // РІС‹Р±РµСЂРµРј РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё Рё РіР»Р°РІРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё РїР°РїРєРё
   d := AssignNodeData(cotDict);
   sl := TStringList.Create;
   slFolder := TStringList.Create;
@@ -1681,7 +1665,7 @@ begin
       ds.Next;
     end;
 
-    // проверим все вложенные справочники
+    // РїСЂРѕРІРµСЂРёРј РІСЃРµ РІР»РѕР¶РµРЅРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
     d.ObjType := cotDict;
     for i := 0 to slRef.Count - 1 do
     begin
@@ -1691,12 +1675,12 @@ begin
       result := CheckGrants(Act, d, err);
       if not result then
       begin
-        err := 'Недостаточно прав на один из вложенных справочников: (PK: ' + VarToStr(d.PK) + ')'#13#10 + err;
+        err := 'РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ РЅР° РѕРґРёРЅ РёР· РІР»РѕР¶РµРЅРЅС‹С… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ: (PK: ' + VarToStr(d.PK) + ')'#13#10 + err;
         exit;
       end;
     end;
 
-    // теперь пройдемся по вложенным папкам
+    // С‚РµРїРµСЂСЊ РїСЂРѕР№РґРµРјСЃСЏ РїРѕ РІР»РѕР¶РµРЅРЅС‹Рј РїР°РїРєР°Рј
     d.ObjType := cotFolder;
     d.Login := Null;
     for i := 0 to slFolder.Count - 1 do
@@ -1736,7 +1720,7 @@ begin
 
       if uInfo.IsEmpty then
       begin
-        if Warn then Application.MessageBox('Ничего нового...', 'Информация', MB_OK + MB_ICONINFORMATION);
+        if Warn then Application.MessageBox('РќРёС‡РµРіРѕ РЅРѕРІРѕРіРѕ...', 'РРЅС„РѕСЂРјР°С†РёСЏ', MB_OK + MB_ICONINFORMATION);
         exit;
       end;
 
@@ -1757,11 +1741,11 @@ begin
 
       if not AvailableUpdate then
       begin
-        if Warn then Application.MessageBox('Ничего нового...', 'Обновление', MB_OK + MB_ICONINFORMATION);
+        if Warn then Application.MessageBox('РќРёС‡РµРіРѕ РЅРѕРІРѕРіРѕ...', 'РћР±РЅРѕРІР»РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
         exit;
       end;
 
-      // есть обновления, надо спрсить
+      // РµСЃС‚СЊ РѕР±РЅРѕРІР»РµРЅРёСЏ, РЅР°РґРѕ СЃРїСЂСЃРёС‚СЊ
       if (not Warn) and (not AskUpdate) then exit;
       AskUpdate := false;
 
@@ -1778,41 +1762,41 @@ begin
         FUpdates.Free;
       end;
 
-      // поехало обновление:
-      // 1. закачать файл
+      // РїРѕРµС…Р°Р»Рѕ РѕР±РЅРѕРІР»РµРЅРёРµ:
+      // 1. Р·Р°РєР°С‡Р°С‚СЊ С„Р°Р№Р»
       Screen.Cursor := crHourGlass;
       tmp_fn := GetTempDir + '\' + ChangeFileExt(uInfo.FileName, '.tmp');
       if FileExists(tmp_fn) then DeleteFile(tmp_fn);
       if FSettings.UpdateFromDb then dsGetUpdateFILE_DATA.SaveToFile(tmp_fn)
       else if not CopyFile(uInfo.SourceFile, tmp_fn, err) then raise Exception.Create(err);
       if AnsiLowerCase(GetFileCheckSum(tmp_fn)) <> AnsiLowerCase(uInfo.MD5) then
-        raise Exception.Create('Файл был поврежден в процессе загрузки!');
+        raise Exception.Create('Р¤Р°Р№Р» Р±С‹Р» РїРѕРІСЂРµР¶РґРµРЅ РІ РїСЂРѕС†РµСЃСЃРµ Р·Р°РіСЂСѓР·РєРё!');
 
-      // 2. обновиться
+      // 2. РѕР±РЅРѕРІРёС‚СЊСЃСЏ
       if FileExists(tmp_fn) then
       begin
-        //Application.MessageBox('Для обновления требуется перезапуск.', 'Обновление', MB_OK + MB_ICONINFORMATION);
+        //Application.MessageBox('Р”Р»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ С‚СЂРµР±СѓРµС‚СЃСЏ РїРµСЂРµР·Р°РїСѓСЃРє.', 'РћР±РЅРѕРІР»РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
         old_fn := Application.ExeName + '.old';  // ChangeFileExt(Application.ExeName, '.old');
-        // new_fn := Application.ExeName - так остается возможность переименования файла приложения
+        // new_fn := Application.ExeName - С‚Р°Рє РѕСЃС‚Р°РµС‚СЃСЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїРµСЂРµРёРјРµРЅРѕРІР°РЅРёСЏ С„Р°Р№Р»Р° РїСЂРёР»РѕР¶РµРЅРёСЏ
         new_fn := ExtractFilePath(Application.ExeName) + uInfo.FileName;
         if FileExists(old_fn) then DeleteFile(old_fn);
 
         if not RenameFile(Application.ExeName, old_fn) then
-          raise Exception.Create('Файловая операция не удалась: ' + SysErrorMessage(GetLastError));
+          raise Exception.Create('Р¤Р°Р№Р»РѕРІР°СЏ РѕРїРµСЂР°С†РёСЏ РЅРµ СѓРґР°Р»Р°СЃСЊ: ' + SysErrorMessage(GetLastError));
 
         if not CopyFile(tmp_fn, new_fn, err) then
-          raise Exception.Create('Файловая операция не удалась: ' + err);
+          raise Exception.Create('Р¤Р°Р№Р»РѕРІР°СЏ РѕРїРµСЂР°С†РёСЏ РЅРµ СѓРґР°Р»Р°СЃСЊ: ' + err);
 
         if FileExists(tmp_fn) then DeleteFile(tmp_fn);
         ForcedTerminate := true;
         ShellExecute(Handle, 'open', pchar('"' + new_fn + '"'), '', '', SW_SHOWNORMAL);
         Close;
       end else
-        Application.MessageBox('При обновлении пропал скачанный файл новой версии, возможно он был удален антивирусной программой', 'Ошибка', MB_OK + MB_ICONERROR);
+        Application.MessageBox('РџСЂРё РѕР±РЅРѕРІР»РµРЅРёРё РїСЂРѕРїР°Р» СЃРєР°С‡Р°РЅРЅС‹Р№ С„Р°Р№Р» РЅРѕРІРѕР№ РІРµСЂСЃРёРё, РІРѕР·РјРѕР¶РЅРѕ РѕРЅ Р±С‹Р» СѓРґР°Р»РµРЅ Р°РЅС‚РёРІРёСЂСѓСЃРЅРѕР№ РїСЂРѕРіСЂР°РјРјРѕР№', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     except
       on e: Exception do
         if Warn then
-          Application.MessageBox(pchar('Ошибка загрузки обновления:'#13#10 + e.Message), 'Ошибка', MB_OK + MB_ICONERROR);
+          Application.MessageBox(pchar('РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё РѕР±РЅРѕРІР»РµРЅРёСЏ:'#13#10 + e.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     end;
   finally
     if FSettings.UpdateFromDb and DBUpdate.Connected then
@@ -1870,7 +1854,7 @@ var
 begin
   if Data.ObjType <> cotDict then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   res := CheckGrants(gaRights, Data, err);
 
   if res then
@@ -1881,13 +1865,13 @@ begin
     if VarIsNull(pk) then
     begin
       res := false;
-      err := 'Не выбран новый пользователь!';
+      err := 'РќРµ РІС‹Р±СЂР°РЅ РЅРѕРІС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ!';
     end else
     begin
-      // меняем владельца справочника
+      // РјРµРЅСЏРµРј РІР»Р°РґРµР»СЊС†Р° СЃРїСЂР°РІРѕС‡РЅРёРєР°
       res := ExecSQL('update DYNAMIC_FORM_REFERENCE set OWNER_USER_PK = ' + VarToStr(pk) + ' where PK = ' +
         VarToStr(TNodeDictInfo(Data).PK), err);
-      // меняем владельца главной формы
+      // РјРµРЅСЏРµРј РІР»Р°РґРµР»СЊС†Р° РіР»Р°РІРЅРѕР№ С„РѕСЂРјС‹
       if res then res := ExecSQL('update DYNAMIC_FORM set OWNER_USER_PK = ' + VarToStr(pk) + ' where PK = (' +
         'select MAIN_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + VarToStr(TNodeDictInfo(Data).PK) + ')', err);
       if res then res := ExecSQL('update DYNAMIC_FORM set OWNER_USER_PK = ' + VarToStr(pk) +
@@ -1896,13 +1880,13 @@ begin
       if res then res := FMain.ExecSQL('update DYNAMIC_FORM set OWNER_USER_PK = ' + VarToStr(pk) +
         ' where PK = (select GROUP_EDIT_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + VarToStr(TNodeDictInfo(Data).PK) +
         ' and GROUP_EDIT_FORM_PK <> -1)', err);
-      // владельца объектови полей менять не будем - пусть будет видно, кто их создавал
-      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'Смена владельца. Старый владелец ' + Data.Login);
+      // РІР»Р°РґРµР»СЊС†Р° РѕР±СЉРµРєС‚РѕРІРё РїРѕР»РµР№ РјРµРЅСЏС‚СЊ РЅРµ Р±СѓРґРµРј - РїСѓСЃС‚СЊ Р±СѓРґРµС‚ РІРёРґРЅРѕ, РєС‚Рѕ РёС… СЃРѕР·РґР°РІР°Р»
+      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°. РЎС‚Р°СЂС‹Р№ РІР»Р°РґРµР»РµС† ' + Data.Login);
     end;
   end;
 
   if res then ReopenTree
-  else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  else Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.ChangeFormButtonCaption(FormIndex: integer; NewCaption, NewHint: string);
@@ -1939,7 +1923,7 @@ var
 begin
   if Data.ObjType <> cotForm then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   res := CheckGrants(gaRights, Data, err);
 
   if res then
@@ -1950,20 +1934,20 @@ begin
     if VarIsNull(pk) then
     begin
       res := false;
-      err := 'Не выбран новый пользователь!';
+      err := 'РќРµ РІС‹Р±СЂР°РЅ РЅРѕРІС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ!';
     end else
     begin
-      // меняем владельца главной формы
+      // РјРµРЅСЏРµРј РІР»Р°РґРµР»СЊС†Р° РіР»Р°РІРЅРѕР№ С„РѕСЂРјС‹
       res := ExecSQL('update DYNAMIC_FORM set OWNER_USER_PK = ' + VarToStr(pk) + ' where PK = ' +
         VarToStr(TNodeDictInfo(Data).PK), err);
-      // владельца объектов и полей менять не будем - пусть будет видно, кто их создавал
+      // РІР»Р°РґРµР»СЊС†Р° РѕР±СЉРµРєС‚РѕРІ Рё РїРѕР»РµР№ РјРµРЅСЏС‚СЊ РЅРµ Р±СѓРґРµРј - РїСѓСЃС‚СЊ Р±СѓРґРµС‚ РІРёРґРЅРѕ, РєС‚Рѕ РёС… СЃРѕР·РґР°РІР°Р»
       if res then AddToRefLog(Data.ObjType, iif(not VarIsNull(Data.Descriptor), Data.Descriptor, Data.Title), rltUpdate,
-        'PK ' + IntToStr(Data.PK) + '. Смена владельца. Старый владелец ' + Data.Login);
+        'PK ' + IntToStr(Data.PK) + '. РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°. РЎС‚Р°СЂС‹Р№ РІР»Р°РґРµР»РµС† ' + Data.Login);
     end;
   end;
 
   if res then ReopenTree
-  else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  else Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.ChangeObjectOwner(Node: TTreeNode);
@@ -1971,7 +1955,7 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -2005,7 +1989,7 @@ begin
 
   if foToExistence in Options then
   begin
-    // по вхождению
+    // РїРѕ РІС…РѕР¶РґРµРЅРёСЋ
     strFinding := StringReplace(strFinding, #13#10, #4, [rfReplaceAll]);
     title := StringReplace(title, #13#10, #4, [rfReplaceAll]);
     if foAnyWord in Options then
@@ -2040,25 +2024,11 @@ begin
 
         if not result then break;
       end;
-    end else {if foWholeString in Options then} // эту опцию можно не указывать - и так понятно
+    end else {if foWholeString in Options then} // СЌС‚Сѓ РѕРїС†РёСЋ РјРѕР¶РЅРѕ РЅРµ СѓРєР°Р·С‹РІР°С‚СЊ - Рё С‚Р°Рє РїРѕРЅСЏС‚РЅРѕ
       result := (Pos(strFinding, pk) > 0) or (Pos(strFinding, descr) > 0) or (Pos(strFinding, title) > 0);
   end else
-    // полное совпадение
+    // РїРѕР»РЅРѕРµ СЃРѕРІРїР°РґРµРЅРёРµ
     result := (strFinding = pk) or (strFinding = descr) or (strFinding = title);
-end;
-
-procedure TFMain.ShowDumpObjectsMaster(Data: TNodeDictInfo);
-var
-  fdmp: TFDumpObjects;
-
-begin
-  try
-    fdmp := TFDumpObjects.Create(Self);
-    fdmp.Item := Data;
-    fdmp.ShowModal;
-  finally
-    fdmp.Free;
-  end;
 end;
 
 procedure TFMain.Connect;
@@ -2090,8 +2060,8 @@ begin
 
     if (c.DataBase = '') then
     begin
-      Application.MessageBox('Внимание! Подключение к БД не настроено. Задать параметры подключения можно в настройках программы.',
-        'Предупреждение', MB_OK + MB_ICONWARNING);
+      Application.MessageBox('Р’РЅРёРјР°РЅРёРµ! РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р” РЅРµ РЅР°СЃС‚СЂРѕРµРЅРѕ. Р—Р°РґР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РјРѕР¶РЅРѕ РІ РЅР°СЃС‚СЂРѕР№РєР°С… РїСЂРѕРіСЂР°РјРјС‹.',
+        'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_OK + MB_ICONWARNING);
       exit;
     end;
 
@@ -2110,11 +2080,11 @@ begin
 
     try
       Database.Open;
-      // проверим, что мы в подходящей БД
+      // РїСЂРѕРІРµСЂРёРј, С‡С‚Рѕ РјС‹ РІ РїРѕРґС…РѕРґСЏС‰РµР№ Р‘Р”
       try
         ds := OpenSQL('select count(*) from RDB$RELATIONS where RDB$RELATION_NAME containing ''DYNAMIC_FORM'' and RDB$RELATION_TYPE = 0');
         if (not ds.Active) or ds.IsEmpty or ds.Fields.Fields[0].Value < 14 then
-          raise Exception.Create('Подключение "' + c.Alias + '" не является базой данных портала!');
+          raise Exception.Create('РџРѕРґРєР»СЋС‡РµРЅРёРµ "' + c.Alias + '" РЅРµ СЏРІР»СЏРµС‚СЃСЏ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С… РїРѕСЂС‚Р°Р»Р°!');
       finally
         ds.Close;
         ds.Free;
@@ -2124,7 +2094,7 @@ begin
       dsPortalUser.Close;
       dsPortalUser.ParamByName('LOGIN').AsString := FSettings.PortalUser;
       dsPortalUser.Open;
-      if dsPortalUser.IsEmpty then raise Exception.Create('Пользователь "' + FSettings.PortalUser + '" не зарегистрирован!');
+      if dsPortalUser.IsEmpty then raise Exception.Create('РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ "' + FSettings.PortalUser + '" РЅРµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ!');
 
       IsAdmin := AnsiLowerCase(dsPortalUserROLE_NAME.AsString) = 'admin';
       IsDeveloper := (dsPortalUserDEVELOPER.AsString = '1') or (AnsiLowerCase(dsPortalUserROLE_NAME.AsString) = 'developer');
@@ -2141,7 +2111,7 @@ begin
         else if (Pos('SQL error', e.Message) > 0) or (Pos('Parameter', e.Message) > 0) then err := Format(ProhibMes[3], [e.Message])
         else err := Format(ProhibMes[3], [e.Message]);
 
-        Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+        Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
       end;
     end;
   finally
@@ -2163,8 +2133,8 @@ begin
   Screen.Cursor := crSQLWait;
   try
     c := FSettings.ConnByIndex[FSettings.UpdateConnect];
-    if (c.DataBase = '') then raise Exception.Create('Подключение к БД не настроено!');
-    if (c.Server <> stFirebird) then raise Exception.Create('Подключение к БД задано неверно! Возможна работа только с серверами Firebird');
+    if (c.DataBase = '') then raise Exception.Create('РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р” РЅРµ РЅР°СЃС‚СЂРѕРµРЅРѕ!');
+    if (c.Server <> stFirebird) then raise Exception.Create('РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р” Р·Р°РґР°РЅРѕ РЅРµРІРµСЂРЅРѕ! Р’РѕР·РјРѕР¶РЅР° СЂР°Р±РѕС‚Р° С‚РѕР»СЊРєРѕ СЃ СЃРµСЂРІРµСЂР°РјРё Firebird');
 
     if c.Host <> '' then
     begin
@@ -2182,7 +2152,7 @@ begin
 
     try
       DBUpdate.Open;
-      // проверим, что мы в подходящей БД
+      // РїСЂРѕРІРµСЂРёРј, С‡С‚Рѕ РјС‹ РІ РїРѕРґС…РѕРґСЏС‰РµР№ Р‘Р”
       try
         ds := TpFIBDataSet.Create(Self);
         ds.Database := DBUpdate;
@@ -2191,7 +2161,7 @@ begin
         if (not ds.Active) or ds.IsEmpty or ds.Fields.Fields[0].Value = 0 then
         begin
           DBUpdate.Close;
-          raise Exception.Create('Подключение "' + c.Alias + '" не поддерживает возможность обновляться!');
+          raise Exception.Create('РџРѕРґРєР»СЋС‡РµРЅРёРµ "' + c.Alias + '" РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РѕР±РЅРѕРІР»СЏС‚СЊСЃСЏ!');
         end;
       finally
         ds.Close;
@@ -2283,11 +2253,11 @@ begin
 
       if ds.IsEmpty then
       begin
-        ErrorMessage := 'Справочник с PK ' + IntToStr(ObjPk) + ' не найден в базе данных!';
+        ErrorMessage := 'РЎРїСЂР°РІРѕС‡РЅРёРє СЃ PK ' + IntToStr(ObjPk) + ' РЅРµ РЅР°Р№РґРµРЅ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…!';
         exit;
       end;
 
-      // формы: главная, стартовая, группового редактирования
+      // С„РѕСЂРјС‹: РіР»Р°РІРЅР°СЏ, СЃС‚Р°СЂС‚РѕРІР°СЏ, РіСЂСѓРїРїРѕРІРѕРіРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
       mainFrmPk := CopyFormInternal(ds.FieldByName('MAIN_FORM_PK').AsInteger, false, FieldsList, ObjectList, grList, fgrList);
       FormList.Values[ds.FieldByName('MAIN_FORM_PK').AsString] := VarToStr(mainFrmPk);
       if not ds.FieldByName('START_FORM_PK').IsNull then
@@ -2301,12 +2271,12 @@ begin
         FormList.Values[ds.FieldByName('GROUP_EDIT_FORM_PK').AsString] := VarToStr(grEditFrmPk);
       end;
 
-      // справочник
+      // СЃРїСЂР°РІРѕС‡РЅРёРє
       result := ExecSQL('insert into DYNAMIC_FORM_REFERENCE (OWNER_USER_PK, TITLE, ORDER_BY, DESCRIPTOR_, PARENT_REFERENCE_PK, MAIN_FORM_PK, ' +
         'START_FORM_PK, BASE_DESCRIPTOR, FOLDER_PK, PARENT_ID_FIELD, ID_FIELD, EXPAND_REF, COLLAPSE_FILTER, SHOW_CHILD_REF, GROUPING, CON_ORIENT, ' +
         'BRIEF_NOTE, EDITABLE, SET_DISTINCT, REF_SIZE, GROUP_EDIT_FORM_PK, SHOW_ONLY_ADMIN, INSERT_COUNT, EXPAND_TREE, USE_MEM, ' +
         'COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT) values (' +
-        VariantToDBStr(dsPortalUserPK.Value, false) + ', ''' + ReplaceQuote(ds.FieldByName('TITLE').AsString) + ' - копия'', ' +
+        VariantToDBStr(dsPortalUserPK.Value, false) + ', ''' + ReplaceQuote(ds.FieldByName('TITLE').AsString) + ' - РєРѕРїРёСЏ'', ' +
         VariantToDBStr(ReplaceQuote(ds.FieldByName('ORDER_BY').AsString), true) + ', ''' + ds.FieldByName('DESCRIPTOR_').AsString +
         '_COPY'', ' + VariantToDBStr(ParentRefPk, false) + ', ' + VariantToDBStr(mainFrmPk, false) + ', ' + VariantToDBStr(startFrmPk, false) +
         ', ''' + ds.FieldByName('BASE_DESCRIPTOR').AsString + ''', ' + VariantToDBStr(ds.FieldByName('FOLDER_PK').Value, false) + ', ' +
@@ -2329,12 +2299,12 @@ begin
       d := AssignNodeData(cotDict);
       d.PK := refPk;
       d.Descriptor := ds.FieldByName('DESCRIPTOR_').AsString + '_COPY';
-      d.Title := ds.FieldByName('TITLE').AsString + ' - копия';
+      d.Title := ds.FieldByName('TITLE').AsString + ' - РєРѕРїРёСЏ';
       d.ParentDictPK := ParentRefPk;
       d.FolderPK := ds.FieldByName('FOLDER_PK').Value;
       d.Login := FSettings.PortalUser;
 
-      // все используемые шаблоны прав
+      // РІСЃРµ РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ С€Р°Р±Р»РѕРЅС‹ РїСЂР°РІ
       ds.Close;
       FreeAndNil(ds);
       ds := OpenSQL('select distinct t.PK_TMP, tmp.TEXT_TEMPLATE from ( ' +
@@ -2371,11 +2341,11 @@ begin
         ds.Next;
       end;
 
-      // права ролей, права должностей
+      // РїСЂР°РІР° СЂРѕР»РµР№, РїСЂР°РІР° РґРѕР»Р¶РЅРѕСЃС‚РµР№
       CopyPermsInternal(ObjPk, refPk, 'DYNAMIC_FORM_PERMISSIONS', PermTmpList);
       CopyPermsInternal(ObjPk, refPk, 'DYNAMIC_FORM_PERM_RANKS', PermTmpList);
 
-      // конфигурации фильтров
+      // РєРѕРЅС„РёРіСѓСЂР°С†РёРё С„РёР»СЊС‚СЂРѕРІ
       ds.Close;
       FreeAndNil(ds);
       ds := OpenSQL('select PK, NAME, FILTER_VALUE from DYNAMIC_FORM_FILTER_CONFIG where REF_PK = ' + IntToStr(ObjPk));
@@ -2391,7 +2361,7 @@ begin
         ds.Next;
       end;
 
-      // привязка конфигураций фильтров к должностям
+      // РїСЂРёРІСЏР·РєР° РєРѕРЅС„РёРіСѓСЂР°С†РёР№ С„РёР»СЊС‚СЂРѕРІ Рє РґРѕР»Р¶РЅРѕСЃС‚СЏРј
       ds.Close;
       FreeAndNil(ds);
       ds := OpenSQL('select p.POST_PK, p.FILTER_CONFIG_PK from DYNAMIC_FROM_POST_FILTER p join DYNAMIC_FORM_FILTER_CONFIG c on c.PK = p.FILTER_CONFIG_PK ' +
@@ -2407,7 +2377,7 @@ begin
         ds.Next;
       end;
 
-      // группы графиков
+      // РіСЂСѓРїРїС‹ РіСЂР°С„РёРєРѕРІ
       ds.Close;
       FreeAndNil(ds);
       ds := OpenSQL('select PK, TITLE, ORIENTATION from DYNAMIC_FORM_CHART_GROUPS where REFERENCE_PK = ' + IntToStr(ObjPk));
@@ -2423,7 +2393,7 @@ begin
         ds.Next;
       end;
 
-      // доп. кнопки (пункты меню)
+      // РґРѕРї. РєРЅРѕРїРєРё (РїСѓРЅРєС‚С‹ РјРµРЅСЋ)
       ds.Close;
       FreeAndNil(ds);
       ds := OpenSQL('select ID_EV, ID_DF_REFERENCE, TITLE_EV, EVENT_REFERENCE, POSITION_EV, IMAGE_NAME_EV, VIEW_TO_MENU, CLASS_NAME, IS_VIZARD, ' +
@@ -2460,7 +2430,7 @@ begin
         ds.Next;
       end;
 
-      // дочерние справочники
+      // РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
       ds.Close;
       FreeAndNil(ds);
       ds := OpenSQL('select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(ObjPk) + ' order by PK');
@@ -2475,14 +2445,14 @@ begin
 
       if IsMain then
       begin
-        // копируем все поля всех форм справочника и его дочерних справочников
+        // РєРѕРїРёСЂСѓРµРј РІСЃРµ РїРѕР»СЏ РІСЃРµС… С„РѕСЂРј СЃРїСЂР°РІРѕС‡РЅРёРєР° Рё РµРіРѕ РґРѕС‡РµСЂРЅРёС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ
         CopyDictAllFields(ObjPk, FormList, FieldsList, ObjectList, grList, fgrList);
         
-        // графики - их надо делать всей кучей у всех, т.к. они могут ссылаться на поля и группы др. справочника
-        // 1. главного справочника
+        // РіСЂР°С„РёРєРё - РёС… РЅР°РґРѕ РґРµР»Р°С‚СЊ РІСЃРµР№ РєСѓС‡РµР№ Сѓ РІСЃРµС…, С‚.Рє. РѕРЅРё РјРѕРіСѓС‚ СЃСЃС‹Р»Р°С‚СЊСЃСЏ РЅР° РїРѕР»СЏ Рё РіСЂСѓРїРїС‹ РґСЂ. СЃРїСЂР°РІРѕС‡РЅРёРєР°
+        // 1. РіР»Р°РІРЅРѕРіРѕ СЃРїСЂР°РІРѕС‡РЅРёРєР°
         CopyChartsInternal(ObjPk, refPk, FieldsList, ChartGroupList);
 
-        // 2. дочерних справочников
+        // 2. РґРѕС‡РµСЂРЅРёС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ
         ds.First;
         while not ds.Eof do
         begin
@@ -2491,7 +2461,7 @@ begin
           ds.Next;
         end;
 
-        // теперь открываем все созданные справочники: дочерние, потом главный (чтоб в самом верху оказался)
+        // С‚РµРїРµСЂСЊ РѕС‚РєСЂС‹РІР°РµРј РІСЃРµ СЃРѕР·РґР°РЅРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё: РґРѕС‡РµСЂРЅРёРµ, РїРѕС‚РѕРј РіР»Р°РІРЅС‹Р№ (С‡С‚РѕР± РІ СЃР°РјРѕРј РІРµСЂС…Сѓ РѕРєР°Р·Р°Р»СЃСЏ)
         OpenChildRef(refPk);
         OpenRef(d);
       end;
@@ -2524,24 +2494,24 @@ var
 begin
   try
     ds := OpenSQL('select PK, MAIN_FORM_PK, START_FORM_PK, GROUP_EDIT_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(RefPk));
-    if ds.IsEmpty then raise Exception.Create('Не найден справочник с PK ' + IntToStr(RefPk) + ' в базе данных!');
+    if ds.IsEmpty then raise Exception.Create('РќРµ РЅР°Р№РґРµРЅ СЃРїСЂР°РІРѕС‡РЅРёРє СЃ PK ' + IntToStr(RefPk) + ' РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…!');
 
-    // главная
+    // РіР»Р°РІРЅР°СЏ
     if (not ds.FieldByName('MAIN_FORM_PK').IsNull) and (FormList.Values[ds.FieldByName('MAIN_FORM_PK').AsString] <> '') then
       CopyFormFields(ds.FieldByName('MAIN_FORM_PK').AsInteger, StrToInt(FormList.Values[ds.FieldByName('MAIN_FORM_PK').AsString]),
         true, FieldsList, ObjectList, GroupsList, FilterGroups);
 
-    // стартовая
+    // СЃС‚Р°СЂС‚РѕРІР°СЏ
     if (not ds.FieldByName('START_FORM_PK').IsNull) and (FormList.Values[ds.FieldByName('START_FORM_PK').AsString] <> '') then
       CopyFormFields(ds.FieldByName('START_FORM_PK').AsInteger, StrToInt(FormList.Values[ds.FieldByName('START_FORM_PK').AsString]),
         true, FieldsList, ObjectList, GroupsList, FilterGroups);
 
-    // группового редактирования
+    // РіСЂСѓРїРїРѕРІРѕРіРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
     if (not ds.FieldByName('GROUP_EDIT_FORM_PK').IsNull) and (FormList.Values[ds.FieldByName('GROUP_EDIT_FORM_PK').AsString] <> '') then
       CopyFormFields(ds.FieldByName('GROUP_EDIT_FORM_PK').AsInteger, StrToInt(FormList.Values[ds.FieldByName('GROUP_EDIT_FORM_PK').AsString]),
         true, FieldsList, ObjectList, GroupsList, FilterGroups);
 
-    // формы дочерних справочников
+    // С„РѕСЂРјС‹ РґРѕС‡РµСЂРЅРёС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ
     ds.Close;
     FreeAndNil(ds);
     ds := OpenSQL('select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(RefPk) + ' order by PK');
@@ -2584,7 +2554,7 @@ begin
 
     if ds.IsEmpty then
     begin
-      ErrorMessage := 'Папка с PK ' + IntToStr(ObjPk) + ' не найдена в базе данных!';
+      ErrorMessage := 'РџР°РїРєР° СЃ PK ' + IntToStr(ObjPk) + ' РЅРµ РЅР°Р№РґРµРЅР° РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…!';
       exit;
     end;
 
@@ -2622,9 +2592,9 @@ begin
   try
     try
       frmPk := CopyFormInternal(ObjPk, true, slf, slo, slg, slgf);
-      if VarIsNull(frmPk) then raise Exception.Create('Не удалось скопировать форму!');
+      if VarIsNull(frmPk) then raise Exception.Create('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ С„РѕСЂРјСѓ!');
       ds := OpenSQL('select PK, TITLE, ALIAS_FORM from DYNAMIC_FORM where PK = ' + VarToStr(frmPk));
-      if ds.IsEmpty then raise Exception.Create('Не удалось скопировать форму!');
+      if ds.IsEmpty then raise Exception.Create('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ С„РѕСЂРјСѓ!');
 
       fForm := TFEditForm.Create(Self, cftForm, omEdit, frmPk, OnChildFormClose);
       d := AssignNodeData(cotForm);
@@ -2719,14 +2689,14 @@ begin
   objOrders := TStringList.Create;
   try
     ds := OpenSQL('select PK, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH from DYNAMIC_FORM where PK = ' + IntToStr(FormPk));
-    if ds.IsEmpty then raise Exception.Create('Форма с PK ' + IntToStr(FormPk) + ' не найдена в базе данных!');
+    if ds.IsEmpty then raise Exception.Create('Р¤РѕСЂРјР° СЃ PK ' + IntToStr(FormPk) + ' РЅРµ РЅР°Р№РґРµРЅР° РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…!');
 
-    // сама форма
+    // СЃР°РјР° С„РѕСЂРјР°
     if (not ds.FieldByName('ALIAS_FORM').IsNull) and (ds.FieldByName('ALIAS_FORM').AsString <> '') then
       alias := ds.FieldByName('ALIAS_FORM').AsString + '_COPY';
 
     if SimpleMode then
-      title := ds.FieldByName('TITLE').AsString + ' - копия'
+      title := ds.FieldByName('TITLE').AsString + ' - РєРѕРїРёСЏ'
     else
       title := ds.FieldByName('TITLE').AsString;
 
@@ -2737,7 +2707,7 @@ begin
       VariantToDBStr(ds.FieldByName('LABEL_WIDTH').Value, false) + ') returning (PK)', 'PK', result, err) then
       raise Exception.Create(err);
 
-    // объекты
+    // РѕР±СЉРµРєС‚С‹
     if not SimpleMode then
     begin
       ds.Close;
@@ -2777,7 +2747,7 @@ begin
       end;
     end;
 
-    // группы полей
+    // РіСЂСѓРїРїС‹ РїРѕР»РµР№
     ds.Close;
     FreeAndNil(ds);
     ds := OpenSQL('select PK, PARENT_PK, ORDER_, TITLE, DESCRIPTION, COUNT_COLUMN, STYLE_EXTERNAL, STYLE_INTERNAL, IS_VISIBLE, ' +
@@ -2803,7 +2773,7 @@ begin
       ds.Next;
     end;
 
-    // группы фильтров
+    // РіСЂСѓРїРїС‹ С„РёР»СЊС‚СЂРѕРІ
     ds.Close;
     FreeAndNil(ds);
     ds := OpenSQL('select PK, TITLE, ORDER_, COLLAPSED from DYNAMIC_FORM_FILTER_GROUP where FORM_PK = ' + IntToStr(FormPk));
@@ -2820,7 +2790,7 @@ begin
       ds.Next;
     end;
 
-    // поля
+    // РїРѕР»СЏ
     if SimpleMode then CopyFormFields(FormPk, result, false, FieldsList, ObjectList, GroupsList, FilterGroups);
   finally
     objOrders.Free;
@@ -2842,20 +2812,20 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
   case TNodeDictInfo(Node.Data).ObjType of
-    cotFolder: s := 'папку';
-    cotDict: s := 'справочник';
-    cotForm: s := 'форму';
-    cotWizard: s := 'сценарий';
+    cotFolder: s := 'РїР°РїРєСѓ';
+    cotDict: s := 'СЃРїСЂР°РІРѕС‡РЅРёРє';
+    cotForm: s := 'С„РѕСЂРјСѓ';
+    cotWizard: s := 'СЃС†РµРЅР°СЂРёР№';
     else exit;
   end;
 
-  if (TNodeDictInfo(Node.Data).ObjType <> cotFolder) and (Application.MessageBox(pchar('Хотите скопировать ' + s + ' ' +
-    VarToStr(TNodeDictInfo(Node.Data).Title) + '?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+  if (TNodeDictInfo(Node.Data).ObjType <> cotFolder) and (Application.MessageBox(pchar('РҐРѕС‚РёС‚Рµ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ ' + s + ' ' +
+    VarToStr(TNodeDictInfo(Node.Data).Title) + '?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
 
   case TNodeDictInfo(Node.Data).ObjType of
     cotFolder: res := CopyFolder(TNodeDictInfo(Node.Data).PK, err);
@@ -2885,13 +2855,13 @@ begin
     cotWizard: res := CopyWizard(TNodeDictInfo(Node.Data).PK, err);
     else begin
       res := false;
-      err := 'Не определен тип объекта';
+      err := 'РќРµ РѕРїСЂРµРґРµР»РµРЅ С‚РёРї РѕР±СЉРµРєС‚Р°';
     end;
   end;
 
   if not res then
-    Application.MessageBox(pchar('Не удалось скопировать ' + s + ' ' + VarToStr(TNodeDictInfo(Node.Data).Title) + '!'#13#10 + err),
-      'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ ' + s + ' ' + VarToStr(TNodeDictInfo(Node.Data).Title) + '!'#13#10 + err),
+      'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.CopyPermsInternal(RefPk, NewRefPk: integer; TableName: string; PermTmpList: TStringList);
@@ -2945,10 +2915,10 @@ begin
   if url <> '' then
   begin
     CopyToClipboard(url);
-    Application.MessageBox('Ссылка скопирована!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РЎСЃС‹Р»РєР° СЃРєРѕРїРёСЂРѕРІР°РЅР°!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
   end else
-    Application.MessageBox('Для текущего подключения не задан url портала! Его можно указать в настройках подключений.',
-      'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox('Р”Р»СЏ С‚РµРєСѓС‰РµРіРѕ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РЅРµ Р·Р°РґР°РЅ url РїРѕСЂС‚Р°Р»Р°! Р•РіРѕ РјРѕР¶РЅРѕ СѓРєР°Р·Р°С‚СЊ РІ РЅР°СЃС‚СЂРѕР№РєР°С… РїРѕРґРєР»СЋС‡РµРЅРёР№.',
+      'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 function TFMain.CopyWizard(ObjPk: integer; var ErrorMessage: string): boolean;
@@ -2974,13 +2944,13 @@ begin
 
       if ds.IsEmpty then
       begin
-        ErrorMessage := 'Сценарий с PK ' + IntToStr(ObjPk) + ' не найден в базе данных!';
+        ErrorMessage := 'РЎС†РµРЅР°СЂРёР№ СЃ PK ' + IntToStr(ObjPk) + ' РЅРµ РЅР°Р№РґРµРЅ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…!';
         exit;
       end;
 
-      // сам визард
+      // СЃР°Рј РІРёР·Р°СЂРґ
       if (not ds.FieldByName('NAME').IsNull) and (ds.FieldByName('NAME').AsString <> '') then
-        wname := ds.FieldByName('NAME').AsString + ' - копия';
+        wname := ds.FieldByName('NAME').AsString + ' - РєРѕРїРёСЏ';
 
       if (not ds.FieldByName('DESCRIPTOR_').IsNull) and (ds.FieldByName('DESCRIPTOR_').AsString <> '') then
         wdescr := ds.FieldByName('DESCRIPTOR_').AsString + '_COPY';
@@ -2997,7 +2967,7 @@ begin
       d.ParentDictPK := ds.FieldByName('REF_PK').Value;
       d.Login := FSettings.PortalUser;
 
-      // состояния сценария
+      // СЃРѕСЃС‚РѕСЏРЅРёСЏ СЃС†РµРЅР°СЂРёСЏ
       ds.Close;
       FreeAndNil(ds);
       ds := OpenSQL('select PK, SCEN_PK, FORM_PK, FIELD_JSON, ACTION_, DESCRIPTOR_, FULL_SCREEN, MAY_DOUBLE from WIZARD_SATES where SCEN_PK = ' +
@@ -3017,7 +2987,7 @@ begin
         ds.Next;
       end;
 
-      // кнопки
+      // РєРЅРѕРїРєРё
       ds.First;
       while not ds.Eof do
       begin
@@ -3044,10 +3014,10 @@ begin
         ds.Next;
       end;
 
-      // слоты сценария
+      // СЃР»РѕС‚С‹ СЃС†РµРЅР°СЂРёСЏ
       CopyWizardSlotsInternal(ObjPk, scenPk, 'SCEN_PK', CrossList);
 
-      // слоты состояния
+      // СЃР»РѕС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёСЏ
       ds.First;
       while not ds.Eof do
       begin
@@ -3116,7 +3086,7 @@ begin
         ', ' + VariantToDBStr(ds.FieldByName('MAIN_SLOT').Value, false) + ', ' + scen + ') returning (PK)', 'PK', slotPk, err)
         then raise Exception.Create(err);
 
-      // значения слота
+      // Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р°
       ds2 := OpenSQL('select PK, SLOT_PK, CROSS_PK, SLOT_VALUE from WIZARD_SC_SLOT_VAL where SLOT_PK = ' + ds.FieldByName('PK').AsString);
       ds2.First;
       while not ds2.Eof do
@@ -3151,7 +3121,7 @@ var
   d: TNodeDictInfo;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaAdd, ParentData, err) then
   begin
     d := AssignNodeData(cotDict);
@@ -3167,9 +3137,9 @@ begin
     finally
       d.Free;
     end;
-    //fDict.Show; метод Show у MDI Child окна срабатывает автоматом сразу при создании (Create)
+    //fDict.Show; РјРµС‚РѕРґ Show Сѓ MDI Child РѕРєРЅР° СЃСЂР°Р±Р°С‚С‹РІР°РµС‚ Р°РІС‚РѕРјР°С‚РѕРј СЃСЂР°Р·Сѓ РїСЂРё СЃРѕР·РґР°РЅРёРё (Create)
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.CreateFolder(ParentData: TNodeDictInfo);
@@ -3179,7 +3149,7 @@ var
   d: TNodeDictInfo;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaAdd, ParentData, err) then
   begin
     d := AssignNodeData(cotFolder);
@@ -3193,7 +3163,7 @@ begin
     end;
     //fFolder.Show;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.CreateForm;
@@ -3203,7 +3173,7 @@ var
   d: TNodeDictInfo;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaAdd, nil, err) then
   begin
     fForm := TFEditForm.Create(Self, cftForm, omAdd, Null, OnChildFormClose);
@@ -3217,7 +3187,7 @@ begin
       d.Free;
     end;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.CreateLikedFolder;
@@ -3225,12 +3195,12 @@ var
   name, err: string;
   
 begin
-  name := Trim(InputBox('Новый раздел избранного', 'Введите имя раздела', ''));
+  name := Trim(InputBox('РќРѕРІС‹Р№ СЂР°Р·РґРµР» РёР·Р±СЂР°РЅРЅРѕРіРѕ', 'Р’РІРµРґРёС‚Рµ РёРјСЏ СЂР°Р·РґРµР»Р°', ''));
   if name = '' then exit;
 
   if not ExecSQL('insert into DCFG_HISTORY (OBJ_PK, OBJ_TYPE, TYPE_, USER_PK, OBJ_NAME) values (gen_id(GEN_DCFG_HISTORY_ID, 1), ' +
     IntToStr(Ord(cotLikedFolder)) + ', ' + IntToStr(Ord(htLiked)) + ', ' + dsPortalUserPK.AsString + ', ''' + name + ''')', err) then
-    Application.MessageBox(pchar('Не удалось добавить раздел в избранное! Ошибка:'#13#10 + err), 'Ошибка', MB_OK + MB_ICONERROR)
+    Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ РґРѕР±Р°РІРёС‚СЊ СЂР°Р·РґРµР» РІ РёР·Р±СЂР°РЅРЅРѕРµ! РћС€РёР±РєР°:'#13#10 + err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR)
   else begin
     if tsHistory.TabVisible then
     begin
@@ -3259,7 +3229,7 @@ var
   d: TNodeDictInfo;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   result := nil;
   if CheckGrants(gaAdd, nil, err) then
   begin
@@ -3273,17 +3243,17 @@ begin
       d.Free;
     end;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.DatabaseAfterConnect(Sender: TObject);
 begin
-  StatusBar.Panels[0].Text := 'Подключено';
+  StatusBar.Panels[0].Text := 'РџРѕРґРєР»СЋС‡РµРЅРѕ';
 end;
 
 procedure TFMain.DatabaseAfterDisconnect(Sender: TObject);
 begin
-  StatusBar.Panels[0].Text := 'Отключено';
+  StatusBar.Panels[0].Text := 'РћС‚РєР»СЋС‡РµРЅРѕ';
   StatusBar.Panels[3].Text := '';
   Caption := Application.Title;
 end;
@@ -3320,7 +3290,7 @@ begin
   case ObjType of
     cotFolder:
     begin
-      s := 'папок';
+      s := 'РїР°РїРѕРє';
       if tsOnFolder.TabVisible then
       begin
         if pcDictTree.ActivePage <> tsOnFolder then pcDictTree.ActivePage := tsOnFolder;
@@ -3329,7 +3299,7 @@ begin
     end;
     cotDict:
     begin
-      s := 'справочников';
+      s := 'СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ';
       if tsOnFolder.TabVisible then
       begin
         if pcDictTree.ActivePage <> tsOnFolder then pcDictTree.ActivePage := tsOnFolder;
@@ -3342,7 +3312,7 @@ begin
     end;
     cotForm:
     begin
-      s := 'форм';
+      s := 'С„РѕСЂРј';
       if tsForm.TabVisible then
       begin
         if pcDictTree.ActivePage <> tsForm then pcDictTree.ActivePage := tsForm;
@@ -3351,7 +3321,7 @@ begin
     end;
     cotWizard:
     begin
-      s := 'сценариев';
+      s := 'СЃС†РµРЅР°СЂРёРµРІ';
       if tsWizard.TabVisible then
       begin
         if pcDictTree.ActivePage <> tsWizard then pcDictTree.ActivePage := tsWizard;
@@ -3362,7 +3332,7 @@ begin
 
   if not Assigned(tv) then
   begin
-    Application.MessageBox(pchar('Отключен показ вкладок ' + s + ' - некуда переместиться!'), 'Сообщение', MB_OK + MB_ICONWARNING);
+    Application.MessageBox(pchar('РћС‚РєР»СЋС‡РµРЅ РїРѕРєР°Р· РІРєР»Р°РґРѕРє ' + s + ' - РЅРµРєСѓРґР° РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ!'), 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONWARNING);
     exit;
   end;
 
@@ -3378,22 +3348,22 @@ var
 begin
   if VarIsNull(Data.PK) then
   begin
-    Application.MessageBox(pchar('Нечего удалять!'), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµС‡РµРіРѕ СѓРґР°Р»СЏС‚СЊ!'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  if Application.MessageBox(pchar('Удалить справочник "' + VarToStr(Data.Title) + '"?'), 'Подтверждение',
+  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ СЃРїСЂР°РІРѕС‡РЅРёРє "' + VarToStr(Data.Title) + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   res := CheckGrants(gaDel, Data, err);
-  // все, что привязано к реф удаляется или отвязывается каскадно
+  // РІСЃРµ, С‡С‚Рѕ РїСЂРёРІСЏР·Р°РЅРѕ Рє СЂРµС„ СѓРґР°Р»СЏРµС‚СЃСЏ РёР»Рё РѕС‚РІСЏР·С‹РІР°РµС‚СЃСЏ РєР°СЃРєР°РґРЅРѕ
   if res then res := ExecSQL('delete from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(Data.PK), err);
   if res then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' +
     IntToStr(Ord(Data.ObjType)), err);
   if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltDelete);
   if res then ReopenTree
-  else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  else Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.DelFolder(Data: TNodeDictInfo);
@@ -3404,25 +3374,25 @@ var
 begin
   if VarIsNull(Data.PK) then
   begin
-    Application.MessageBox(pchar('Нечего удалять!'), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµС‡РµРіРѕ СѓРґР°Р»СЏС‚СЊ!'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  if Application.MessageBox(pchar('Удалить папку "' + VarToStr(Data.Title) + '"?'), 'Подтверждение',
+  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РїР°РїРєСѓ "' + VarToStr(Data.Title) + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
-  // сначала права: на саму папку и на содержащиеся в ней объекты, которыми ты не являешься владельцем
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°: РЅР° СЃР°РјСѓ РїР°РїРєСѓ Рё РЅР° СЃРѕРґРµСЂР¶Р°С‰РёРµСЃСЏ РІ РЅРµР№ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹РјРё С‚С‹ РЅРµ СЏРІР»СЏРµС€СЊСЃСЏ РІР»Р°РґРµР»СЊС†РµРј
   //res := CheckGrants(gaDel, Data, err);
   res := CheckGrantsDepth(gaDel, Data, err);
 
-  // надо отвязать вложенные папки (привязанные справочники отвязываются каскадно по ключу)
+  // РЅР°РґРѕ РѕС‚РІСЏР·Р°С‚СЊ РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё (РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё РѕС‚РІСЏР·С‹РІР°СЋС‚СЃСЏ РєР°СЃРєР°РґРЅРѕ РїРѕ РєР»СЋС‡Сѓ)
   if res then res := ExecSQL('update DYNAMIC_FORM_FOLDER set PARENT_FOLDER_PK = null where PARENT_FOLDER_PK = ' + IntToStr(Data.PK), err);
   if res then res := ExecSQL('delete from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Data.PK), err);
   if res then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' +
     IntToStr(Ord(Data.ObjType)), err);
   if res then AddToRefLog(Data.ObjType, Data.Title, rltDelete, 'PK ' + IntToStr(Data.PK));
   if res then ReopenTree
-  else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  else Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 function TFMain.DelFolderFull(Data: TNodeDictInfo; Ask: boolean): boolean;
@@ -3437,21 +3407,21 @@ begin
   result := false;
   if VarIsNull(Data.PK) then
   begin
-    Application.MessageBox(pchar('Нечего удалять!'), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµС‡РµРіРѕ СѓРґР°Р»СЏС‚СЊ!'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  if Ask and (Application.MessageBox(pchar('Удалить папку "' + VarToStr(Data.Title) + '" И ВСЕ ЕЕ СОДЕРЖИМОЕ?'), 'Подтверждение',
+  if Ask and (Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РїР°РїРєСѓ "' + VarToStr(Data.Title) + '" Р Р’РЎР• Р•Р• РЎРћР”Р•Р Р–РРњРћР•?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   if not CheckGrants(gaDel, Data, err) then
   begin
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  // выберем вложенные папки и главные справочники папки
+  // РІС‹Р±РµСЂРµРј РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё Рё РіР»Р°РІРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё РїР°РїРєРё
   d := AssignNodeData(cotDict);
   sl := TStringList.Create;
   slFolder := TStringList.Create;
@@ -3478,17 +3448,17 @@ begin
 
     idx := FindChildForm(Data.ObjType, Data.PK);
 
-    // закроем окно объекта, если оно открыто (для 1 уровня вложенности не делаем - оно закроется из метода, вызвавшего этот)
+    // Р·Р°РєСЂРѕРµРј РѕРєРЅРѕ РѕР±СЉРµРєС‚Р°, РµСЃР»Рё РѕРЅРѕ РѕС‚РєСЂС‹С‚Рѕ (РґР»СЏ 1 СѓСЂРѕРІРЅСЏ РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё РЅРµ РґРµР»Р°РµРј - РѕРЅРѕ Р·Р°РєСЂРѕРµС‚СЃСЏ РёР· РјРµС‚РѕРґР°, РІС‹Р·РІР°РІС€РµРіРѕ СЌС‚РѕС‚)
     if (not Ask) and (idx <> -1) then ChildForms[idx].Close;
 
-    // надо проверить наличие открытых окон вложенных справочников и позакрывать их тоже
+    // РЅР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ РЅР°Р»РёС‡РёРµ РѕС‚РєСЂС‹С‚С‹С… РѕРєРѕРЅ РІР»РѕР¶РµРЅРЅС‹С… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ Рё РїРѕР·Р°РєСЂС‹РІР°С‚СЊ РёС… С‚РѕР¶Рµ
     for i := 0 to sl.Count - 1 do
     begin
       idx := FindChildForm(cotDict, StrToInt(sl.Strings[i]));
       if idx <> -1 then ChildForms[idx].Close;
     end;
 
-    // удаление - сначала все вложенные справочники
+    // СѓРґР°Р»РµРЅРёРµ - СЃРЅР°С‡Р°Р»Р° РІСЃРµ РІР»РѕР¶РµРЅРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
     d.ObjType := cotDict;
     for i := 0 to slRef.Count - 1 do
     begin
@@ -3496,25 +3466,25 @@ begin
       d.Login := ExtractWordEx(1, slRef.Values[slRef.Names[i]], ['/'], []);
       d.Descriptor := ExtractWordEx(2, slRef.Values[slRef.Names[i]], ['/'], []);
 
-      // проверим права
+      // РїСЂРѕРІРµСЂРёРј РїСЂР°РІР°
       if not CheckGrants(gaDel, d, err) then
       begin
-        Application.MessageBox(pchar('Недостаточно прав на один из вложенных объектов: (PK: ' + VarToStr(d.PK) + ')'#13#10 + err),
-          'Ошибка', MB_OK + MB_ICONERROR);
+        Application.MessageBox(pchar('РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ РЅР° РѕРґРёРЅ РёР· РІР»РѕР¶РµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ: (PK: ' + VarToStr(d.PK) + ')'#13#10 + err),
+          'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
         exit;
       end;
 
-      // все, что привязано к реф удаляется или отвязывается каскадно
+      // РІСЃРµ, С‡С‚Рѕ РїСЂРёРІСЏР·Р°РЅРѕ Рє СЂРµС„ СѓРґР°Р»СЏРµС‚СЃСЏ РёР»Рё РѕС‚РІСЏР·С‹РІР°РµС‚СЃСЏ РєР°СЃРєР°РґРЅРѕ
       if not ExecSQL('delete from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(d.PK), err) then
       begin
-        Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+        Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
         exit;
       end;
       ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(d.PK) + ' and OBJ_TYPE = ' + IntToStr(Ord(d.ObjType)), err);
       AddToRefLog(d.ObjType, d.Descriptor, rltDelete);
     end;
 
-    // удаление - теперь вложенные папки
+    // СѓРґР°Р»РµРЅРёРµ - С‚РµРїРµСЂСЊ РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё
     d.ObjType := cotFolder;
     d.Login := Null;
     d.Descriptor := Null;
@@ -3525,13 +3495,13 @@ begin
       if not DelFolderFull(d, false) then exit;
     end;
 
-    // теперь удалить саму эту папку
-    // на всякий случай надо отвязать вложенные папки (хотя они уже удалены до этого)
+    // С‚РµРїРµСЂСЊ СѓРґР°Р»РёС‚СЊ СЃР°РјСѓ СЌС‚Сѓ РїР°РїРєСѓ
+    // РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РЅР°РґРѕ РѕС‚РІСЏР·Р°С‚СЊ РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё (С…РѕС‚СЏ РѕРЅРё СѓР¶Рµ СѓРґР°Р»РµРЅС‹ РґРѕ СЌС‚РѕРіРѕ)
     ExecSQL('update DYNAMIC_FORM_FOLDER set PARENT_FOLDER_PK = null where PARENT_FOLDER_PK = ' + IntToStr(Data.PK), err);
     result := ExecSQL('delete from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Data.PK), err);
     if result then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' + IntToStr(Ord(Data.ObjType)), err);
     if result then AddToRefLog(Data.ObjType, Data.Title, rltDelete, 'PK ' + IntToStr(Data.PK));
-    if not result then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    if not result then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
   finally
     d.Free;
     sl.Free;
@@ -3551,16 +3521,16 @@ var
 begin
   if VarIsNull(Data.PK) then
   begin
-    Application.MessageBox(pchar('Нечего удалять!'), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµС‡РµРіРѕ СѓРґР°Р»СЏС‚СЊ!'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  if Application.MessageBox(pchar('Удалить форму "' + VarToStr(Data.Title) + '"?'), 'Подтверждение',
+  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ С„РѕСЂРјСѓ "' + VarToStr(Data.Title) + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   res := CheckGrants(gaDel, Data, err);
-  // отвязываем стартовую и групповую формы (главная форма отвязывается каскадно по ключу, визарды удаляются каскадно)
+  // РѕС‚РІСЏР·С‹РІР°РµРј СЃС‚Р°СЂС‚РѕРІСѓСЋ Рё РіСЂСѓРїРїРѕРІСѓСЋ С„РѕСЂРјС‹ (РіР»Р°РІРЅР°СЏ С„РѕСЂРјР° РѕС‚РІСЏР·С‹РІР°РµС‚СЃСЏ РєР°СЃРєР°РґРЅРѕ РїРѕ РєР»СЋС‡Сѓ, РІРёР·Р°СЂРґС‹ СѓРґР°Р»СЏСЋС‚СЃСЏ РєР°СЃРєР°РґРЅРѕ)
   if res then res := ExecSQL('update DYNAMIC_FORM_REFERENCE set START_FORM_PK = null where START_FORM_PK = ' + IntToStr(Data.PK), err);
   if res then res := ExecSQL('update DYNAMIC_FORM_REFERENCE set GROUP_EDIT_FORM_PK = null where GROUP_EDIT_FORM_PK = ' + IntToStr(Data.PK), err);
   if res then res := ExecSQL('delete from DYNAMIC_FORM where PK = ' + IntToStr(Data.PK), err);
@@ -3568,7 +3538,7 @@ begin
     IntToStr(Ord(Data.ObjType)), err);
   if res then AddToRefLog(Data.ObjType, iif(not VarIsNull(Data.Descriptor), data.Descriptor, Data.Title), rltDelete, 'PK ' + IntToStr(Data.PK));
   if res then ReopenTree
-  else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  else Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.DelFromHistory(Data: TNodeDictInfo; HistType: THistoryType);
@@ -3605,7 +3575,7 @@ var
 begin
   if Data.ObjType <> cotDict then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   res := CheckGrants(gaRights, Data, err);
 
   if res then
@@ -3616,16 +3586,16 @@ begin
     if VarIsNull(pk) then
     begin
       res := false;
-      err := 'Не выбран пользователь!';
+      err := 'РќРµ РІС‹Р±СЂР°РЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ!';
     end else
     begin
       res := ExecSQL('delete from DYNAMIC_FORM_REF_USER where REF_PK = ' + VarToStr(TNodeDictInfo(Data).PK) +
         ' and USER_PK = ' + VarToStr(pk), err);
-      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'Удаление прав на конфигурацию. Полюзователь ' + VarToStr(pk));
+      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'РЈРґР°Р»РµРЅРёРµ РїСЂР°РІ РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ. РџРѕР»СЋР·РѕРІР°С‚РµР»СЊ ' + VarToStr(pk));
     end;
   end;
 
-  if not res then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  if not res then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.DelLikedFolder(Data: TNodeDictInfo);
@@ -3635,16 +3605,16 @@ var
 begin
   if VarIsNull(Data.PK) then
   begin
-    Application.MessageBox(pchar('Нечего удалять!'), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµС‡РµРіРѕ СѓРґР°Р»СЏС‚СЊ!'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  if (Application.MessageBox(pchar('Удалить раздел избранного "' + VarToStr(Data.Title) +
-    '"? Все вложенные объекты будут перемещены в корневую ветку избранного'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+  if (Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ СЂР°Р·РґРµР» РёР·Р±СЂР°РЅРЅРѕРіРѕ "' + VarToStr(Data.Title) +
+    '"? Р’СЃРµ РІР»РѕР¶РµРЅРЅС‹Рµ РѕР±СЉРµРєС‚С‹ Р±СѓРґСѓС‚ РїРµСЂРµРјРµС‰РµРЅС‹ РІ РєРѕСЂРЅРµРІСѓСЋ РІРµС‚РєСѓ РёР·Р±СЂР°РЅРЅРѕРіРѕ'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
 
   if not ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + VarToStr(Data.PK) + ' and OBJ_TYPE = ' + IntToStr(Ord(cotLikedFolder)) +
     ' and TYPE_ = ' + IntToStr(Ord(htLiked)) + ' and USER_PK = ' + dsPortalUserPK.AsString, err) then
-    Application.MessageBox(pchar('Не удалось переименовать раздел избранного! Ошибка:'#13#10 + err), 'Ошибка', MB_OK + MB_ICONERROR)
+    Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ РїРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ СЂР°Р·РґРµР» РёР·Р±СЂР°РЅРЅРѕРіРѕ! РћС€РёР±РєР°:'#13#10 + err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR)
   else begin
     if tsHistory.TabVisible then
     begin
@@ -3672,11 +3642,11 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
-  // встанем на предыдущий узел, чтоб не потеряться в дереве после удаления
+  // РІСЃС‚Р°РЅРµРј РЅР° РїСЂРµРґС‹РґСѓС‰РёР№ СѓР·РµР», С‡С‚РѕР± РЅРµ РїРѕС‚РµСЂСЏС‚СЊСЃСЏ РІ РґРµСЂРµРІРµ РїРѕСЃР»Рµ СѓРґР°Р»РµРЅРёСЏ
   pNode := Node.getPrevSibling;
   if not Assigned(pNode) then pNode := Node.GetPrevVisible;
   TvSelectNode(pNode);
@@ -3699,9 +3669,9 @@ begin
       cotLikedFolder: DelLikedFolder(TNodeDictInfo(Node.Data));
     end;
 
-    // закроем окно объекта, если оно открыто
+    // Р·Р°РєСЂРѕРµРј РѕРєРЅРѕ РѕР±СЉРµРєС‚Р°, РµСЃР»Рё РѕРЅРѕ РѕС‚РєСЂС‹С‚Рѕ
     if idx <> -1 then ChildForms[idx].Close;
-    // если это справочник - надо проверить наличие открытых окон дочерних справочников и позакрывать их тоже
+    // РµСЃР»Рё СЌС‚Рѕ СЃРїСЂР°РІРѕС‡РЅРёРє - РЅР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ РЅР°Р»РёС‡РёРµ РѕС‚РєСЂС‹С‚С‹С… РѕРєРѕРЅ РґРѕС‡РµСЂРЅРёС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ Рё РїРѕР·Р°РєСЂС‹РІР°С‚СЊ РёС… С‚РѕР¶Рµ
     for i := 0 to sl.Count - 1 do
     begin
       idx := FindChildForm(ot, StrToInt(sl.Strings[i]));
@@ -3720,22 +3690,22 @@ begin
   result := false;
   if VarIsNull(Data.PK) then
   begin
-    Application.MessageBox(pchar('Нечего удалять!'), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РќРµС‡РµРіРѕ СѓРґР°Р»СЏС‚СЊ!'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  if Application.MessageBox(pchar('Удалить сценарий "' + VarToStr(Data.Title) + '"?'), 'Подтверждение',
+  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ СЃС†РµРЅР°СЂРёР№ "' + VarToStr(Data.Title) + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
-  // сначала права
+  // СЃРЅР°С‡Р°Р»Р° РїСЂР°РІР°
   result := CheckGrants(gaDel, Data, err);
-  // все, что привязано к визарду удаляется или отвязывается каскадно
+  // РІСЃРµ, С‡С‚Рѕ РїСЂРёРІСЏР·Р°РЅРѕ Рє РІРёР·Р°СЂРґСѓ СѓРґР°Р»СЏРµС‚СЃСЏ РёР»Рё РѕС‚РІСЏР·С‹РІР°РµС‚СЃСЏ РєР°СЃРєР°РґРЅРѕ
   if result then result := ExecSQL('delete from WIZARD_SCENS where PK = ' + IntToStr(Data.PK), err);
   if result then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' +
     IntToStr(Ord(Data.ObjType)), err);
   if result then AddToRefLog(cotWizard, iif(not VarIsNull(Data.Descriptor), Data.Descriptor, Data.Title), rltDelete, 'PK ' + VarToStr(Data.PK));
   if result then ReopenTree
-  else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  else Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.DoFilter(tv: TJvTreeView);
@@ -3745,11 +3715,11 @@ var
 begin
   if not Assigned(tv) then exit;
 
-  // начинаем всегда с первой ноды
+  // РЅР°С‡РёРЅР°РµРј РІСЃРµРіРґР° СЃ РїРµСЂРІРѕР№ РЅРѕРґС‹
   Node := tv.Items.GetFirstNode;
   if not Assigned(Node) then exit;
 
-  // пробегаемся по всем узлам
+  // РїСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј СѓР·Р»Р°Рј
   try
     TJvTreeView(Node.TreeView).OnChange := nil;
     Node.TreeView.Visible := false;
@@ -3774,7 +3744,7 @@ var
   fDict: TFEditDict;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaEdit, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditDict.ClassName) then exit;
@@ -3793,7 +3763,7 @@ begin
     end;
   end else
   begin
-    //Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    //Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     ViewDict(Data);
   end;
 end;
@@ -3804,7 +3774,7 @@ var
   fFolder: TFEditFolder;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaEdit, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditFolder.ClassName) then exit;
@@ -3815,7 +3785,7 @@ begin
     AddToHistory(Data, htHistory);
   end else
   begin
-    //Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    //Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     ViewFolder(Data);
   end;
 end;
@@ -3826,7 +3796,7 @@ var
   fForm: TFEditForm;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaEdit, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditForm.ClassName) then exit;
@@ -3837,7 +3807,7 @@ begin
     AddToHistory(Data, htHistory);
   end else
   begin
-    //Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    //Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     ViewForm(Data);
   end;
 end;
@@ -3847,13 +3817,13 @@ var
   name, err: string;
 
 begin
-  name := Trim(InputBox('Переименование раздела избранного', 'Введите имя раздела', VarToStr(Data.Title)));
+  name := Trim(InputBox('РџРµСЂРµРёРјРµРЅРѕРІР°РЅРёРµ СЂР°Р·РґРµР»Р° РёР·Р±СЂР°РЅРЅРѕРіРѕ', 'Р’РІРµРґРёС‚Рµ РёРјСЏ СЂР°Р·РґРµР»Р°', VarToStr(Data.Title)));
   if (name = '') or (name = Data.Title) then exit;
 
   if not ExecSQL('update DCFG_HISTORY set OBJ_NAME = ''' + name + ''' where OBJ_PK = ' + VarToStr(Data.PK) +
     ' and OBJ_TYPE = ' + IntToStr(Ord(cotLikedFolder)) + ' and TYPE_ = ' + IntToStr(Ord(htLiked)) + ' and USER_PK = ' +
     dsPortalUserPK.AsString, err) then
-    Application.MessageBox(pchar('Не удалось переименовать раздел избранного! Ошибка:'#13#10 + err), 'Ошибка', MB_OK + MB_ICONERROR)
+    Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ РїРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ СЂР°Р·РґРµР» РёР·Р±СЂР°РЅРЅРѕРіРѕ! РћС€РёР±РєР°:'#13#10 + err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR)
   else begin
     if tsHistory.TabVisible then
     begin
@@ -3875,7 +3845,7 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -3894,7 +3864,7 @@ var
   fWizard: TFEditWizard;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaEdit, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditWizard.ClassName) then exit;
@@ -3905,7 +3875,7 @@ begin
     AddToHistory(Data, htHistory);
   end else
   begin
-    //Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    //Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     ViewWizard(Data);
   end;
 end;
@@ -3948,7 +3918,7 @@ begin
   if not Assigned(Grid) then exit;
 
   SaveDialog.FileName := FileName;
-  SaveDialog.Filter := 'Текстовый файл (*.txt)|*.txt|Файл CSV (.csv)|*.csv';
+  SaveDialog.Filter := 'РўРµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» (*.txt)|*.txt|Р¤Р°Р№Р» CSV (.csv)|*.csv';
   SaveDialog.DefaultExt := 'csv';
 
   if not SaveDialog.Execute then exit;
@@ -3995,7 +3965,7 @@ begin
 
   try
     CopyGrid(Grid, grid_);
-//    if SheetName = '' then SheetName := 'Лист 1';
+//    if SheetName = '' then SheetName := 'Р›РёСЃС‚ 1';
 //    XLSExpFile.Workbook.Sheets.Item[0].Name := SheetName;
     XLSExp.Options := [eoptVisibleOnly];
     XLSExp.XLSExportFile := XLSExpFile;
@@ -4076,9 +4046,9 @@ begin
   ParentNode.Expand(false);
   Node := ParentNode.getFirstChild;
 
-  // перебираем все дочерние узлы, сверяем текущий и его деток - всегда
-  // если ни у него, ни у деток ничего не найдено - текущий удаляется, иначе остается
-  // результат True, если хотя бы у одного из узлов или его деток что-то было найдено
+  // РїРµСЂРµР±РёСЂР°РµРј РІСЃРµ РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹, СЃРІРµСЂСЏРµРј С‚РµРєСѓС‰РёР№ Рё РµРіРѕ РґРµС‚РѕРє - РІСЃРµРіРґР°
+  // РµСЃР»Рё РЅРё Сѓ РЅРµРіРѕ, РЅРё Сѓ РґРµС‚РѕРє РЅРёС‡РµРіРѕ РЅРµ РЅР°Р№РґРµРЅРѕ - С‚РµРєСѓС‰РёР№ СѓРґР°Р»СЏРµС‚СЃСЏ, РёРЅР°С‡Рµ РѕСЃС‚Р°РµС‚СЃСЏ
+  // СЂРµР·СѓР»СЊС‚Р°С‚ True, РµСЃР»Рё С…РѕС‚СЏ Р±С‹ Сѓ РѕРґРЅРѕРіРѕ РёР· СѓР·Р»РѕРІ РёР»Рё РµРіРѕ РґРµС‚РѕРє С‡С‚Рѕ-С‚Рѕ Р±С‹Р»Рѕ РЅР°Р№РґРµРЅРѕ
   while Assigned(Node) do
   begin
     nextNode := ParentNode.GetNextChild(Node);
@@ -4104,7 +4074,7 @@ begin
   if not Assigned(StartNode) then exit;
   Node := StartNode;
 
-  // перебираем все узлы, начиная от переданного, и если у текущего и у его деток нет совпадений - удаляем его
+  // РїРµСЂРµР±РёСЂР°РµРј РІСЃРµ СѓР·Р»С‹, РЅР°С‡РёРЅР°СЏ РѕС‚ РїРµСЂРµРґР°РЅРЅРѕРіРѕ, Рё РµСЃР»Рё Сѓ С‚РµРєСѓС‰РµРіРѕ Рё Сѓ РµРіРѕ РґРµС‚РѕРє РЅРµС‚ СЃРѕРІРїР°РґРµРЅРёР№ - СѓРґР°Р»СЏРµРј РµРіРѕ
   while Assigned(Node) do
   begin
     nextNode := Node.getNextSibling;
@@ -4129,8 +4099,8 @@ var
 begin
   if (not AContinue) or (FindDialog.cbFindText.Text = '') then
   begin
-    // если новый, то показать диалог
-    FindDialog.Caption := 'Поиск по дереву';
+    // РµСЃР»Рё РЅРѕРІС‹Р№, С‚Рѕ РїРѕРєР°Р·Р°С‚СЊ РґРёР°Р»РѕРі
+    FindDialog.Caption := 'РџРѕРёСЃРє РїРѕ РґРµСЂРµРІСѓ';
     if FindDialog.ShowModal <> mrOk then exit;
   end;
 
@@ -4142,7 +4112,7 @@ begin
   if FindDialog.rbAnyWord.Checked then FindOptions := FindOptions + [foAnyWord];
   if FindDialog.rbAllWords.Checked then FindOptions := FindOptions + [foAllWords];
 
-  // ну а поиск собственно всегда будем вести от текущей ноды
+  // РЅСѓ Р° РїРѕРёСЃРє СЃРѕР±СЃС‚РІРµРЅРЅРѕ РІСЃРµРіРґР° Р±СѓРґРµРј РІРµСЃС‚Рё РѕС‚ С‚РµРєСѓС‰РµР№ РЅРѕРґС‹
   tv := GetCurrentTreeView;
   if not Assigned(tv) then exit;
 
@@ -4151,11 +4121,11 @@ begin
 
   if not Assigned(Node) then
   begin
-    Application.MessageBox('Негде искать!', 'Поиск', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµРіРґРµ РёСЃРєР°С‚СЊ!', 'РџРѕРёСЃРє', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
-  // пробегаемся по всем узлам, начиная от текущего
+  // РїСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј СѓР·Р»Р°Рј, РЅР°С‡РёРЅР°СЏ РѕС‚ С‚РµРєСѓС‰РµРіРѕ
   try
     Node.TreeView.Visible := false;
     Application.ProcessMessages;
@@ -4178,7 +4148,7 @@ var
 begin
   if (GetCurrentTreeView <> tvMain) and (GetCurrentTreeView <> tvDict) and (GetCurrentTreeView <> tvHistory) then exit;
 
-  FindDialog.Caption := 'Поиск по объекту БД';
+  FindDialog.Caption := 'РџРѕРёСЃРє РїРѕ РѕР±СЉРµРєС‚Сѓ Р‘Р”';
   if FindDialog.ShowModal <> mrOk then exit;
 
   FindStr := FindDialog.cbFindText.Text;
@@ -4193,7 +4163,7 @@ begin
   try
     if FRefList.Execute(FindStr, FindOptions) and FRefList.dsRefList.Active and (not FRefList.dsRefList.IsEmpty) then
     begin
-      // Хотят Открыть все найденные справочники
+      // РҐРѕС‚СЏС‚ РћС‚РєСЂС‹С‚СЊ РІСЃРµ РЅР°Р№РґРµРЅРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
       if FRefList.OpenAll then
       begin
         FRefList.dsRefList.First;
@@ -4262,10 +4232,10 @@ begin
   ParentNode.Expand(false);
   Node := ParentNode.getFirstChild;
 
-  // переберем дочек, поищем у них
+  // РїРµСЂРµР±РµСЂРµРј РґРѕС‡РµРє, РїРѕРёС‰РµРј Сѓ РЅРёС…
   while Assigned(Node) do
   begin
-    // смотрим текущий узел - если совпало, завершаем поиск
+    // СЃРјРѕС‚СЂРёРј С‚РµРєСѓС‰РёР№ СѓР·РµР» - РµСЃР»Рё СЃРѕРІРїР°Р»Рѕ, Р·Р°РІРµСЂС€Р°РµРј РїРѕРёСЃРє
     if Assigned(Node.Data) then
       if CompareNodeData(Str, TNodeDictInfo(Node.Data), Options) then
       begin
@@ -4274,7 +4244,7 @@ begin
         exit;
       end;
 
-    // сразу переберем дочерние узлы (рекурсивно) - если там нашлось, завершаем
+    // СЃСЂР°Р·Сѓ РїРµСЂРµР±РµСЂРµРј РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹ (СЂРµРєСѓСЂСЃРёРІРЅРѕ) - РµСЃР»Рё С‚Р°Рј РЅР°С€Р»РѕСЃСЊ, Р·Р°РІРµСЂС€Р°РµРј
     result := FindInChildNodes(Node, Str, Options);
     if result then break;
 
@@ -4292,22 +4262,22 @@ begin
   result := false;
   if not Assigned(StartNode) then
   begin
-    if ShowMsg then Application.MessageBox('Поиск неожиданно прервался!', 'Поиск', MB_OK + MB_ICONINFORMATION);
+    if ShowMsg then Application.MessageBox('РџРѕРёСЃРє РЅРµРѕР¶РёРґР°РЅРЅРѕ РїСЂРµСЂРІР°Р»СЃСЏ!', 'РџРѕРёСЃРє', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
   if CheckCurrent then Node := StartNode
   else begin
-    // сразу переберем дочерние узлы (рекурсивно) - если там нашлось, завершаем
+    // СЃСЂР°Р·Сѓ РїРµСЂРµР±РµСЂРµРј РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹ (СЂРµРєСѓСЂСЃРёРІРЅРѕ) - РµСЃР»Рё С‚Р°Рј РЅР°С€Р»РѕСЃСЊ, Р·Р°РІРµСЂС€Р°РµРј
     result := FindInChildNodes(StartNode, Str, Options);
     if result then exit;
     Node := StartNode.getNextSibling;
   end;
 
-  // переберем братьев, поищем у них
+  // РїРµСЂРµР±РµСЂРµРј Р±СЂР°С‚СЊРµРІ, РїРѕРёС‰РµРј Сѓ РЅРёС…
   while Assigned(Node) do
   begin
-    // смотрим текущий узел - если совпало, завершаем поиск
+    // СЃРјРѕС‚СЂРёРј С‚РµРєСѓС‰РёР№ СѓР·РµР» - РµСЃР»Рё СЃРѕРІРїР°Р»Рѕ, Р·Р°РІРµСЂС€Р°РµРј РїРѕРёСЃРє
     if Assigned(Node.Data) then
       if CompareNodeData(Str, TNodeDictInfo(Node.Data), Options) then
       begin
@@ -4316,20 +4286,20 @@ begin
         exit;
       end;
 
-    // переберем дочерние узлы (рекурсивно) - если там нашлось, завершаем
+    // РїРµСЂРµР±РµСЂРµРј РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹ (СЂРµРєСѓСЂСЃРёРІРЅРѕ) - РµСЃР»Рё С‚Р°Рј РЅР°С€Р»РѕСЃСЊ, Р·Р°РІРµСЂС€Р°РµРј
     result := FindInChildNodes(Node, Str, Options);
     if result then exit;
 
     Node := Node.getNextSibling;
   end;
 
-  // ничего не нашли...
+  // РЅРёС‡РµРіРѕ РЅРµ РЅР°С€Р»Рё...
   if Assigned(StartNode.Parent) and (StartNode.Parent.getNextSibling <> nil) then
-    //Тогда, если у узла есть родитель, то надо продолжить поиск, начиная со следующего брата родителя
+    //РўРѕРіРґР°, РµСЃР»Рё Сѓ СѓР·Р»Р° РµСЃС‚СЊ СЂРѕРґРёС‚РµР»СЊ, С‚Рѕ РЅР°РґРѕ РїСЂРѕРґРѕР»Р¶РёС‚СЊ РїРѕРёСЃРє, РЅР°С‡РёРЅР°СЏ СЃРѕ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±СЂР°С‚Р° СЂРѕРґРёС‚РµР»СЏ
     result := FindInNodes(StartNode.Parent.getNextSibling, true, Str, Options, ShowMsg)
   else begin
-    // значит добрались до конца, надо спросить и начать сначала
-    if ShowMsg and (Application.MessageBox('Поиск завершен! Начать с начала?', 'Поиск', MB_YESNO + MB_ICONQUESTION) = ID_YES) then
+    // Р·РЅР°С‡РёС‚ РґРѕР±СЂР°Р»РёСЃСЊ РґРѕ РєРѕРЅС†Р°, РЅР°РґРѕ СЃРїСЂРѕСЃРёС‚СЊ Рё РЅР°С‡Р°С‚СЊ СЃРЅР°С‡Р°Р»Р°
+    if ShowMsg and (Application.MessageBox('РџРѕРёСЃРє Р·Р°РІРµСЂС€РµРЅ! РќР°С‡Р°С‚СЊ СЃ РЅР°С‡Р°Р»Р°?', 'РџРѕРёСЃРє', MB_YESNO + MB_ICONQUESTION) = ID_YES) then
       result := FindInNodes(TJvTreeView(StartNode.TreeView).Items.GetFirstNode, true, Str, Options, ShowMsg)
     else
       result := false;
@@ -4346,14 +4316,14 @@ begin
   if not ForcedTerminate then
   begin
     if FSettings.ConfirmExit and
-      (Application.MessageBox(pchar('Завершить работу программы?'), 'Выход', MB_YESNO + MB_ICONQUESTION) = ID_NO) then
+      (Application.MessageBox(pchar('Р—Р°РІРµСЂС€РёС‚СЊ СЂР°Р±РѕС‚Сѓ РїСЂРѕРіСЂР°РјРјС‹?'), 'Р’С‹С…РѕРґ', MB_YESNO + MB_ICONQUESTION) = ID_NO) then
     begin
       Action := caNone;
       exit;
     end;
 
     if FSettings.ConfirmCloseChild and (OpenedFormCount > 0) and
-      (Application.MessageBox(pchar('Все открытые окна будут ЗАКРЫТЫ БЕЗ СОХРАНЕНИЯ изменений! Выходим?'), 'Подтверждение',
+      (Application.MessageBox(pchar('Р’СЃРµ РѕС‚РєСЂС‹С‚С‹Рµ РѕРєРЅР° Р±СѓРґСѓС‚ Р—РђРљР Р«РўР« Р‘Р•Р— РЎРћРҐР РђРќР•РќРРЇ РёР·РјРµРЅРµРЅРёР№! Р’С‹С…РѕРґРёРј?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
         MB_YESNO + MB_ICONQUESTION) = ID_NO) then
     begin
       Action := caNone;
@@ -4377,7 +4347,7 @@ end;
 procedure TFMain.FormCreate(Sender: TObject);
 begin
   DbObjectList := TStringList.Create;
-  tmrEndSession.Interval := 75 * 60 * 1000; // 1 час 15 мин
+  tmrEndSession.Interval := 75 * 60 * 1000; // 1 С‡Р°СЃ 15 РјРёРЅ
   WindowBar.Tabs.Clear;
   ConnectionsList := TConnectManager.Create(Self);
   ConnectChecker := TConnectChecker.Create;
@@ -4494,10 +4464,10 @@ var
   i: integer;
 
 begin
-  // кнопки в общем-то автоматом удаляться при закрытии окна
+  // РєРЅРѕРїРєРё РІ РѕР±С‰РµРј-С‚Рѕ Р°РІС‚РѕРјР°С‚РѕРј СѓРґР°Р»СЏС‚СЊСЃСЏ РїСЂРё Р·Р°РєСЂС‹С‚РёРё РѕРєРЅР°
   WindowBar.Tabs.Clear;
 
-  // пункты меню тоже
+  // РїСѓРЅРєС‚С‹ РјРµРЅСЋ С‚РѕР¶Рµ
   {for i := 0 to miWindow.Count - 1 do
     if Pos('miWindow', miWindow.Items[i].Name) > 0 then
       miWindow.Remove(miWindow.Items[i]);}
@@ -4536,15 +4506,15 @@ var
   ds: TpFIBDataSet;
 
 begin
-  // выберем вложенные папки и главные справочники папки
+  // РІС‹Р±РµСЂРµРј РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё Рё РіР»Р°РІРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё РїР°РїРєРё
   try
     ds := OpenSQL('select 1 TYPE_, PK from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = ' + IntToStr(FolderPK) +
       ' union all select 2 TYPE_, PK from DYNAMIC_FORM_REFERENCE where FOLDER_PK = ' + IntToStr(FolderPK) + ' and PARENT_REFERENCE_PK is null');
 
-    // если папка пустая - выгрузим ее саму
+    // РµСЃР»Рё РїР°РїРєР° РїСѓСЃС‚Р°СЏ - РІС‹РіСЂСѓР·РёРј РµРµ СЃР°РјСѓ
     if ds.IsEmpty then GenFolderSQL(FolderPK, Script, Folders);
 
-    // пробежимся по всем пивязанным к папке справочникам, не имеющим родительского справочника и выгрузим их. Они подтянут за собой все остальное
+    // РїСЂРѕР±РµР¶РёРјСЃСЏ РїРѕ РІСЃРµРј РїРёРІСЏР·Р°РЅРЅС‹Рј Рє РїР°РїРєРµ СЃРїСЂР°РІРѕС‡РЅРёРєР°Рј, РЅРµ РёРјРµСЋС‰РёРј СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СЃРїСЂР°РІРѕС‡РЅРёРєР° Рё РІС‹РіСЂСѓР·РёРј РёС…. РћРЅРё РїРѕРґС‚СЏРЅСѓС‚ Р·Р° СЃРѕР±РѕР№ РІСЃРµ РѕСЃС‚Р°Р»СЊРЅРѕРµ
     ds.First;
     while not ds.Eof do
     begin
@@ -4552,7 +4522,7 @@ begin
       ds.Next;
     end;
 
-    // теперь надо пройтись по всем вложенным папкам и повторить все эти действия для них (рекурсивно)
+    // С‚РµРїРµСЂСЊ РЅР°РґРѕ РїСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј РІР»РѕР¶РµРЅРЅС‹Рј РїР°РїРєР°Рј Рё РїРѕРІС‚РѕСЂРёС‚СЊ РІСЃРµ СЌС‚Рё РґРµР№СЃС‚РІРёСЏ РґР»СЏ РЅРёС… (СЂРµРєСѓСЂСЃРёРІРЅРѕ)
     ds.First;
     while not ds.Eof do
     begin
@@ -4570,15 +4540,15 @@ var
   ds: TpFIBDataSet;
 
 begin
-  // выберем вложенные папки и главные справочники папки
+  // РІС‹Р±РµСЂРµРј РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё Рё РіР»Р°РІРЅС‹Рµ СЃРїСЂР°РІРѕС‡РЅРёРєРё РїР°РїРєРё
   try
     ds := OpenSQL('select 1 TYPE_, PK from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = ' + IntToStr(FolderPK) +
       ' union all select 2 TYPE_, PK from DYNAMIC_FORM_REFERENCE where FOLDER_PK = ' + IntToStr(FolderPK) + ' and PARENT_REFERENCE_PK is null');
 
-    // если папка пустая - уходим
+    // РµСЃР»Рё РїР°РїРєР° РїСѓСЃС‚Р°СЏ - СѓС…РѕРґРёРј
     if ds.IsEmpty then exit;
 
-    // пробежимся по всем пивязанным к папке справочникам, не имеющим родительского справочника и выгрузим их сценарии. Они подтянут за собой все остальное
+    // РїСЂРѕР±РµР¶РёРјСЃСЏ РїРѕ РІСЃРµРј РїРёРІСЏР·Р°РЅРЅС‹Рј Рє РїР°РїРєРµ СЃРїСЂР°РІРѕС‡РЅРёРєР°Рј, РЅРµ РёРјРµСЋС‰РёРј СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СЃРїСЂР°РІРѕС‡РЅРёРєР° Рё РІС‹РіСЂСѓР·РёРј РёС… СЃС†РµРЅР°СЂРёРё. РћРЅРё РїРѕРґС‚СЏРЅСѓС‚ Р·Р° СЃРѕР±РѕР№ РІСЃРµ РѕСЃС‚Р°Р»СЊРЅРѕРµ
     ds.First;
     while not ds.Eof do
     begin
@@ -4586,7 +4556,7 @@ begin
       ds.Next;
     end;
 
-    // теперь надо пройтись по всем вложенным папкам и повторить все эти действия для них (рекурсивно)
+    // С‚РµРїРµСЂСЊ РЅР°РґРѕ РїСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј РІР»РѕР¶РµРЅРЅС‹Рј РїР°РїРєР°Рј Рё РїРѕРІС‚РѕСЂРёС‚СЊ РІСЃРµ СЌС‚Рё РґРµР№СЃС‚РІРёСЏ РґР»СЏ РЅРёС… (СЂРµРєСѓСЂСЃРёРІРЅРѕ)
     ds.First;
     while not ds.Eof do
     begin
@@ -4698,7 +4668,7 @@ begin
     ds1 := OpenSQL('select PK, MAIN_FORM_PK, START_FORM_PK, GROUP_EDIT_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
-    // главная
+    // РіР»Р°РІРЅР°СЏ
     if not ds1.FieldByName('MAIN_FORM_PK').IsNull then
     begin
       ds2 := OpenSQL('select PK from DYNAMIC_FORM_FIELD where FORM_PK = ' + ds1.FieldByName('MAIN_FORM_PK').AsString + ' order by PK');
@@ -4712,7 +4682,7 @@ begin
       FreeAndNil(ds2);
     end;
 
-    // стартовая
+    // СЃС‚Р°СЂС‚РѕРІР°СЏ
     if not ds1.FieldByName('START_FORM_PK').IsNull then
     begin
       ds2 := OpenSQL('select PK from DYNAMIC_FORM_FIELD where FORM_PK = ' + ds1.FieldByName('START_FORM_PK').AsString + ' order by PK');
@@ -4726,7 +4696,7 @@ begin
       FreeAndNil(ds2);
     end;
 
-    // группового редактирования
+    // РіСЂСѓРїРїРѕРІРѕРіРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
     if not ds1.FieldByName('GROUP_EDIT_FORM_PK').IsNull then
     begin
       ds2 := OpenSQL('select PK from DYNAMIC_FORM_FIELD where FORM_PK = ' + ds1.FieldByName('GROUP_EDIT_FORM_PK').AsString + ' order by PK');
@@ -4740,7 +4710,7 @@ begin
       FreeAndNil(ds2);
     end;
 
-    // дочерние справочники
+    // РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
     ds1.Close;
     FreeAndNil(ds1);
     ds1 := OpenSQL('select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(Pk) + ' order by PK');
@@ -4773,7 +4743,7 @@ begin
     ds1 := OpenSQL('select PK, DESCRIPTOR_ from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
-    // справочник
+    // СЃРїСЂР°РІРѕС‡РЅРёРє
     Script.Add('/* DYNAMIC_FORM_REFERENCE */');
     Script.Add('execute block');
     Script.Add('as');
@@ -4785,7 +4755,7 @@ begin
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_REFERENCE'', :PARAMS) matching (VAR_NAME);');
     Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL) values (1, ''' + ds1.FieldByName('DESCRIPTOR_').AsString +
-      ''', 1, ' + dsPortalUserPK.AsString + ', ''Перенакат всех прав справочника'');');
+      ''', 1, ' + dsPortalUserPK.AsString + ', ''РџРµСЂРµРЅР°РєР°С‚ РІСЃРµС… РїСЂР°РІ СЃРїСЂР°РІРѕС‡РЅРёРєР°'');');
     Script.Add('  delete from DYNAMIC_FORM_PERMISSIONS where REFERENCE_PK = :PK;');
     Script.Add('  delete from DYNAMIC_FORM_PERM_RANKS where REFERENCE_PK = :PK;');
     Script.Add('end^');
@@ -4793,8 +4763,8 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // привязанные объекты
-    // все шаблоны всех справочников ветки DYNAMIC_FORM_PERM_TMP
+    // РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ РѕР±СЉРµРєС‚С‹
+    // РІСЃРµ С€Р°Р±Р»РѕРЅС‹ РІСЃРµС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ РІРµС‚РєРё DYNAMIC_FORM_PERM_TMP
     ds1 := OpenSQL('select distinct PK_TMP from ( ' +
       'select ADD_ PK_TMP from DYNAMIC_FORM_PERMISSIONS where REFERENCE_PK = :PK and ADD_ is not null and ADD_ <> 0 and ADD_ <> 1 ' +
       'union select EDIT_ PK_TMP from DYNAMIC_FORM_PERMISSIONS where REFERENCE_PK = :PK and EDIT_ is not null and EDIT_ <> 0 and EDIT_ <> 1 ' +
@@ -4867,14 +4837,14 @@ begin
     ds1 := OpenSQL('select PK, MAIN_FORM_PK, START_FORM_PK, GROUP_EDIT_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(RefPk));
     if ds1.IsEmpty then exit;
 
-    // главная
+    // РіР»Р°РІРЅР°СЏ
     if not ds1.FieldByName('MAIN_FORM_PK').IsNull then PkList.Add(ds1.FieldByName('MAIN_FORM_PK').AsString);
-    // стартовая
+    // СЃС‚Р°СЂС‚РѕРІР°СЏ
     if not ds1.FieldByName('START_FORM_PK').IsNull then PkList.Add(ds1.FieldByName('START_FORM_PK').AsString);
-    // группового редактирования
+    // РіСЂСѓРїРїРѕРІРѕРіРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
     if not ds1.FieldByName('GROUP_EDIT_FORM_PK').IsNull then PkList.Add(ds1.FieldByName('GROUP_EDIT_FORM_PK').AsString);
 
-    // дочерние справочники
+    // РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
     ds1.Close;
     FreeAndNil(ds1);
     ds1 := OpenSQL('select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(RefPk) + ' order by PK');
@@ -4910,14 +4880,14 @@ begin
 
     if IsMain then
     begin
-      // если это первый раз и есть родительский справочник - надо выгрузить его, а он за собой потянет дочерние
+      // РµСЃР»Рё СЌС‚Рѕ РїРµСЂРІС‹Р№ СЂР°Р· Рё РµСЃС‚СЊ СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ СЃРїСЂР°РІРѕС‡РЅРёРє - РЅР°РґРѕ РІС‹РіСЂСѓР·РёС‚СЊ РµРіРѕ, Р° РѕРЅ Р·Р° СЃРѕР±РѕР№ РїРѕС‚СЏРЅРµС‚ РґРѕС‡РµСЂРЅРёРµ
       if not ds1.FieldByName('PARENT_REFERENCE_PK').IsNull then
       begin
         GenDictSQL(ds1.FieldByName('PARENT_REFERENCE_PK').AsInteger, Script, Folders);
         exit;
       end else
       begin
-        // очистка
+        // РѕС‡РёСЃС‚РєР°
         Script.Add('/* deleting dict */');
         Script.Add('delete from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds1.FieldByName('DESCRIPTOR_').AsString + '''^');
         Script.Add('commit^');
@@ -4925,19 +4895,19 @@ begin
       end;
     end;
 
-    // выгрузим формы
+    // РІС‹РіСЂСѓР·РёРј С„РѕСЂРјС‹
     if not ds1.FieldByName('MAIN_FORM_PK').IsNull then GenFormSQL(ds1.FieldByName('MAIN_FORM_PK').AsInteger, Script);
     if not ds1.FieldByName('START_FORM_PK').IsNull then GenFormSQL(ds1.FieldByName('START_FORM_PK').AsInteger, Script);
     if not ds1.FieldByName('GROUP_EDIT_FORM_PK').IsNull then GenFormSQL(ds1.FieldByName('GROUP_EDIT_FORM_PK').AsInteger, Script);
 
-    // выгрузим папки
+    // РІС‹РіСЂСѓР·РёРј РїР°РїРєРё
     if not ds1.FieldByName('FOLDER_PK').IsNull then GenFolderSQL(ds1.FieldByName('FOLDER_PK').AsInteger, Script, Folders);
 
-    // документ
+    // РґРѕРєСѓРјРµРЅС‚
     if not ds1.FieldByName('BRIEF_NOTE').IsNull then
       ds2 := OpenSQL('select PK, CONTENT from DYNAMIC_FORM_DOCUMENT where PK = ' + ds1.FieldByName('BRIEF_NOTE').AsString);
 
-    // справочник
+    // СЃРїСЂР°РІРѕС‡РЅРёРє
     Script.Add('/* DYNAMIC_FORM_REFERENCE */');
     Script.Add('execute block');
     Script.Add('as');
@@ -5030,8 +5000,8 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // привязанные объекты
-    // все шаблоны всех справочников ветки DYNAMIC_FORM_PERM_TMP
+    // РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ РѕР±СЉРµРєС‚С‹
+    // РІСЃРµ С€Р°Р±Р»РѕРЅС‹ РІСЃРµС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ РІРµС‚РєРё DYNAMIC_FORM_PERM_TMP
     if IsMain then
     begin
       ds1 := OpenSQL('select distinct PK_TMP from ( ' +
@@ -5066,7 +5036,7 @@ begin
       ds1.Close;
       FreeAndNil(ds1);
 
-      // все шаблоны полей всех справочников и форм
+      // РІСЃРµ С€Р°Р±Р»РѕРЅС‹ РїРѕР»РµР№ РІСЃРµС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ Рё С„РѕСЂРј
       GetDictAllFormsPK(Pk, fpkList);
       if fpkList.Count > 0 then
       begin
@@ -5168,7 +5138,7 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // дочерние справочники
+    // РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
     ds1 := OpenSQL('select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(Pk) + ' order by PK');
     ds1.First;
     while not ds1.Eof do
@@ -5179,12 +5149,12 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // все поля форм справочника, рекурсивно с дочерними. Так надо, потому что поля надо выгрузить в конце после того, как будут залиты все объекты
+    // РІСЃРµ РїРѕР»СЏ С„РѕСЂРј СЃРїСЂР°РІРѕС‡РЅРёРєР°, СЂРµРєСѓСЂСЃРёРІРЅРѕ СЃ РґРѕС‡РµСЂРЅРёРјРё. РўР°Рє РЅР°РґРѕ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РїРѕР»СЏ РЅР°РґРѕ РІС‹РіСЂСѓР·РёС‚СЊ РІ РєРѕРЅС†Рµ РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє Р±СѓРґСѓС‚ Р·Р°Р»РёС‚С‹ РІСЃРµ РѕР±СЉРµРєС‚С‹
     if IsMain then
     begin
       GenDictAllFieldsSQL(Pk, Script);
 
-      // DYNAMIC_FORM_CHARTS - главный
+      // DYNAMIC_FORM_CHARTS - РіР»Р°РІРЅС‹Р№
       ds1 := OpenSQL('select PK from DYNAMIC_FORM_CHARTS where REFERENC_PK = ' + IntToStr(Pk));
       ds1.First;
       while not ds1.Eof do
@@ -5195,7 +5165,7 @@ begin
       ds1.Close;
       FreeAndNil(ds1);
 
-      // DYNAMIC_FORM_CHARTS - дочерние
+      // DYNAMIC_FORM_CHARTS - РґРѕС‡РµСЂРЅРёРµ
       ds1 := OpenSQL('select PK from DYNAMIC_FORM_CHARTS where REFERENC_PK in (' +
         'select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(Pk) + ') order by REFERENC_PK');
 
@@ -5432,12 +5402,12 @@ var
   ds1: TpFIBDataSet;
 
 begin
-  // выгружаем саму папку
+  // РІС‹РіСЂСѓР¶Р°РµРј СЃР°РјСѓ РїР°РїРєСѓ
   try
     ds1 := OpenSQL('select PK, NAME, PARENT_FOLDER_PK from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
-    // если первый раз и есть родительская папка - выгружаем сначала ее
+    // РµСЃР»Рё РїРµСЂРІС‹Р№ СЂР°Р· Рё РµСЃС‚СЊ СЂРѕРґРёС‚РµР»СЊСЃРєР°СЏ РїР°РїРєР° - РІС‹РіСЂСѓР¶Р°РµРј СЃРЅР°С‡Р°Р»Р° РµРµ
     if IsMain then
     begin
       if (not ds1.FieldByName('PARENT_FOLDER_PK').IsNull) then
@@ -5447,7 +5417,7 @@ begin
       end else Script.Add('/* DYNAMIC_FORM_FOLDER */');
     end;
 
-    // т.к. папки выгружаются всей веткой, по каждому справочнику, они могут по нескольку раз попадать в скрипт
+    // С‚.Рє. РїР°РїРєРё РІС‹РіСЂСѓР¶Р°СЋС‚СЃСЏ РІСЃРµР№ РІРµС‚РєРѕР№, РїРѕ РєР°Р¶РґРѕРјСѓ СЃРїСЂР°РІРѕС‡РЅРёРєСѓ, РѕРЅРё РјРѕРіСѓС‚ РїРѕ РЅРµСЃРєРѕР»СЊРєСѓ СЂР°Р· РїРѕРїР°РґР°С‚СЊ РІ СЃРєСЂРёРїС‚
     if Folders.IndexOf(IntToStr(Pk)) > -1 then exit;
     Folders.Add(IntToStr(Pk));
 
@@ -5477,7 +5447,7 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // теперь дочерние папки
+    // С‚РµРїРµСЂСЊ РґРѕС‡РµСЂРЅРёРµ РїР°РїРєРё
     {ds1 := OpenSQL('select PK from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = ' + IntToStr(Pk) + ' order by PK');
     ds1.First;
     while not ds1.Eof do
@@ -5501,7 +5471,7 @@ var
   i: integer;
 
 begin
-  // выгружаем форму
+  // РІС‹РіСЂСѓР¶Р°РµРј С„РѕСЂРјСѓ
   try
     ds1 := OpenSQL('select PK, OWNER_USER_PK, CREATE_, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH from DYNAMIC_FORM where PK = ' +
       IntToStr(Pk));
@@ -5547,8 +5517,8 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // выгрузка связанных с формой объектов
-    // объекты БД DYNAMIC_FORM_OBJECT_TREE
+    // РІС‹РіСЂСѓР·РєР° СЃРІСЏР·Р°РЅРЅС‹С… СЃ С„РѕСЂРјРѕР№ РѕР±СЉРµРєС‚РѕРІ
+    // РѕР±СЉРµРєС‚С‹ Р‘Р” DYNAMIC_FORM_OBJECT_TREE
     ObjList := TStringList.Create;
     try
       //ds1 := OpenSQL('select PK from DYNAMIC_FORM_OBJECT_TREE where FORM_PK = ' + IntToStr(Pk) + ' order by JOIN_PARENT_PK, PK');
@@ -5569,7 +5539,7 @@ begin
       ObjList.Free;
     end;
 
-    // группы полей DYNAMIC_FORM_FIELD_GROUP
+    // РіСЂСѓРїРїС‹ РїРѕР»РµР№ DYNAMIC_FORM_FIELD_GROUP
     ds1 := OpenSQL('select PK from DYNAMIC_FORM_FIELD_GROUP where FORM_PK = ' + IntToStr(Pk) + ' order by PK');
     ds1.First;
     while not ds1.Eof do
@@ -5580,7 +5550,7 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // группы фильтров DYNAMIC_FORM_FILTER_GROUP
+    // РіСЂСѓРїРїС‹ С„РёР»СЊС‚СЂРѕРІ DYNAMIC_FORM_FILTER_GROUP
     ds1 := OpenSQL('select PK from DYNAMIC_FORM_FILTER_GROUP where FORM_PK = ' + IntToStr(Pk) + ' order by PK');
     ds1.First;
     while not ds1.Eof do
@@ -5591,7 +5561,7 @@ begin
     ds1.Close;
     FreeAndNil(ds1);
 
-    // поля DYNAMIC_FORM_FIELD - выгружаем только в режиме выгрузки одиночной формы. В остальных случаях поля будут залиты при выгрузке справочника
+    // РїРѕР»СЏ DYNAMIC_FORM_FIELD - РІС‹РіСЂСѓР¶Р°РµРј С‚РѕР»СЊРєРѕ РІ СЂРµР¶РёРјРµ РІС‹РіСЂСѓР·РєРё РѕРґРёРЅРѕС‡РЅРѕР№ С„РѕСЂРјС‹. Р’ РѕСЃС‚Р°Р»СЊРЅС‹С… СЃР»СѓС‡Р°СЏС… РїРѕР»СЏ Р±СѓРґСѓС‚ Р·Р°Р»РёС‚С‹ РїСЂРё РІС‹РіСЂСѓР·РєРµ СЃРїСЂР°РІРѕС‡РЅРёРєР°
     if SimpleMode then
     begin
       ds1 := OpenSQL('select PK from DYNAMIC_FORM_FIELD where FORM_PK = ' + IntToStr(Pk) + ' order by PK');
@@ -5669,7 +5639,7 @@ begin
       'ALIAS_DF, LINK_METHOD from DYNAMIC_FORM_OTHER_EVENT where ID_EV = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
-    // получение refDescr
+    // РїРѕР»СѓС‡РµРЅРёРµ refDescr
     refDescr := 'null';
     if not ds1.FieldByName('EVENT_REFERENCE').IsNull then
     begin
@@ -5679,7 +5649,7 @@ begin
       ds2.Free;
     end;
 
-    // получение wizardDescr
+    // РїРѕР»СѓС‡РµРЅРёРµ wizardDescr
     wizardDescr := 'null';
     if not ds1.FieldByName('IS_VIZARD').IsNull then
     begin
@@ -5861,7 +5831,7 @@ var
 
 begin
   try
-    // все сценарии переданного справочника (пока только те, что навешаны на сам справочник, но если надо будет, добавлю те, в которых задействованы формы справочника)
+    // РІСЃРµ СЃС†РµРЅР°СЂРёРё РїРµСЂРµРґР°РЅРЅРѕРіРѕ СЃРїСЂР°РІРѕС‡РЅРёРєР° (РїРѕРєР° С‚РѕР»СЊРєРѕ С‚Рµ, С‡С‚Рѕ РЅР°РІРµС€Р°РЅС‹ РЅР° СЃР°Рј СЃРїСЂР°РІРѕС‡РЅРёРє, РЅРѕ РµСЃР»Рё РЅР°РґРѕ Р±СѓРґРµС‚, РґРѕР±Р°РІР»СЋ С‚Рµ, РІ РєРѕС‚РѕСЂС‹С… Р·Р°РґРµР№СЃС‚РІРѕРІР°РЅС‹ С„РѕСЂРјС‹ СЃРїСЂР°РІРѕС‡РЅРёРєР°)
     ds1 := OpenSQL('select TYPE_, PK from (' +
       'select 0 TYPE_, PK from WIZARD_SCENS where REF_PK = :REF_PK ' +
       '/*union select 1 TYPE_, s.PK from WIZARD_SATES st ' +
@@ -5882,7 +5852,7 @@ begin
     ds1.Close;
     ds1.Free;
 
-    // а теперь пройдемся по дочерним справочникам
+    // Р° С‚РµРїРµСЂСЊ РїСЂРѕР№РґРµРјСЃСЏ РїРѕ РґРѕС‡РµСЂРЅРёРј СЃРїСЂР°РІРѕС‡РЅРёРєР°Рј
     ds1 := OpenSQL('select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(RefPk) + ' order by PK');
     ds1.First;
     while not ds1.Eof do
@@ -5912,17 +5882,17 @@ begin
         'join WIZARD_SCENS wsc on ws.SCEN_PK = wsc.PK where ws.PK = ' + IntToStr(Pk));
       if ds1.IsEmpty then exit;
 
-      Script.Add('/* WIZARD_SATES_SLOTS, слоты сценария */');
+      Script.Add('/* WIZARD_SATES_SLOTS, СЃР»РѕС‚С‹ СЃС†РµРЅР°СЂРёСЏ */');
 
       state := 'null';
       scen := '(select PK from WIZARD_SCENS where DESCRIPTOR_ = ''' + ds1.FieldByName('DESCRIPTOR_').AsString + ''')';
     end else
     begin
-      // слоты состояний
+      // СЃР»РѕС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёР№
       ds1 := OpenSQL('select PK, SATE_PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK from WIZARD_SATES_SLOTS where PK = ' + IntToStr(Pk));
       if ds1.IsEmpty then exit;
 
-      Script.Add('/* WIZARD_SATES_SLOTS, слоты состояний */');
+      Script.Add('/* WIZARD_SATES_SLOTS, СЃР»РѕС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёР№ */');
 
       state := '(select NEW_PK from TMP_WIZARD_VAR where TABLE_NAME = ''WIZARD_SATES'' and OLD_PK = ' + ds1.FieldByName('SATE_PK').AsString + ')';
       scen := 'null';
@@ -5980,8 +5950,8 @@ begin
       Script.Add('');
     end else
     begin
-      Application.MessageBox(pchar('Сценарий "' + ds1.FieldByName('NAME').AsString + '" (PK '+ ds1.FieldByName('PK').AsString + ') ' +
-        'имеет пустое поле DESCRIPTOR_! Сгенерить корректный скрипт для него невозможно.'), 'Ошибка', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar('РЎС†РµРЅР°СЂРёР№ "' + ds1.FieldByName('NAME').AsString + '" (PK '+ ds1.FieldByName('PK').AsString + ') ' +
+        'РёРјРµРµС‚ РїСѓСЃС‚РѕРµ РїРѕР»Рµ DESCRIPTOR_! РЎРіРµРЅРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅС‹Р№ СЃРєСЂРёРїС‚ РґР»СЏ РЅРµРіРѕ РЅРµРІРѕР·РјРѕР¶РЅРѕ.'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
       exit;
     end;
 
@@ -6013,7 +5983,7 @@ begin
       ds2.Next;
     end;
 
-    // WIZARD_SATES_SLOTS, слоты состояний
+    // WIZARD_SATES_SLOTS, СЃР»РѕС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёР№
     ds2.First;
     while not(ds2.Eof) do
     begin
@@ -6032,7 +6002,7 @@ begin
     ds2.Close;
     FreeAndNil(ds2);
 
-    // WIZARD_SATES_SLOTS, слоты сценария
+    // WIZARD_SATES_SLOTS, СЃР»РѕС‚С‹ СЃС†РµРЅР°СЂРёСЏ
     ds2 := OpenSQL('select PK from WIZARD_SATES_SLOTS where SCEN_PK = ' + ds1.FieldByName('PK').AsString);
     ds2.First;
     while not ds2.Eof do
@@ -6120,12 +6090,12 @@ begin
     begin
       formSql := '(select PK from DYNAMIC_FORM where ALIAS_FORM = ''' + ds1.FieldByName('ALIAS_FORM').AsString + ''')';
 
-      // тут надо предупредить, если алиас формы отсутсвует
+      // С‚СѓС‚ РЅР°РґРѕ РїСЂРµРґСѓРїСЂРµРґРёС‚СЊ, РµСЃР»Рё Р°Р»РёР°СЃ С„РѕСЂРјС‹ РѕС‚СЃСѓС‚СЃРІСѓРµС‚
       if ds1.FieldByName('ALIAS_FORM').AsString = '' then
       begin
-        Application.MessageBox(pchar('Форма состояния "' + ds1.FieldByName('TITLE').AsString + '" (PK '+ ds1.FieldByName('PK').AsString + ') ' +
-          'не привязана к справочнику и имеет пустое поле ALIAS_FORM! Состояние выгружено без привязки к форме, т.к. определить форму невозможно.'),
-          'Предупреждение', MB_OK + MB_ICONWARNING);
+        Application.MessageBox(pchar('Р¤РѕСЂРјР° СЃРѕСЃС‚РѕСЏРЅРёСЏ "' + ds1.FieldByName('TITLE').AsString + '" (PK '+ ds1.FieldByName('PK').AsString + ') ' +
+          'РЅРµ РїСЂРёРІСЏР·Р°РЅР° Рє СЃРїСЂР°РІРѕС‡РЅРёРєСѓ Рё РёРјРµРµС‚ РїСѓСЃС‚РѕРµ РїРѕР»Рµ ALIAS_FORM! РЎРѕСЃС‚РѕСЏРЅРёРµ РІС‹РіСЂСѓР¶РµРЅРѕ Р±РµР· РїСЂРёРІСЏР·РєРё Рє С„РѕСЂРјРµ, С‚.Рє. РѕРїСЂРµРґРµР»РёС‚СЊ С„РѕСЂРјСѓ РЅРµРІРѕР·РјРѕР¶РЅРѕ.'),
+          'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_OK + MB_ICONWARNING);
       end;
     end else
       formSql := '(select MAIN_FORM_PK from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds1.FieldByName('REF_DESCR').AsString + ''')';
@@ -6155,7 +6125,7 @@ var
   ds1, ds2: TpFIBDataSet;
 
 begin
-  // выгрузка отдельных состояний сценария
+  // РІС‹РіСЂСѓР·РєР° РѕС‚РґРµР»СЊРЅС‹С… СЃРѕСЃС‚РѕСЏРЅРёР№ СЃС†РµРЅР°СЂРёСЏ
   if Trim(StatesPk) = '' then exit;
   
   try
@@ -6166,8 +6136,8 @@ begin
     ds1.First;
     if ds1.FieldByName('DESCRIPTOR_').IsNull then
     begin
-      Application.MessageBox(pchar('Сценарий "' + ds1.FieldByName('NAME').AsString + '" (PK '+ ds1.FieldByName('PK').AsString + ') ' +
-        'имеет пустое поле DESCRIPTOR_! Сгенерить корректный скрипт для него невозможно.'), 'Ошибка', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar('РЎС†РµРЅР°СЂРёР№ "' + ds1.FieldByName('NAME').AsString + '" (PK '+ ds1.FieldByName('PK').AsString + ') ' +
+        'РёРјРµРµС‚ РїСѓСЃС‚РѕРµ РїРѕР»Рµ DESCRIPTOR_! РЎРіРµРЅРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅС‹Р№ СЃРєСЂРёРїС‚ РґР»СЏ РЅРµРіРѕ РЅРµРІРѕР·РјРѕР¶РЅРѕ.'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
       exit;
     end;
 
@@ -6189,7 +6159,7 @@ begin
       ds1.Next;
     end;
 
-    // WIZARD_SATES_SLOTS, слоты состояний
+    // WIZARD_SATES_SLOTS, СЃР»РѕС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёР№
     ds1.First;
     while not(ds1.Eof) do
     begin
@@ -6327,8 +6297,8 @@ var
   url: string;
 
 begin
-  // пример ссылки, тут с позиционированием на конкретную запись:
-  // https://rao.corp.tander.ru/#referenceDescriptor=GM_RP_REGISTER&whereParams={"fields":[{"name":"GM_RP_REGISTER.PK","value":" =${pack[''PK'']}","bound":" AND ","caseSens":false,"innerBound":[]}]}&refTitle=Рационализаторские предложения КРС ГМ
+  // РїСЂРёРјРµСЂ СЃСЃС‹Р»РєРё, С‚СѓС‚ СЃ РїРѕР·РёС†РёРѕРЅРёСЂРѕРІР°РЅРёРµРј РЅР° РєРѕРЅРєСЂРµС‚РЅСѓСЋ Р·Р°РїРёСЃСЊ:
+  // https://rao.corp.tander.ru/#referenceDescriptor=GM_RP_REGISTER&whereParams={"fields":[{"name":"GM_RP_REGISTER.PK","value":" =${pack[''PK'']}","bound":" AND ","caseSens":false,"innerBound":[]}]}&refTitle=Р Р°С†РёРѕРЅР°Р»РёР·Р°С‚РѕСЂСЃРєРёРµ РїСЂРµРґР»РѕР¶РµРЅРёСЏ РљР РЎ Р“Рњ
 
   result := '';
   url := Trim(FSettings.GetCurrentConnection.PortalUrl);
@@ -6383,24 +6353,24 @@ begin
   Result.IsEmpty := true;
   updPath := FSettings.UpdatePath;
 
-  if Trim(updPath) = '' then raise Exception.Create('Не задан путь поиска обновлений!');
+  if Trim(updPath) = '' then raise Exception.Create('РќРµ Р·Р°РґР°РЅ РїСѓС‚СЊ РїРѕРёСЃРєР° РѕР±РЅРѕРІР»РµРЅРёР№!');
   if updPath[Length(updPath)] <> '\' then updPath := updPath + '\';
 
   if (Length(updPath) > 1) and (updPath[1] = '\') and (updPath[2] = '\') then
   begin
-    // это сеть - пробуем залезть в сеть...
+    // СЌС‚Рѕ СЃРµС‚СЊ - РїСЂРѕР±СѓРµРј Р·Р°Р»РµР·С‚СЊ РІ СЃРµС‚СЊ...
     si := FindFirst(updPath + '*', faAnyFile, sr);
     if si <> 0 then
     begin
-      // если не получилось, надо открывать коннект
+      // РµСЃР»Рё РЅРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ, РЅР°РґРѕ РѕС‚РєСЂС‹РІР°С‚СЊ РєРѕРЅРЅРµРєС‚
       NetCanClose := NetCompConnect(updPath, FSettings.NetUser, FSettings.NetPass, false, err);
-      if not NetCanClose then raise Exception.Create('Не удалось подключиться к сети! Ошибка: ' + err);
+      if not NetCanClose then raise Exception.Create('РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ Рє СЃРµС‚Рё! РћС€РёР±РєР°: ' + err);
     end else
       FindClose(sr);
   end else
   if Pos(LowerCase('ftp://'), updPath) > 0 then
   begin
-    // это ftp-шник, коннектимся и закачиваем все содержимое во временную папку
+    // СЌС‚Рѕ ftp-С€РЅРёРє, РєРѕРЅРЅРµРєС‚РёРјСЃСЏ Рё Р·Р°РєР°С‡РёРІР°РµРј РІСЃРµ СЃРѕРґРµСЂР¶РёРјРѕРµ РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ РїР°РїРєСѓ
     ftp_temp := GetTempDir + '\DictConfigurator\';
     ftp_dir := '';
     ftp_host := StringReplace(updPath, 'ftp://', '', [rfIgnoreCase]);
@@ -6429,7 +6399,7 @@ begin
           FTPClient.Get(sl.Strings[i], ftp_temp + sl.Strings[i], true);
       except
         on e: Exception do
-          raise Exception.Create('Ошибка ftp-сервера ' + ftp_host + ': ' + e.Message);
+          raise Exception.Create('РћС€РёР±РєР° ftp-СЃРµСЂРІРµСЂР° ' + ftp_host + ': ' + e.Message);
       end;
       updPath := ftp_temp;
     finally
@@ -6440,14 +6410,14 @@ begin
 
   cfgFn := updPath + 'update.ini';
   if (not FileExists(cfgFn)) then
-    raise Exception.Create('Задан неверный путь поиска обновлений: "' + FSettings.UpdatePath + '"!');
+    raise Exception.Create('Р—Р°РґР°РЅ РЅРµРІРµСЂРЅС‹Р№ РїСѓС‚СЊ РїРѕРёСЃРєР° РѕР±РЅРѕРІР»РµРЅРёР№: "' + FSettings.UpdatePath + '"!');
 
   updIni := TIniFile.Create(cfgFn);
   try
     sl := TStringList.Create;
     if (not updIni.SectionExists('MAIN')) or (not updIni.SectionExists('FILES')) or
       (updIni.ReadString('MAIN', 'CS', '') <> UPDATESKEY) then
-      raise Exception.Create('Задан неверный путь поиска обновлений: "' + FSettings.UpdatePath + '"!');
+      raise Exception.Create('Р—Р°РґР°РЅ РЅРµРІРµСЂРЅС‹Р№ РїСѓС‚СЊ РїРѕРёСЃРєР° РѕР±РЅРѕРІР»РµРЅРёР№: "' + FSettings.UpdatePath + '"!');
 
     Result.IsEmpty := false;
     result.FileName := updIni.ReadString('FILES', 'Executable', '');
@@ -6489,7 +6459,7 @@ begin
 
   if TNodeDictInfo(Parent.Data).ObjType = cotFolder then
   begin
-    // если это папка - грузим подпапки, потом грузим справочники этой папки
+    // РµСЃР»Рё СЌС‚Рѕ РїР°РїРєР° - РіСЂСѓР·РёРј РїРѕРґРїР°РїРєРё, РїРѕС‚РѕРј РіСЂСѓР·РёРј СЃРїСЂР°РІРѕС‡РЅРёРєРё СЌС‚РѕР№ РїР°РїРєРё
     dsTreeFolder.ParamByName('PARENT_FOLDER_PK').Value := TNodeDictInfo(Parent.Data).PK;
     dsTreeFolder.Open;
     AddSubnodesDict(TreeView, true, Parent, dsTreeFolder, 0, true);
@@ -6503,11 +6473,11 @@ begin
     dsTreeDict.Close;
   end else if TNodeDictInfo(Parent.Data).ObjType = cotLikedFolder then
   begin
-    // это папка истории - надо загрузить вложенные в нее объекты
+    // СЌС‚Рѕ РїР°РїРєР° РёСЃС‚РѕСЂРёРё - РЅР°РґРѕ Р·Р°РіСЂСѓР·РёС‚СЊ РІР»РѕР¶РµРЅРЅС‹Рµ РІ РЅРµРµ РѕР±СЉРµРєС‚С‹
     LoadHistoryItems(Parent, htLiked, TNodeDictInfo(Parent.Data).PK, 'OBJ_NAME nulls last');
   end else
   begin
-    // если это справочник - грузим только его дочерние справочники
+    // РµСЃР»Рё СЌС‚Рѕ СЃРїСЂР°РІРѕС‡РЅРёРє - РіСЂСѓР·РёРј С‚РѕР»СЊРєРѕ РµРіРѕ РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
     dsTreeDict.ParamByName('BYFOLDER').Value := 0;
     dsTreeDict.ParamByName('FOLDER_PK').Clear;
     dsTreeDict.ParamByName('PARENT_REFERENCE_PK').Value := TNodeDictInfo(Parent.Data).PK;
@@ -6522,7 +6492,7 @@ begin
   dsTreeDict2.Close;
   if (not Assigned(Parent.Data)) then exit;
 
-  // грузим дочерние справочники
+  // РіСЂСѓР·РёРј РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
   dsTreeDict2.ParamByName('PARENT_REFERENCE_PK').Value := TNodeDictInfo(Parent.Data).PK;
   dsTreeDict2.Open;
   AddSubnodesDict(TreeView, true, Parent, dsTreeDict2, 1, false);
@@ -6548,13 +6518,13 @@ begin
     if ht = htLiked then
     begin
       code := '$LIKED';
-      title := 'Избранное';
+      title := 'РР·Р±СЂР°РЅРЅРѕРµ';
       img := 8;
       order := 'OBJ_NAME nulls last';
     end else
     begin
       code := '$HISTORY';
-      title := 'История';
+      title := 'РСЃС‚РѕСЂРёСЏ';
       img := 9;
       order := 'LASTDATE desc';
     end;
@@ -6657,11 +6627,11 @@ begin
   if NoLoadInfo then exit;
 
   mtObjectInfo.CreateDataSet;
-  _addParam('Объект', GetConfObjectTypeStr(NodeData.ObjType));
+  _addParam('РћР±СЉРµРєС‚', GetConfObjectTypeStr(NodeData.ObjType));
   _addParam('PK', NodeData.PK);
-  _addParam('Дескриптор', NodeData.Descriptor);
-  _addParam('Название', NodeData.Title);
-  _addParam('Владелец', NodeData.Login);
+  _addParam('Р”РµСЃРєСЂРёРїС‚РѕСЂ', NodeData.Descriptor);
+  _addParam('РќР°Р·РІР°РЅРёРµ', NodeData.Title);
+  _addParam('Р’Р»Р°РґРµР»РµС†', NodeData.Login);
 
   case NodeData.ObjType of
     cotFolder:
@@ -6671,18 +6641,18 @@ begin
       dsFolderInfo.Open;
 
       if not dsFolderInfo.IsEmpty then
-        _addParam('Папка', iif(dsFolderInfoPARENT_FOLDER_PK.IsNull, '',
+        _addParam('РџР°РїРєР°', iif(dsFolderInfoPARENT_FOLDER_PK.IsNull, '',
           dsFolderInfoPARENT_FOLDER_PK.AsString + ' : ' + dsFolderInfoPARENT_NAME.AsString));
 
       dsFolderFolders.Close;
       dsFolderFolders.ParamByName('PK').Value := NodeData.PK;
       dsFolderFolders.Open;
-      _addParam('Папок', dsFolderFolders.RecordCount);
+      _addParam('РџР°РїРѕРє', dsFolderFolders.RecordCount);
 
       dsFolderReference.Close;
       dsFolderReference.ParamByName('PK').Value := NodeData.PK;
       dsFolderReference.Open;
-      _addParam('Справочников', dsFolderReference.RecordCount);
+      _addParam('РЎРїСЂР°РІРѕС‡РЅРёРєРѕРІ', dsFolderReference.RecordCount);
 
       dsFolderInfo.Close;
       dsFolderFolders.Close;
@@ -6696,29 +6666,29 @@ begin
 
       if not dsDictInfo.IsEmpty then
       begin
-        _addParam('ФИО', dsDictInfoUSERNAME.AsVariant);
-        _addParam('База данных', dsDictInfoBASE_DESCRIPTOR.AsVariant);
-        _addParam('Создан', dsDictInfoCREATE_.AsVariant);
-        _addParam('Изменен', dsDictInfoMODIFY.AsVariant);
+        _addParam('Р¤РРћ', dsDictInfoUSERNAME.AsVariant);
+        _addParam('Р‘Р°Р·Р° РґР°РЅРЅС‹С…', dsDictInfoBASE_DESCRIPTOR.AsVariant);
+        _addParam('РЎРѕР·РґР°РЅ', dsDictInfoCREATE_.AsVariant);
+        _addParam('РР·РјРµРЅРµРЅ', dsDictInfoMODIFY.AsVariant);
         if not dsDictInfoPARENT_REFERENCE_PK.IsNull then
-          _addParam('Род. справочник', dsDictInfoPARENT_REFERENCE_PK.AsString + ' : ' + dsDictInfoPARENT_DESCRIPTOR.AsString + ' : ' +
+          _addParam('Р РѕРґ. СЃРїСЂР°РІРѕС‡РЅРёРє', dsDictInfoPARENT_REFERENCE_PK.AsString + ' : ' + dsDictInfoPARENT_DESCRIPTOR.AsString + ' : ' +
             dsDictInfoPARENT_TITLE.AsString);
         if not dsDictInfoFOLDER_PK.IsNull then
-          _addParam('Папка', dsDictInfoFOLDER_PK.AsString + ' : ' + dsDictInfoFOLDER_NAME.AsString);
-        _addParam('Главная форма', dsDictInfoMAIN_FORM_PK.AsString + iif(dsDictInfoMAIN_FORM_ALIAS.IsNull, '', ' : ' +
+          _addParam('РџР°РїРєР°', dsDictInfoFOLDER_PK.AsString + ' : ' + dsDictInfoFOLDER_NAME.AsString);
+        _addParam('Р“Р»Р°РІРЅР°СЏ С„РѕСЂРјР°', dsDictInfoMAIN_FORM_PK.AsString + iif(dsDictInfoMAIN_FORM_ALIAS.IsNull, '', ' : ' +
           dsDictInfoMAIN_FORM_ALIAS.AsString) + ' : ' + dsDictInfoMAIN_FORM_TITLE.AsString);
         if not dsDictInfoSTART_FORM_PK.IsNull then
-          _addParam('Стартовая форма', dsDictInfoSTART_FORM_PK.AsString + iif(dsDictInfoSTART_FORM_ALIAS.IsNull, '', ' : ' +
+          _addParam('РЎС‚Р°СЂС‚РѕРІР°СЏ С„РѕСЂРјР°', dsDictInfoSTART_FORM_PK.AsString + iif(dsDictInfoSTART_FORM_ALIAS.IsNull, '', ' : ' +
             dsDictInfoSTART_FORM_ALIAS.AsString) + ' : ' + dsDictInfoSTART_FORM_TITLE.AsString);
         if not dsDictInfoGROUP_EDIT_FORM_PK.IsNull then
-          _addParam('Форма Гр. редакт.', dsDictInfoGROUP_EDIT_FORM_PK.AsString + iif(dsDictInfoGROUP_FORM_ALIAS.IsNull, '', ' : ' +
+          _addParam('Р¤РѕСЂРјР° Р“СЂ. СЂРµРґР°РєС‚.', dsDictInfoGROUP_EDIT_FORM_PK.AsString + iif(dsDictInfoGROUP_FORM_ALIAS.IsNull, '', ' : ' +
             dsDictInfoGROUP_FORM_ALIAS.AsString) + ' : ' + dsDictInfoGROUP_FORM_TITLE.AsString);
       end;
 
       dsDictReference.Close;
       dsDictReference.ParamByName('PK').Value := NodeData.PK;
       dsDictReference.Open;
-      _addParam('Дочерн. справочников', dsDictReference.RecordCount);
+      _addParam('Р”РѕС‡РµСЂРЅ. СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ', dsDictReference.RecordCount);
 
       dsDictWizard.Close;
       dsDictWizard.ParamByName('PK').Value := NodeData.PK;
@@ -6726,7 +6696,7 @@ begin
       dsDictWizard.First;
       while not dsDictWizard.Eof do
       begin
-        _addParam('Визард', dsDictWizardPK.AsString + iif(dsDictWizardDESCRIPTOR_.IsNull, '', ' : ' + dsDictWizardDESCRIPTOR_.AsString) + ' : ' +
+        _addParam('Р’РёР·Р°СЂРґ', dsDictWizardPK.AsString + iif(dsDictWizardDESCRIPTOR_.IsNull, '', ' : ' + dsDictWizardDESCRIPTOR_.AsString) + ' : ' +
           dsDictWizardNAME.AsString);
         //mtObjectInfoPK.AsVariant := dsDictWizardPK.AsVariant;
         //mtObjectInfoTYPE.AsInteger := Ord(cftWizard);
@@ -6745,9 +6715,9 @@ begin
 
       if not dsFormInfo.IsEmpty then
       begin
-        _addParam('ФИО', dsFormInfoUSER_NAME.AsVariant);
-        _addParam('Создана', dsFormInfoCREATE_.AsVariant);
-        _addParam('Изменена', dsFormInfoMODIFY.AsVariant);
+        _addParam('Р¤РРћ', dsFormInfoUSER_NAME.AsVariant);
+        _addParam('РЎРѕР·РґР°РЅР°', dsFormInfoCREATE_.AsVariant);
+        _addParam('РР·РјРµРЅРµРЅР°', dsFormInfoMODIFY.AsVariant);
       end;
 
       dsFormReference.Close;
@@ -6756,7 +6726,7 @@ begin
       dsFormReference.First;
       while not dsFormReference.Eof do
       begin
-        _addParam('Справочник', dsFormReferencePK.AsString + ' : ' + dsFormReferenceDESCRIPTOR_.AsString + ' : ' + dsFormReferenceTITLE.AsString);
+        _addParam('РЎРїСЂР°РІРѕС‡РЅРёРє', dsFormReferencePK.AsString + ' : ' + dsFormReferenceDESCRIPTOR_.AsString + ' : ' + dsFormReferenceTITLE.AsString);
         //mtObjectInfoPK.AsVariant := dsFormReferencePK.AsVariant;
         //mtObjectInfoTYPE.AsInteger := Ord(cftDict);
         dsFormReference.Next;
@@ -6768,7 +6738,7 @@ begin
       dsFormWizard.First;
       while not dsFormWizard.Eof do
       begin
-        _addParam('Визард', dsFormWizardPK.AsString + iif(dsFormWizardDESCRIPTOR_.IsNull, '', ' : ' + dsFormWizardDESCRIPTOR_.AsString) + ' : ' +
+        _addParam('Р’РёР·Р°СЂРґ', dsFormWizardPK.AsString + iif(dsFormWizardDESCRIPTOR_.IsNull, '', ' : ' + dsFormWizardDESCRIPTOR_.AsString) + ' : ' +
           dsFormWizardNAME.AsString);
         //mtObjectInfoPK.AsVariant := dsFormWizardPK.AsVariant;
         //mtObjectInfoTYPE.AsInteger := Ord(cftWizard);
@@ -6787,11 +6757,11 @@ begin
 
       if not dsWizardInfo.IsEmpty then
       begin
-        _addParam('ФИО', dsWizardInfoUSERNAME.AsVariant);
-        _addParam('Тип', dsWizardInfoSCEN_TYPE.AsVariant);
+        _addParam('Р¤РРћ', dsWizardInfoUSERNAME.AsVariant);
+        _addParam('РўРёРї', dsWizardInfoSCEN_TYPE.AsVariant);
         if not dsWizardInfoREF_PK.IsNull then
         begin
-          _addParam('Справочник', dsWizardInfoREF_PK.AsString + ' : ' + dsWizardInfoREF_DESCRIPTOR.AsString + ' : ' + dsWizardInfoREF_TITLE.AsString);
+          _addParam('РЎРїСЂР°РІРѕС‡РЅРёРє', dsWizardInfoREF_PK.AsString + ' : ' + dsWizardInfoREF_DESCRIPTOR.AsString + ' : ' + dsWizardInfoREF_TITLE.AsString);
           //mtObjectInfoPK.AsVariant := dsWizardInfoREF_PK.AsVariant;
           //mtObjectInfoTYPE.AsInteger := Ord(cftDict);
         end;
@@ -6803,7 +6773,7 @@ begin
       dsWizardForm.First;
       while not dsWizardForm.Eof do
       begin
-        _addParam('Форма', dsWizardFormFORM_PK.AsString + iif(dsWizardFormALIAS_FORM.IsNull, '', ' : ' + dsWizardFormALIAS_FORM.AsString) + ' : ' +
+        _addParam('Р¤РѕСЂРјР°', dsWizardFormFORM_PK.AsString + iif(dsWizardFormALIAS_FORM.IsNull, '', ' : ' + dsWizardFormALIAS_FORM.AsString) + ' : ' +
           dsWizardFormTITLE.AsString);
         dsWizardForm.Next;
       end;
@@ -6844,14 +6814,14 @@ var
   sl: TStringList;
   i: integer;
   ownForm: integer;
-  // параметры окна
+  // РїР°СЂР°РјРµС‚СЂС‹ РѕРєРЅР°
   cls: string;
   frmType, ownFrmType: TChildFormType;
   mode, ownMode: TOpenMode;
   d, od: TNodeDictInfo;
   
 begin
-  // восстановление открытых окон
+  // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РѕС‚РєСЂС‹С‚С‹С… РѕРєРѕРЅ
   if not Database.Connected then exit;
   regKey := REG_KEY_SESSION + '\' + IntToStr(FSettings.CurrConnect);
 
@@ -6869,7 +6839,7 @@ begin
         try
           if reg.OpenKey(regKey + '\' + sl.Strings[i], false) then
           begin
-            // сначала грузим параметры окна
+            // СЃРЅР°С‡Р°Р»Р° РіСЂСѓР·РёРј РїР°СЂР°РјРµС‚СЂС‹ РѕРєРЅР°
             d := AssignNodeData(cotNone);
             cls := ReadRegValueStr(reg, 'ClassName', '');
             frmType := TChildFormType(ReadRegValueInt(reg, 'FormType', -1));
@@ -6888,7 +6858,7 @@ begin
             d.Login := ReadRegValueStr(reg, 'Login', '');
             if d.Login = '' then d.Login := Null;
 
-            // параметры окна владельца
+            // РїР°СЂР°РјРµС‚СЂС‹ РѕРєРЅР° РІР»Р°РґРµР»СЊС†Р°
             od := AssignNodeData(cotNone);
             ownFrmType := TChildFormType(ReadRegValueInt(reg, 'OwnerFormType', -1));
             ownMode := TOpenMode(ReadRegValueInt(reg, 'OwnerMode', 0));
@@ -6897,7 +6867,7 @@ begin
             od.Descriptor := ReadRegValueStr(reg, 'OwnerDescriptor', '');
             if od.Descriptor = '' then od.Descriptor := Null;
 
-            // открываем окно (окна создания объектов открывать не будем - только существующих)
+            // РѕС‚РєСЂС‹РІР°РµРј РѕРєРЅРѕ (РѕРєРЅР° СЃРѕР·РґР°РЅРёСЏ РѕР±СЉРµРєС‚РѕРІ РѕС‚РєСЂС‹РІР°С‚СЊ РЅРµ Р±СѓРґРµРј - С‚РѕР»СЊРєРѕ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС…)
             case frmType of
               cftFolder:
               begin
@@ -6960,7 +6930,7 @@ begin
 
                 if cls = TFFieldEditor.ClassName then
                 begin
-                  // не сработает если парент - фрейм формы
+                  // РЅРµ СЃСЂР°Р±РѕС‚Р°РµС‚ РµСЃР»Рё РїР°СЂРµРЅС‚ - С„СЂРµР№Рј С„РѕСЂРјС‹
                   case ownFrmType of
                     cftDict:
                       case mode of
@@ -6981,7 +6951,7 @@ begin
 
                 if cls = TFGroupEditor.ClassName then
                 begin
-                  // не сработает если парент - фрейм формы
+                  // РЅРµ СЃСЂР°Р±РѕС‚Р°РµС‚ РµСЃР»Рё РїР°СЂРµРЅС‚ - С„СЂРµР№Рј С„РѕСЂРјС‹
                   case ownFrmType of
                     cftDict:
                       case mode of
@@ -7042,17 +7012,17 @@ begin
 
                 if cls = TFSlotEditor.ClassName then
                 begin
-                  // не делал, т.к. надо еще схранять признак слот СЦЕНАРИЯ ИЛИ СОСТОЯНИЯ
+                  // РЅРµ РґРµР»Р°Р», С‚.Рє. РЅР°РґРѕ РµС‰Рµ СЃС…СЂР°РЅСЏС‚СЊ РїСЂРёР·РЅР°Рє СЃР»РѕС‚ РЎР¦Р•РќРђР РРЇ РР›Р РЎРћРЎРўРћРЇРќРРЇ
                 end else
 
                 if cls = TFSlotValEditor.ClassName then
                 begin
-                  // не делал, т.к. надо еще схранять признак значение слота СЦЕНАРИЯ ИЛИ СОСТОЯНИЯ
+                  // РЅРµ РґРµР»Р°Р», С‚.Рє. РЅР°РґРѕ РµС‰Рµ СЃС…СЂР°РЅСЏС‚СЊ РїСЂРёР·РЅР°Рє Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р° РЎР¦Р•РќРђР РРЇ РР›Р РЎРћРЎРўРћРЇРќРРЇ
                 end;
 
                 if cls = TFJsonReader.ClassName then
                 begin
-                  // восстанавливать не вижу смысла. Да и сложностей там много - форма может быть открыта для любого поля любого датасета
+                  // РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ РЅРµ РІРёР¶Сѓ СЃРјС‹СЃР»Р°. Р”Р° Рё СЃР»РѕР¶РЅРѕСЃС‚РµР№ С‚Р°Рј РјРЅРѕРіРѕ - С„РѕСЂРјР° РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС‚РєСЂС‹С‚Р° РґР»СЏ Р»СЋР±РѕРіРѕ РїРѕР»СЏ Р»СЋР±РѕРіРѕ РґР°С‚Р°СЃРµС‚Р°
                 end else
 
                 if cls = TFFilterConfigEditor.ClassName then
@@ -7077,7 +7047,7 @@ begin
               end;
               cftPreview:
               begin
-                // не сработает если парент - фрейм формы
+                // РЅРµ СЃСЂР°Р±РѕС‚Р°РµС‚ РµСЃР»Рё РїР°СЂРµРЅС‚ - С„СЂРµР№Рј С„РѕСЂРјС‹
                 ownForm := FindChildForm(ownFrmType, ownMode, od.PK, od.Descriptor);
                 if ownForm = -1 then continue;
 
@@ -7100,11 +7070,11 @@ begin
             reg.CloseKey;
           end;
         except
-          // без сообщений
+          // Р±РµР· СЃРѕРѕР±С‰РµРЅРёР№
         end;
       end;
     except
-      // без сообщений
+      // Р±РµР· СЃРѕРѕР±С‰РµРЅРёР№
     end;
   finally
     FNoHistory := false;
@@ -7124,8 +7094,8 @@ begin
     c := FSettings.GetCurrentConnection;
     CloseConfiguration;
 
-    Application.MessageBox(pchar('Потеряно соединение с базой данных ' + c.Alias + ' [' + FSettings.cbServer.Items[Ord(c.Server)] +
-      ':' + c.Host + ':' + c.DataBase + ']! Ошибка:'#13#10 + ErrorMessage), pchar(Application.Title), MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('РџРѕС‚РµСЂСЏРЅРѕ СЃРѕРµРґРёРЅРµРЅРёРµ СЃ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С… ' + c.Alias + ' [' + FSettings.cbServer.Items[Ord(c.Server)] +
+      ':' + c.Host + ':' + c.DataBase + ']! РћС€РёР±РєР°:'#13#10 + ErrorMessage), pchar(Application.Title), MB_OK + MB_ICONERROR);
   end;
 
   if (Connection = DBTask) then
@@ -7134,7 +7104,7 @@ begin
     if i <> -1 then
     begin
       FreeAndNil(ChildForms[i]);
-      Application.MessageBox(pchar('Соединение Планировщика задач было разорвано! Ошибка:'#13#10 + ErrorMessage),
+      Application.MessageBox(pchar('РЎРѕРµРґРёРЅРµРЅРёРµ РџР»Р°РЅРёСЂРѕРІС‰РёРєР° Р·Р°РґР°С‡ Р±С‹Р»Рѕ СЂР°Р·РѕСЂРІР°РЅРѕ! РћС€РёР±РєР°:'#13#10 + ErrorMessage),
         pchar(Application.Title), MB_OK + MB_ICONERROR);
     end;
   end;
@@ -7182,7 +7152,7 @@ end;
 //    result := not ds.IsEmpty;
 //    if result then exit;
 //
-//    // не совпало - переберем дочерние узлы
+//    // РЅРµ СЃРѕРІРїР°Р»Рѕ - РїРµСЂРµР±РµСЂРµРј РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹
 //    ds.Close;
 //    FreeAndNil(ds);
 //    if IsFolder then
@@ -7293,8 +7263,8 @@ begin
   if url <> '' then
     ShellExecute(0, 'open', pchar(url), nil, nil, SW_SHOWNORMAL)
   else
-    Application.MessageBox('Для текущего подключения не задан url портала! Его можно указать в настройках подключений.',
-      'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox('Р”Р»СЏ С‚РµРєСѓС‰РµРіРѕ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РЅРµ Р·Р°РґР°РЅ url РїРѕСЂС‚Р°Р»Р°! Р•РіРѕ РјРѕР¶РЅРѕ СѓРєР°Р·Р°С‚СЊ РІ РЅР°СЃС‚СЂРѕР№РєР°С… РїРѕРґРєР»СЋС‡РµРЅРёР№.',
+      'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.OpenRef(Data: TNodeDictInfo);
@@ -7335,13 +7305,13 @@ var
   mode: TOpenMode;
   
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   d := AssignNodeData(cotNone);
   try
     if CheckGrants(gaOpenInstr, d, err) then mode := omEdit
     else if CheckGrants(gaViewInstr, d, err) then mode := omView
     else begin
-      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
       exit;
     end;
 
@@ -7582,7 +7552,7 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -7594,7 +7564,7 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -7609,7 +7579,7 @@ var
 
 begin
   if not Database.Connected then exit;
-  if VarIsNull(Data.PK) then raise Exception.Create('Отсутствует PK узла!');
+  if VarIsNull(Data.PK) then raise Exception.Create('РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ PK СѓР·Р»Р°!');
   if Data.ObjType <> cotFolder then exit;
 
   sl := TStringList.Create;
@@ -7630,7 +7600,7 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -7645,7 +7615,7 @@ var
 
 begin
   if not Database.Connected then exit;
-  if VarIsNull(Data.PK) then raise Exception.Create('Отсутствует PK узла!');
+  if VarIsNull(Data.PK) then raise Exception.Create('РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ PK СѓР·Р»Р°!');
   if Data.ObjType <> cotFolder then exit;
 
   sl := TStringList.Create;
@@ -7677,7 +7647,7 @@ var
   reg: TRegistry;
   
 begin
-  // сохранение открытых окон
+  // СЃРѕС…СЂР°РЅРµРЅРёРµ РѕС‚РєСЂС‹С‚С‹С… РѕРєРѕРЅ
   if not Database.Connected then exit;
   regKey := REG_KEY_SESSION + '\' + IntToStr(FSettings.CurrConnect);
   DeleteRegKey(PARAM_ROOT_KEY, regKey);
@@ -7711,7 +7681,7 @@ begin
         reg.CloseKey;
       end;
   except
-    // без сообщений
+    // Р±РµР· СЃРѕРѕР±С‰РµРЅРёР№
   end;
 
   if Assigned(reg) then reg.Free;
@@ -7722,13 +7692,13 @@ var
   sl, slf, slw: TStringList;
 
 begin
-//  Target: Флаг работает только когда выгружаемый объект - справочник.
-//    0 - выгрузить стандартно сам справочник
-//    1 - выгрузить все сценарии справочника
-//    2 - выгрузить только права на справочник
+//  Target: Р¤Р»Р°Рі СЂР°Р±РѕС‚Р°РµС‚ С‚РѕР»СЊРєРѕ РєРѕРіРґР° РІС‹РіСЂСѓР¶Р°РµРјС‹Р№ РѕР±СЉРµРєС‚ - СЃРїСЂР°РІРѕС‡РЅРёРє.
+//    0 - РІС‹РіСЂСѓР·РёС‚СЊ СЃС‚Р°РЅРґР°СЂС‚РЅРѕ СЃР°Рј СЃРїСЂР°РІРѕС‡РЅРёРє
+//    1 - РІС‹РіСЂСѓР·РёС‚СЊ РІСЃРµ СЃС†РµРЅР°СЂРёРё СЃРїСЂР°РІРѕС‡РЅРёРєР°
+//    2 - РІС‹РіСЂСѓР·РёС‚СЊ С‚РѕР»СЊРєРѕ РїСЂР°РІР° РЅР° СЃРїСЂР°РІРѕС‡РЅРёРє
 
   if not Database.Connected then exit;
-  if VarIsNull(Data.PK) then raise Exception.Create('Отсутствует PK узла!');
+  if VarIsNull(Data.PK) then raise Exception.Create('РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ PK СѓР·Р»Р°!');
 
   sl := TStringList.Create;
   slf := TStringList.Create;
@@ -7826,8 +7796,8 @@ begin
   DictPk := Null;
   fsel := TFSelUser.Create(Self);
   try
-    fsel.Caption := 'Справочники';
-    fsel.lbQuery.Caption := 'Выбери справочник';
+    fsel.Caption := 'РЎРїСЂР°РІРѕС‡РЅРёРєРё';
+    fsel.lbQuery.Caption := 'Р’С‹Р±РµСЂРё СЃРїСЂР°РІРѕС‡РЅРёРє';
 
     fsel.lcbUsers.DropDownBox.Columns.Clear;
     col := fsel.lcbUsers.DropDownBox.Columns.Add;
@@ -7881,8 +7851,8 @@ begin
   GroupPk := Null;
   fsel := TFSelUser.Create(Self);
   try
-    fsel.Caption := 'Группы портала';
-    fsel.lbQuery.Caption := 'Выбери группу';
+    fsel.Caption := 'Р“СЂСѓРїРїС‹ РїРѕСЂС‚Р°Р»Р°';
+    fsel.lbQuery.Caption := 'Р’С‹Р±РµСЂРё РіСЂСѓРїРїСѓ';
     fsel.lcbUsers.DropDownBox.Columns.Clear;
     fsel.LoadData(SQLQuery);
     result := fsel.ShowModal = mrOk;
@@ -7900,8 +7870,8 @@ begin
   Pk := Null;
   fsel := TFSelUser.Create(Self);
   try
-    fsel.Caption := 'Разделы избранного';
-    fsel.lbQuery.Caption := 'Выбери раздел, в который надо поместить объект';
+    fsel.Caption := 'Р Р°Р·РґРµР»С‹ РёР·Р±СЂР°РЅРЅРѕРіРѕ';
+    fsel.lbQuery.Caption := 'Р’С‹Р±РµСЂРё СЂР°Р·РґРµР», РІ РєРѕС‚РѕСЂС‹Р№ РЅР°РґРѕ РїРѕРјРµСЃС‚РёС‚СЊ РѕР±СЉРµРєС‚';
     fsel.lcbUsers.DropDownBox.Columns.Clear;
     fsel.LoadData(SQLQuery);
     fsel.lcbUsers.KeyValue := Null;
@@ -8017,7 +7987,7 @@ begin
       end;
     end else
     begin
-      // если не нашли, строка была каким-то чудом удалена, надо ее восстановить
+      // РµСЃР»Рё РЅРµ РЅР°С€Р»Рё, СЃС‚СЂРѕРєР° Р±С‹Р»Р° РєР°РєРёРј-С‚Рѕ С‡СѓРґРѕРј СѓРґР°Р»РµРЅР°, РЅР°РґРѕ РµРµ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ
       ts := pcDictTree.Pages[i];
       FSettings.mtMainPages.Append;
       FSettings.mtMainPagesCAPTION.AsString := ts.Caption;
@@ -8036,7 +8006,7 @@ end;
 
 procedure TFMain.SetSaveDialogToSQL;
 begin
-  SaveDialog.Filter := 'Файлы SQL (*.sql)|*.sql|Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*';
+  SaveDialog.Filter := 'Р¤Р°Р№Р»С‹ SQL (*.sql)|*.sql|РўРµРєСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹ (*.txt)|*.txt|Р’СЃРµ С„Р°Р№Р»С‹ (*.*)|*.*';
   SaveDialog.DefaultExt := 'sql';
 end;
 
@@ -8046,7 +8016,7 @@ var
   fh: TFHistory;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaOpenInstr, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFHistory.ClassName) then exit;
@@ -8055,7 +8025,7 @@ begin
     RegisterChildForm(fh);
     //fh.Show;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.ShowUserInfo;
@@ -8183,7 +8153,7 @@ begin
   case Key of
     VK_F3: if AFindNext.Enabled then AFindExecute(AFindNext);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('А')) or (Key = Ord('а'))) and
+      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('Рђ')) or (Key = Ord('Р°'))) and
         AFind.Enabled then AFindExecute(AFind); 
   end;
 end;
@@ -8234,7 +8204,7 @@ var
   fDict: TFEditDict;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaView, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditDict.ClassName) then exit;
@@ -8243,7 +8213,7 @@ begin
     RegisterChildForm(fDict);
     //fDict.Show;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.ViewFolder(Data: TNodeDictInfo);
@@ -8252,7 +8222,7 @@ var
   fFolder: TFEditFolder;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaView, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditFolder.ClassName) then exit;
@@ -8261,7 +8231,7 @@ begin
     RegisterChildForm(fFolder);
     //fFolder.Show;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.ViewForm(Data: TNodeDictInfo);
@@ -8270,7 +8240,7 @@ var
   fForm: TFEditForm;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaView, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditForm.ClassName) then exit;
@@ -8279,7 +8249,7 @@ begin
     RegisterChildForm(fForm);
     //fForm.Show;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.ViewTreeNode(Node: TTreeNode);
@@ -8287,7 +8257,7 @@ begin
   if not Database.Connected then exit;
   if (not Assigned(Node)) or (not Assigned(Node.Data)) then
   begin
-    Application.MessageBox('Не выбран узел!', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+    Application.MessageBox('РќРµ РІС‹Р±СЂР°РЅ СѓР·РµР»!', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
     exit;
   end;
 
@@ -8305,7 +8275,7 @@ var
   fWizard: TFEditWizard;
 
 begin
-  // проверка прав
+  // РїСЂРѕРІРµСЂРєР° РїСЂР°РІ
   if CheckGrants(gaView, Data, err) then
   begin
     if SetFocusOpenedWindow(Data.PK, TFEditWizard.ClassName) then exit;
@@ -8314,7 +8284,7 @@ begin
     RegisterChildForm(fWizard);
     //fWizard.Show;
   end else
-    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFMain.WindowBarTabSelected(Sender: TObject; Item: TJvTabBarItem);
@@ -8324,7 +8294,7 @@ var
 begin
   if not Assigned(Item) then
   begin
-    //for idx := 0 to miWindow.Count - 1 do miWindow.Items[idx].Checked := false; - будем оставлять выделенным последнее окно
+    //for idx := 0 to miWindow.Count - 1 do miWindow.Items[idx].Checked := false; - Р±СѓРґРµРј РѕСЃС‚Р°РІР»СЏС‚СЊ РІС‹РґРµР»РµРЅРЅС‹Рј РїРѕСЃР»РµРґРЅРµРµ РѕРєРЅРѕ
     exit;
   end;
 
@@ -8373,17 +8343,17 @@ var
 
 begin
   case Data.ObjType of
-    cotFolder: ot := 'Папка';
-    cotDict: ot := 'Справочник';
-    cotForm: ot := 'Форма';
-    cotWizard: ot := 'Сценарий';
-    else ot := '<Неожиданный тип объекта>';
+    cotFolder: ot := 'РџР°РїРєР°';
+    cotDict: ot := 'РЎРїСЂР°РІРѕС‡РЅРёРє';
+    cotForm: ot := 'Р¤РѕСЂРјР°';
+    cotWizard: ot := 'РЎС†РµРЅР°СЂРёР№';
+    else ot := '<РќРµРѕР¶РёРґР°РЅРЅС‹Р№ С‚РёРї РѕР±СЉРµРєС‚Р°>';
   end;
 
   case Rule of
-    0: r := 'Создание (пересоздание)';
-    1: r := 'Обновление';
-    2: r := 'Удаление';
+    0: r := 'РЎРѕР·РґР°РЅРёРµ (РїРµСЂРµСЃРѕР·РґР°РЅРёРµ)';
+    1: r := 'РћР±РЅРѕРІР»РµРЅРёРµ';
+    2: r := 'РЈРґР°Р»РµРЅРёРµ';
   end;
 
   descr := ot + ' - ' + VarToStr(Data.PK) + iif(VarIsNull(Data.Descriptor), '', ' : ' + Data.Descriptor) + ' : ' + VarToStr(Data.Title);
@@ -8391,8 +8361,11 @@ begin
   Script.Add('/*');
   Script.Add('  Script generated by Dict Configurator, Ver.: ' + GetVersion(Application.ExeName));
   Script.Add('');
-  Script.Add('  Объект:      ' + descr);
-  Script.Add('  Правило:     ' + r);
+  Script.Add('  Р”Р°С‚Р°:        ' + DateTimeToStr(Now));
+  Script.Add('  РђРІС‚РѕСЂ:       ' + FSettings.PortalUser);
+  Script.Add('');
+  Script.Add('  РћР±СЉРµРєС‚:      ' + descr);
+  Script.Add('  РџСЂР°РІРёР»Рѕ:     ' + r);
   Script.Add('*/');
   Script.Add('');
   Script.Add('set term ^ ;');
@@ -8415,10 +8388,10 @@ var
   sl: TStringList;
 
 begin
-  // выгрузка отдельных состояний сценария визардов
+  // РІС‹РіСЂСѓР·РєР° РѕС‚РґРµР»СЊРЅС‹С… СЃРѕСЃС‚РѕСЏРЅРёР№ СЃС†РµРЅР°СЂРёСЏ РІРёР·Р°СЂРґРѕРІ
   if not Database.Connected then exit;
-  if VarIsNull(Data.PK) then raise Exception.Create('Отсутствует PK узла!');
-  if Data.ObjType <> cotWizard then raise Exception.Create('Данная возможность поддерживается только для Сценариев!');
+  if VarIsNull(Data.PK) then raise Exception.Create('РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ PK СѓР·Р»Р°!');
+  if Data.ObjType <> cotWizard then raise Exception.Create('Р”Р°РЅРЅР°СЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ РЎС†РµРЅР°СЂРёРµРІ!');
 
   sl := TStringList.Create;
   try
