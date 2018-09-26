@@ -1142,49 +1142,49 @@ object FSettings: TFSettings
     Visible = False
     object lbUpdatePath: TLabel
       Left = 30
-      Top = 197
+      Top = 216
       Width = 120
       Height = 13
       Caption = #1043#1076#1077' '#1080#1089#1082#1072#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103
     end
     object Label13: TLabel
       Left = 13
-      Top = 225
+      Top = 244
       Width = 211
       Height = 13
       Caption = #1044#1077#1089#1082#1088#1080#1087#1090#1086#1088' '#1076#1083#1103' '#1086#1089#1085#1086#1074#1085#1086#1075#1086' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1103
     end
     object Label14: TLabel
       Left = 13
-      Top = 253
+      Top = 272
       Width = 137
       Height = 13
       Caption = #1054#1090#1082#1088#1099#1074#1072#1090#1100' '#1086#1082#1085#1072' '#1086#1073#1098#1077#1082#1090#1086#1074
     end
     object Label33: TLabel
       Left = 13
-      Top = 281
+      Top = 300
       Width = 92
       Height = 13
       Caption = #1041#1044' '#1087#1083#1072#1085#1080#1088#1086#1074#1097#1080#1082#1072
     end
     object Label35: TLabel
       Left = 13
-      Top = 309
+      Top = 328
       Width = 36
       Height = 13
       Caption = #1041#1044' ENS'
     end
     object Label36: TLabel
       Left = 13
-      Top = 337
+      Top = 356
       Width = 82
       Height = 13
       Caption = #1041#1044' '#1082#1101#1096#1072' '#1076#1077#1088#1077#1074#1072
     end
     object btnClearTreeCacheConn: TSpeedButton
       Left = 395
-      Top = 333
+      Top = 352
       Width = 23
       Height = 23
       Hint = #1054#1095#1080#1089#1090#1080#1090#1100
@@ -1229,20 +1229,20 @@ object FSettings: TFSettings
     end
     object edUpdatePath: TEdit
       Left = 156
-      Top = 194
+      Top = 213
       Width = 261
       Height = 21
-      TabOrder = 8
+      TabOrder = 16
       Visible = False
     end
     object cbUpdateConnect: TComboBox
       Left = 156
-      Top = 194
+      Top = 213
       Width = 261
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      TabOrder = 15
+      TabOrder = 10
     end
     object chbConfirmExit: TCheckBox
       Left = 13
@@ -1254,11 +1254,11 @@ object FSettings: TFSettings
     end
     object chbTreeShowDescriptor: TCheckBox
       Left = 13
-      Top = 72
+      Top = 91
       Width = 201
       Height = 17
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1076#1077#1089#1082#1088#1080#1087#1090#1086#1088#1099' '#1074' '#1076#1077#1088#1077#1074#1077
-      TabOrder = 3
+      TabOrder = 4
     end
     object chbConfirmSave: TCheckBox
       Left = 13
@@ -1266,20 +1266,20 @@ object FSettings: TFSettings
       Width = 309
       Height = 17
       Hint = 
-        #1055#1088#1080' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1080' '#1086#1073#1098#1077#1082#1090#1086#1074' '#1074' '#1041#1044' '#1073#1091#1076#1077#1090' '#1074#1099#1076#1072#1074#1072#1090#1100' '#1086#1082#1085#1086' '#1089' '#1089#1075#1077#1085#1077#1088#1080#1085#1099#1084' '#1089#1082 +
-        #1088#1080#1087#1090#1086#1084' '#1085#1072#1082#1072#1090#1072' '#1080#1079#1084#1077#1085#1077#1085#1080#1081', '#1082#1086#1090#1086#1088#1099#1081' '#1084#1086#1078#1085#1086' '#1073#1091#1076#1077#1090' '#1089#1086#1093#1088#1072#1085#1080#1090#1100'.'
-      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1089#1082#1088#1080#1087#1090' '#1080#1079#1084#1077#1085#1077#1085#1080#1081' '#1087#1088#1080' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1080' '#1086#1073#1098#1077#1082#1090#1086#1074
+        #1057#1087#1088#1072#1096#1080#1074#1072#1090#1100' '#1087#1086#1076#1090#1074#1077#1088#1078#1076#1077#1085#1080#1077' '#1087#1077#1088#1077#1076' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077#1084' '#1086#1073#1098#1077#1082#1090#1086#1074' '#1074' '#1073#1072#1079#1091' '#1076#1072#1085#1085#1099 +
+        #1093
+      Caption = #1055#1086#1076#1090#1074#1077#1088#1078#1076#1077#1085#1080#1077' '#1087#1088#1080' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1080' '#1074' '#1073#1072#1079#1091' '#1076#1072#1085#1085#1099#1093
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
     end
     object chbCheckUpdates: TCheckBox
       Left = 13
-      Top = 173
+      Top = 192
       Width = 181
       Height = 17
       Caption = #1055#1088#1086#1074#1077#1088#1103#1090#1100' '#1085#1072#1083#1080#1095#1080#1077' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
-      TabOrder = 7
+      TabOrder = 9
       OnClick = chbCheckUpdatesClick
     end
     object GroupBox1: TGroupBox
@@ -1288,7 +1288,7 @@ object FSettings: TFSettings
       Width = 387
       Height = 82
       Caption = ' '#1057#1077#1090#1077#1074#1072#1103' '#1080#1076#1077#1085#1090#1080#1092#1080#1082#1072#1094#1080#1103' '
-      TabOrder = 9
+      TabOrder = 17
       Visible = False
       DesignSize = (
         387
@@ -1327,7 +1327,7 @@ object FSettings: TFSettings
     end
     object cbMainDescriptor: TComboBox
       Left = 230
-      Top = 222
+      Top = 241
       Width = 187
       Height = 21
       Hint = 
@@ -1337,11 +1337,11 @@ object FSettings: TFSettings
       ItemHeight = 13
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 10
+      TabOrder = 11
     end
     object chbTreeRestorePos: TCheckBox
       Left = 13
-      Top = 92
+      Top = 111
       Width = 174
       Height = 17
       Hint = 
@@ -1350,7 +1350,7 @@ object FSettings: TFSettings
       Caption = #1047#1072#1087#1086#1084#1080#1085#1072#1090#1100' '#1087#1086#1079#1080#1094#1080#1102' '#1074' '#1076#1077#1088#1077#1074#1077
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 4
+      TabOrder = 5
     end
     object chbConfirmCloseChild: TCheckBox
       Left = 13
@@ -1367,12 +1367,12 @@ object FSettings: TFSettings
     end
     object cbChildWindowState: TComboBox
       Left = 156
-      Top = 250
+      Top = 269
       Width = 261
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      TabOrder = 11
+      TabOrder = 12
       Items.Strings = (
         #1053#1086#1088#1084#1072#1083#1100#1085#1086
         #1056#1072#1079#1074#1077#1088#1085#1091#1090#1086
@@ -1380,7 +1380,7 @@ object FSettings: TFSettings
     end
     object chbRestoreSession: TCheckBox
       Left = 13
-      Top = 112
+      Top = 131
       Width = 187
       Height = 17
       Hint = 
@@ -1389,20 +1389,20 @@ object FSettings: TFSettings
       Caption = #1042#1086#1089#1089#1090#1072#1085#1072#1074#1083#1080#1074#1072#1090#1100' '#1086#1090#1082#1088#1099#1090#1099#1077' '#1086#1082#1085#1072
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
+      TabOrder = 6
     end
     object cbShedulerConnect: TComboBox
       Left = 156
-      Top = 278
+      Top = 297
       Width = 261
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      TabOrder = 12
+      TabOrder = 13
     end
     object chbRememberHistory: TCheckBox
       Left = 13
-      Top = 132
+      Top = 151
       Width = 198
       Height = 17
       Hint = 
@@ -1411,20 +1411,20 @@ object FSettings: TFSettings
       Caption = #1042#1077#1089#1090#1080' '#1080#1089#1090#1086#1088#1080#1102' '#1086#1090#1082#1088#1099#1090#1080#1103' '#1086#1073#1098#1077#1082#1090#1086#1074
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 6
+      TabOrder = 7
     end
     object cbEnsConnect: TComboBox
       Left = 156
-      Top = 306
+      Top = 325
       Width = 261
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      TabOrder = 13
+      TabOrder = 14
     end
     object cbTreeCacheConnect: TComboBox
       Left = 156
-      Top = 334
+      Top = 353
       Width = 237
       Height = 21
       Hint = 
@@ -1436,11 +1436,11 @@ object FSettings: TFSettings
       ItemHeight = 13
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 14
+      TabOrder = 15
     end
     object chbSelSqlAddTitle: TCheckBox
       Left = 13
-      Top = 152
+      Top = 171
       Width = 313
       Height = 17
       Hint = 
@@ -1449,7 +1449,20 @@ object FSettings: TFSettings
       Caption = #1044#1086#1073#1072#1074#1083#1103#1090#1100' '#1087#1086#1076#1087#1080#1089#1080' '#1082' '#1087#1086#1083#1103#1084' '#1087#1088#1080' '#1075#1077#1085#1077#1088#1072#1094#1080#1080' select-'#1079#1072#1087#1088#1086#1089#1072
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 16
+      TabOrder = 8
+    end
+    object chbShowScriptForm: TCheckBox
+      Left = 13
+      Top = 71
+      Width = 309
+      Height = 17
+      Hint = 
+        #1055#1088#1080' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1080' '#1086#1073#1098#1077#1082#1090#1086#1074' '#1074' '#1041#1044' '#1073#1091#1076#1077#1090' '#1074#1099#1076#1072#1074#1072#1090#1100' '#1086#1082#1085#1086' '#1089' '#1089#1075#1077#1085#1077#1088#1080#1085#1099#1084' '#1089#1082 +
+        #1088#1080#1087#1090#1086#1084' '#1085#1072#1082#1072#1090#1072' '#1080#1079#1084#1077#1085#1077#1085#1080#1081', '#1082#1086#1090#1086#1088#1099#1081' '#1084#1086#1078#1085#1086' '#1073#1091#1076#1077#1090' '#1089#1086#1093#1088#1072#1085#1080#1090#1100'.'
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1089#1082#1088#1080#1087#1090' '#1080#1079#1084#1077#1085#1077#1085#1080#1081' '#1087#1088#1080' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1080' '#1086#1073#1098#1077#1082#1090#1086#1074
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
     end
   end
   object pCaption: TWDGradientPanel
@@ -1618,10 +1631,10 @@ object FSettings: TFSettings
       0918043D044204350440044404350439044104}
   end
   object ilSetTree: TImageList
-    Left = 176
-    Top = 160
+    Left = 96
+    Top = 88
     Bitmap = {
-      494C010103000400480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004004C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1767,8 +1780,8 @@ object FSettings: TFSettings
       '*.fdb|Interbase7 Database Files (*.ib)|*.ib|All files (*.*)|*.*'
     Options = [ofEnableSizing]
     Title = #1054#1090#1082#1088#1099#1090#1100
-    Left = 584
-    Top = 146
+    Left = 32
+    Top = 87
   end
   object dbTest: TpFIBDatabase
     DefaultTransaction = transTest
@@ -1776,24 +1789,24 @@ object FSettings: TFSettings
     SQLDialect = 3
     Timeout = 0
     WaitForRestoreConnect = 0
-    Left = 576
-    Top = 270
+    Left = 32
+    Top = 125
   end
   object transTest: TpFIBTransaction
     DefaultDatabase = dbTest
     TimeoutAction = TARollback
-    Left = 608
-    Top = 270
+    Left = 64
+    Top = 125
   end
   object PgProvider: TPostgreSQLUniProvider
-    Left = 608
-    Top = 306
+    Left = 64
+    Top = 161
   end
   object SqlConn: TUniConnection
     DefaultTransaction.DefaultConnection = SqlConn
     LoginPrompt = False
-    Left = 576
-    Top = 306
+    Left = 32
+    Top = 161
   end
   object FontDialog: TFontDialog
     Font.Charset = DEFAULT_CHARSET
@@ -1801,13 +1814,13 @@ object FSettings: TFSettings
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Left = 400
-    Top = 24
+    Left = 64
+    Top = 88
   end
   object mtMainPages: TMemTableEh
     Params = <>
-    Left = 448
-    Top = 32
+    Left = 32
+    Top = 200
     object mtMainPagesNAME: TStringField
       FieldName = 'NAME'
     end
@@ -1821,7 +1834,7 @@ object FSettings: TFSettings
   end
   object dsoMainPages: TDataSource
     DataSet = mtMainPages
-    Left = 480
-    Top = 32
+    Left = 64
+    Top = 200
   end
 end
