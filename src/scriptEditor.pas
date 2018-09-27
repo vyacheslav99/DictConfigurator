@@ -51,7 +51,7 @@ end;
 procedure TFScriptEditor.btnCopyToClipboardClick(Sender: TObject);
 begin
   CopyToClipboard;
-  Application.MessageBox('Скрипт скопирован в буфер обмена', 'Сообщение', MB_OK + MB_ICONINFORMATION);
+  Application.MessageBox('РЎРєСЂРёРїС‚ СЃРєРѕРїРёСЂРѕРІР°РЅ РІ Р±СѓС„РµСЂ РѕР±РјРµРЅР°', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
 end;
 
 procedure TFScriptEditor.btnSaveToFileClick(Sender: TObject);
