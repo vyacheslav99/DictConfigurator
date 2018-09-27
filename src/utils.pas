@@ -9,7 +9,7 @@ uses
 const
   U_WM_FORCED_TERMINATE = WM_USER + $132;
   
-  // РєР»СЋС‡Рё СЂРµРµСЃС‚СЂР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РЅР°СЃС‚СЂРѕРµРє
+  // ключи реестра для хранения настроек
   PARAM_ROOT_KEY = HKEY_CURRENT_USER;
   PARAM_REG_KEY = 'Software\DictConfigurator';
   REG_KEY_WINDOW = PARAM_REG_KEY + '\Window';
@@ -28,16 +28,16 @@ const
 
   {$I keys.inc}
 
-  PATH_DELIM = 'вЂў';
+  PATH_DELIM = '•';
 
   FIND_WORD_DELIMS = [#0..#34, #40..#47, #58..#63, #91..#93, #123..#127, #130, #132, #133, #139, #145..#152, #155, #160,
     #164, #166, #171..#173, #177, #183, #187];
 
   ProhibMes: array [0..3] of string = (
-    'РќРµРІРµСЂРЅС‹Рµ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР»Рё РїР°СЂРѕР»СЊ!',
-    'Р‘Р°Р·Р° РґР°РЅРЅС‹С… ''%s'' РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.',
-    'РЎРµСЂРІРµСЂ ''%s'' РЅРµ РѕС‚РІРµС‡Р°РµС‚.',
-    'РџСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°.'#13#10#13#10'%s');
+    'Неверные имя пользователя или пароль!',
+    'База данных ''%s'' не существует.',
+    'Сервер ''%s'' не отвечает.',
+    'При подключении произошла ошибка.'#13#10#13#10'%s');
 
   FBENCODINGS = 'ASCII,BIG_5,CP943C,CYRL,DOS437,DOS850,DOS852,DOS857,DOS860,DOS861,DOS863,DOS865,EUCJ_0208,GB_2312,GBK,' +
     'ISO8859_1,ISO8859_2,KSC_5601,NEXT,NONE,OCTETS,SJIS_0208,TIS620,UNICODE_FSS,UTF8,WIN1250,WIN1251,WIN1252,WIN1253,WIN1254';
@@ -223,10 +223,10 @@ var
 implementation
 
 const
-  AnsiCharTable: array[0..72] of string = ('\', '/', '"', '<', '>', #13#10, #9, 'Рђ', 'Р‘', 'Р’', 'Р“', 'Р”', 'Р•', 'РЃ', 'Р–',
-    'Р—', 'Р', 'Р™', 'Рљ', 'Р›', 'Рњ', 'Рќ', 'Рћ', 'Рџ', 'Р ', 'РЎ', 'Рў', 'РЈ', 'Р¤', 'РҐ', 'Р¦', 'Р§', 'РЁ', 'Р©', 'РЄ', 'Р«', 'Р¬', 'Р­',
-    'Р®', 'РЇ', 'Р°', 'Р±', 'РІ', 'Рі', 'Рґ', 'Рµ', 'С‘', 'Р¶', 'Р·', 'Рё', 'Р№', 'Рє', 'Р»', 'Рј', 'РЅ', 'Рѕ', 'Рї', 'СЂ', 'СЃ', 'С‚', 'Сѓ',
-    'С„', 'С…', 'С†', 'С‡', 'С€', 'С‰', 'СЉ', 'С‹', 'СЊ', 'СЌ', 'СЋ', 'СЏ');
+  AnsiCharTable: array[0..72] of string = ('\', '/', '"', '<', '>', #13#10, #9, 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж',
+    'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э',
+    'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у',
+    'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я');
   UniCharTable: array[0..72] of string = ('\\', '\/', '\"', '\u003c', '\u003e', '\n', '\t', '\u0410', '\u0411', '\u0412',
     '\u0413', '\u0414', '\u0415', '\u0401', '\u0416', '\u0417', '\u0418', '\u0419', '\u041a', '\u041b', '\u041c', '\u041d',
     '\u041e', '\u041f', '\u0420', '\u0421', '\u0422', '\u0423', '\u0424', '\u0425', '\u0426', '\u0427', '\u0428', '\u0429',
@@ -359,15 +359,15 @@ var
   clsName: string;
 
 begin
-  // РљР°Р»Р»Р±СЌРє С„СѓРЅРєС†РёСЏ РґР»СЏ EnumWindows, РєРѕС‚РѕСЂР°СЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР»СЏ РєР°Р¶РґРѕРіРѕ РѕРєРЅР° РІ СЃРёСЃС‚РµРјРµ (С…СЌРЅРґР» РѕРєРЅР° РїРµСЂРµРґР°РµС‚СЃСЏ СЃСЋРґР° С‡РµСЂРµР· 1 РїР°СЂР°РјРµС‚СЂ):
-  // РїСЂРѕРІРµСЂСЏРµС‚, РїСЂРёРЅР°РґР»РµР¶РёС‚ Р»Рё РѕРєРЅРѕ РёРЅС‚РµСЂРµСЃСѓСЋС‰РµРјСѓ РјРµРЅСЏ РїСЂРѕС†РµСЃСЃСѓ Рё СЏРІР»СЏРµС‚СЃСЏ Р»Рё СЌРєР·РµРјРїР»СЏСЂРѕРј MainForm.
-  // Р¤СѓРЅРєС†РёСЏ РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР»СЏ РєР°Р¶РґРѕРіРѕ РѕРєРЅР° РІ СЃРёСЃС‚РµРјРµ, РїРµСЂРµС‡РёСЃР»СЏРµРјС‹С… EnumWindows.
-  // РџР°СЂР°РјРµС‚СЂ в„– 2 (lParam) - PID РёРЅС‚РµСЂРµСЃСѓСЋС‰РµРіРѕ РјРµРЅСЏ РїСЂРѕС†РµСЃСЃР° - СЏ РїРµСЂРµРґР°СЋ РµРіРѕ СЃР°Рј С‡РµСЂРµР· EnumWindows (С‚Р°Рј РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ 1
-  // РїР°СЂР°РјРµС‚СЂ, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ РїРµСЂРµРґР°РЅ РІ С‚Р°РєРѕРј Р¶Рµ РІРёРґРµ РІ РєР°Р»Р»Р±СЌРє С„СѓРЅРєС†РёСЋ С‡РµСЂРµР· lParam).
-  // Р•СЃР»Рё РѕРєРЅРѕ - РёСЃРєРѕРјРѕРµ РѕРєРЅРѕ, СЃРѕС…СЂР°РЅСЏСЋ РµРіРѕ Handle РІ РіР»РѕР±Р°Р»СЊРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№, РєРѕС‚РѕСЂСѓСЋ РїРѕС‚РѕРј РёСЃРїРѕР»СЊР·СѓСЋ.
-  // Р’РѕР·РІСЂР°С‰Р°РµРјС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚:
-  // РµСЃР»Рё result := True - EnumWindows РїСЂРѕРґРѕР»Р¶РёС‚ РїРѕРёСЃРє РґР°Р»СЊС€Рµ (С‚.Рµ. РїРµСЂРµС…РѕРґРёС‚ Рє СЃР»РµРґ. РѕРєРЅСѓ РІ СЃРїРёСЃРєРµ),
-  // РµСЃР»Рё False - РѕСЃС‚Р°РЅРѕРІРёС‚СЃСЏ. РљР°Рє С‚РѕР»СЊРєРѕ РЅР°С…РѕРґРёРј РЅСѓР¶РЅРѕРµ РѕРєРЅРѕ - РїСЂРµСЂС‹РІР°РµРј РїРѕРёСЃРє (РІРѕР·РІСЂР°С‰Р°РµРј False).
+  // Каллбэк функция для EnumWindows, которая вызывается для каждого окна в системе (хэндл окна передается сюда через 1 параметр):
+  // проверяет, принадлежит ли окно интересующему меня процессу и является ли экземпляром MainForm.
+  // Функция вызывается для каждого окна в системе, перечисляемых EnumWindows.
+  // Параметр № 2 (lParam) - PID интересующего меня процесса - я передаю его сам через EnumWindows (там можно передавать 1
+  // параметр, который будет передан в таком же виде в каллбэк функцию через lParam).
+  // Если окно - искомое окно, сохраняю его Handle в глобальной переменной, которую потом использую.
+  // Возвращаемый результат:
+  // если result := True - EnumWindows продолжит поиск дальше (т.е. переходит к след. окну в списке),
+  // если False - остановится. Как только находим нужное окно - прерываем поиск (возвращаем False).
 
   clsName := '';
   DWndHandle := 0;
@@ -956,12 +956,12 @@ begin
   result := False;
   if not FileExists(SourceFile) then
   begin
-    ErrMsg := 'РќРµ РЅР°Р№РґРµРЅ С„Р°Р№Р» РёСЃС‚РѕС‡РЅРёРє "' + SourceFile + '"!';
+    ErrMsg := 'Не найден файл источник "' + SourceFile + '"!';
     exit;
   end;
   if not DirectoryExists(ExtractFileDir(DestFile)) then
   begin
-    ErrMsg := 'РџР°РїРєР° РЅР°Р·РЅР°С‡РµРЅРёСЏ "' + ExtractFileDir(DestFile) + '" РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!';
+    ErrMsg := 'Папка назначения "' + ExtractFileDir(DestFile) + '" не существует!';
     exit;
   end;
 
@@ -1216,13 +1216,13 @@ begin
   if genrule > 6 then genrule := 6;
 
   case genrule of
-    0: symbs := symbs + [48..57];                           //С†РёС„СЂС‹ 0..9
-    1: symbs := symbs + [65..90, 97..122];                  //Р±СѓРєРІС‹ A..Z, a..z
-    2: symbs := symbs + [65..90];                           //Р±СѓРєРІС‹ A..Z
-    3: symbs := symbs + [97..122];                          //Р±СѓРєРІС‹ a..z
-    4: symbs := symbs + [48..57, 65..90];                   //С†РёС„СЂС‹ + Р±СѓРєРІС‹ A..Z
-    5: symbs := symbs + [48..57, 97..122];                  //С†РёС„СЂС‹ + Р±СѓРєРІС‹ a..z
-    6: symbs := symbs + [48..57, 65..90, 97..122];          //С†РёС„СЂС‹ + Р±СѓРєРІС‹ A..Z, a..z
+    0: symbs := symbs + [48..57];                           //цифры 0..9
+    1: symbs := symbs + [65..90, 97..122];                  //буквы A..Z, a..z
+    2: symbs := symbs + [65..90];                           //буквы A..Z
+    3: symbs := symbs + [97..122];                          //буквы a..z
+    4: symbs := symbs + [48..57, 65..90];                   //цифры + буквы A..Z
+    5: symbs := symbs + [48..57, 97..122];                  //цифры + буквы a..z
+    6: symbs := symbs + [48..57, 65..90, 97..122];          //цифры + буквы A..Z, a..z
   end;
   if symbs = [] then exit;
 
@@ -1416,7 +1416,7 @@ begin
     end;
     //if Addr[Length(Addr)] = '\' then Delete(Addr, Length(Addr), 1);
 
-    // РєРѕРЅРЅРµРєС‚РёРјСЃСЏ Рє РјР°С€РёРЅРµ
+    // коннектимся к машине
     if CanClose then
     begin
       WNetCancelConnection2(pchar(netCompName), 0, false);
@@ -1437,7 +1437,7 @@ begin
       if not result then Err := SysErrorMessage(tn);
     end;
   end else
-    Err := 'РќРµРІРµСЂРЅС‹Р№ СЃРµС‚РµРІРѕР№ РїСѓС‚СЊ';
+    Err := 'Неверный сетевой путь';
 end;
 
 function GenCaption(Prefix, Postfix, Pk, Descriptor, Title: string; ShowDescr: boolean): string;
@@ -1476,11 +1476,11 @@ end;
 function GetConfObjectTypeStr(ObjectType: TConfObjectType): string;
 begin
   case ObjectType of
-    cotFolder: result := 'РџР°РїРєР°';
-    cotDict: result := 'РЎРїСЂР°РІРѕС‡РЅРёРє';
-    cotForm: result := 'Р¤РѕСЂРјР°';
-    cotWizard: result := 'РЎС†РµРЅР°СЂРёР№';
-    cotNone: result := 'РќРµРёР·РІРµСЃС‚РЅРѕ';
+    cotFolder: result := 'Папка';
+    cotDict: result := 'Справочник';
+    cotForm: result := 'Форма';
+    cotWizard: result := 'Сценарий';
+    cotNone: result := 'Неизвестно';
     else result := '';
   end;
 end;
@@ -1521,7 +1521,7 @@ begin
 
   if foToExistence in Options then
   begin
-    // РїРѕ РІС…РѕР¶РґРµРЅРёСЋ
+    // по вхождению
     StrWhere := StringReplace(StrWhere, #13#10, #4, [rfReplaceAll]);
     StrWhat := StringReplace(StrWhat, #13#10, #4, [rfReplaceAll]);
     if foAnyWord in Options then
@@ -1554,10 +1554,10 @@ begin
 
         if not result then break;
       end;
-    end else {if foWholeString in Options then} // СЌС‚Сѓ РѕРїС†РёСЋ РјРѕР¶РЅРѕ РЅРµ СѓРєР°Р·С‹РІР°С‚СЊ - Рё С‚Р°Рє РїРѕРЅСЏС‚РЅРѕ
+    end else {if foWholeString in Options then} // эту опцию можно не указывать - и так понятно
       result := Pos(StrWhat, StrWhere) > 0;
   end else
-    // РїРѕР»РЅРѕРµ СЃРѕРІРїР°РґРµРЅРёРµ
+    // полное совпадение
     result := StrWhere = StrWhat;
 end;
 
@@ -1616,13 +1616,13 @@ var
 begin
   if FindStr = '' then
   begin
-    Application.MessageBox('РќРµС‡РµРіРѕ РёСЃРєР°С‚СЊ! Р’РІРµРґРёС‚Рµ С…РѕС‚СЏ Р±С‹ 1 СЃРёРјРІРѕР» РґР»СЏ РїРѕРёСЃРєР°', 'РџРѕРёСЃРє', MB_OK + MB_ICONEXCLAMATION);
+    Application.MessageBox('Нечего искать! Введите хотя бы 1 символ для поиска', 'Поиск', MB_OK + MB_ICONEXCLAMATION);
     exit;
   end;
 
   if (not Assigned(Grid)) or (not Assigned(Grid.DataSource)) or (not Assigned(Grid.DataSource.DataSet)) then
   begin
-    Application.MessageBox('РќРµРіРґРµ РёСЃРєР°С‚СЊ! РќРµ РїСЂРёРІСЏР·Р°РЅ РёСЃС‚РѕС‡РЅРёРє РґР°РЅРЅС‹С… РґР»СЏ РїРѕРёСЃРєР°', 'РџРѕРёСЃРє', MB_OK + MB_ICONEXCLAMATION);
+    Application.MessageBox('Негде искать! Не привязан источник данных для поиска', 'Поиск', MB_OK + MB_ICONEXCLAMATION);
     exit;
   end;
 
@@ -1635,11 +1635,11 @@ begin
   inAll := (FieldName = '*') or (FieldName = '');
 
   try
-    // РёС‰РµРј РѕС‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†Рё РєСѓСЂСЃРѕСЂР°
+    // ищем от текущей позици курсора
     if AContinue then DataSet.Next;
     if DataSet.Eof then
     begin
-      if NoEndQuery or (Application.MessageBox('РџРѕРёСЃРє Р·Р°РІРµСЂС€РµРЅ! РќР°С‡Р°С‚СЊ СЃ РЅР°С‡Р°Р»Р°?', 'РџРѕРёСЃРє', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+      if NoEndQuery or (Application.MessageBox('Поиск завершен! Начать с начала?', 'Поиск', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
       DataSet.First;
     end;
 
@@ -1648,7 +1648,7 @@ begin
       Column := Grid.FindFieldColumn(FieldName);
       if not Assigned(Column) then
       begin
-        Application.MessageBox('РћС€РёР±РєР°! РќРµ СѓРґР°Р»РѕСЃСЊ РЅР°Р№С‚Рё РїРѕР»Рµ РґР»СЏ РїРѕРёСЃРєР°', 'РџРѕРёСЃРє', MB_OK + MB_ICONERROR);
+        Application.MessageBox('Ошибка! Не удалось найти поле для поиска', 'Поиск', MB_OK + MB_ICONERROR);
         exit;
       end;
     end;
@@ -1672,7 +1672,7 @@ begin
 
       if DataSet.Eof then
       begin
-        if NoEndQuery or (Application.MessageBox('РџРѕРёСЃРє Р·Р°РІРµСЂС€РµРЅ! РќР°С‡Р°С‚СЊ СЃ РЅР°С‡Р°Р»Р°?', 'РџРѕРёСЃРє', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+        if NoEndQuery or (Application.MessageBox('Поиск завершен! Начать с начала?', 'Поиск', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
         DataSet.First;
       end;
     end;
@@ -1698,7 +1698,7 @@ end;
 
 procedure TGridParams.Assign(Source: TObject);
 begin
-  // Source - СЌРєР·РµРјРїР»СЏСЂ TGridParams !!!
+  // Source - экземпляр TGridParams !!!
   if (not Assigned(Source)) or (not (Source is TGridParams)) then exit;
 
   Flat := TGridParams(Source).Flat;
@@ -1785,7 +1785,7 @@ end;
 
 procedure TNodeDictInfo.Assign(Source: TObject);
 begin
-  // Source - СЌРєР·РµРјРїР»СЏСЂ TNodeDictInfo !!!
+  // Source - экземпляр TNodeDictInfo !!!
   if (not Assigned(Source)) or (not (Source is TNodeDictInfo)) then exit;
 
   PK := TNodeDictInfo(Source).PK;
@@ -1800,7 +1800,7 @@ end;
 function TNodeDictInfo.IsEqual(Source: TObject): boolean;
 begin
   result := false;
-  // Source - СЌРєР·РµРјРїР»СЏСЂ TNodeDictInfo !!!
+  // Source - экземпляр TNodeDictInfo !!!
   if (not Assigned(Source)) or (not (Source is TNodeDictInfo)) then exit;
 
   result := (TNodeDictInfo(Source).ObjType = ObjType) and (TNodeDictInfo(Source).PK = PK) and
@@ -1817,13 +1817,13 @@ const
 
 begin
   if b div GB > 0 then
-    result := Format('%.2f Р“Р±', [b / GB])
+    result := Format('%.2f Гб', [b / GB])
   else if b div MB > 0 then
-     Result := Format('%.2f РњР±', [b / MB])
+     Result := Format('%.2f Мб', [b / MB])
    else if b div KB > 0 then
-     Result := Format('%.2f РљР±', [b / KB])
+     Result := Format('%.2f Кб', [b / KB])
    else
-     Result := IntToStr(b) + ' Р±';
+     Result := IntToStr(b) + ' б';
 end;
 
 end.

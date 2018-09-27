@@ -203,7 +203,7 @@ type
     procedure SetPagesToControls;
   public
     GridOptsChanged: boolean;
-    //РѕСЃРЅРѕРІРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РїСЂРѕРіСЂР°РјРјС‹
+    //основные настройки программы
     ConfirmExit: boolean;
     ConfirmCloseChild: boolean;
     ConfirmSave: boolean;
@@ -232,7 +232,7 @@ type
     CSVExpSeparator: string;
     CSVExpShowCaption: boolean;
     CSVExpQuoted: boolean;
-    // СЂР°Р·РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё, Рє-СЂС‹Рµ РЅРµР»СЊР·СЏ РјРµРЅСЏС‚СЊ (РѕРЅРё СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё)
+    // разные настройки, к-рые нельзя менять (они сохраняются автоматически)
     WLeft: integer;
     WTop: integer;
     WWidth: integer;
@@ -272,7 +272,7 @@ type
     EnsDefLogPath: string;
     EnsDefScriptPath: string;
     EnsFolderWidth: integer;
-    // РѕРїС†РёРё РјР°СЃС‚РµСЂР° РІС‹РіСЂСѓР·РєРё СЃРєСЂРёРїС‚РѕРІ
+    // опции мастера выгрузки скриптов
     CmpScriptFile: string;
     CmpType: integer;
     CmpRefOptions: boolean;
@@ -304,7 +304,7 @@ type
     CmpScenParams: boolean;
     CmpScenStates: boolean;
     CmpFolderParams: boolean;
-    // РїРѕРґРєР»СЋС‡РµРЅРёРµ
+    // подключение
     CurrConnect: integer;
     procedure ActivateConnectControls(Active: boolean);
     procedure GetPagesFromControls;
@@ -331,7 +331,7 @@ implementation
 uses dbUtils, gridsettings;
 
 const
-  MAIN_PAGES = 'tsOnFolder=РџРѕ РїР°РїРєР°Рј|1,tsOnlyDict=РЎРїСЂР°РІРѕС‡РЅРёРєРё|1,tsForm=Р¤РѕСЂРјС‹|1,tsWizard=РЎС†РµРЅР°СЂРёРё|1,tsHistory=РР·Р±СЂР°РЅРЅРѕРµ|1';
+  MAIN_PAGES = 'tsOnFolder=По папкам|1,tsOnlyDict=Справочники|1,tsForm=Формы|1,tsWizard=Сценарии|1,tsHistory=Избранное|1';
   
 { TFSettings }
 
@@ -363,11 +363,11 @@ var
   s: string;
 
 begin
-  s := InputBox('РќРѕРІРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ', 'Р’РІРµРґРёС‚Рµ РёРјСЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ', '');
+  s := InputBox('Новое подключение', 'Введите имя подключения', '');
   if (s = '') then exit;
   if (cbConnection.Items.IndexOf(s) > -1) then
   begin
-    Application.MessageBox(pchar('РџРѕРґРєР»СЋС‡РµРЅРёРµ "' + s + '" СѓР¶Рµ РµСЃС‚СЊ РІ СЃРїРёСЃРєРµ.'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('Подключение "' + s + '" уже есть в списке.'), 'Ошибка', MB_OK + MB_ICONERROR);
     exit;
   end;
 
@@ -416,9 +416,9 @@ begin
   r := TestConnect(err);
 
   if r then
-    Application.MessageBox('РЎРѕРµРґРёРЅРµРЅРёРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ.', 'РџСЂРѕРІРµСЂРєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ', MB_OK + MB_ICONINFORMATION)
+    Application.MessageBox('Соединение установлено.', 'Проверка подключения', MB_OK + MB_ICONINFORMATION)
   else
-    Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ! РћС€РёР±РєР°:'#13#10 + err), 'РџСЂРѕРІРµСЂРєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('Не удалось подключиться! Ошибка:'#13#10 + err), 'Проверка подключения', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFSettings.btnDelClick(Sender: TObject);
@@ -559,7 +559,7 @@ end;
 procedure TFSettings.ChangePartControls(nodeID: integer);
 begin
   pCaption.Caption := tvPartition.Selected.Text;
-  lblPartDescr.Caption := 'Р’С‹Р±РµСЂРёС‚Рµ СЂР°Р·РґРµР»';
+  lblPartDescr.Caption := 'Выберите раздел';
   pNone.Visible := false;
   pGeneral.Visible := false;
   pConnection.Visible := false;
@@ -576,7 +576,7 @@ end;
 
 procedure TFSettings.chbCheckUpdatesClick(Sender: TObject);
 begin
- { РґРёР·СЌР№Р±Р»РёС‚СЊ РЅРµ РЅР°РґРѕ, С‚Р°Рє РєР°Рє РјРѕР¶РЅРѕ РµС‰Рµ РІСЂСѓС‡РЅСѓСЋ РїСЂРѕРІРµСЂСЏС‚СЊ
+ { дизэйблить не надо, так как можно еще вручную проверять
   edUpdatePath.Enabled := chbCheckUpdates.Checked;
   lbUpdatePath.Enabled := chbCheckUpdates.Checked;
   Label11.Enabled := chbCheckUpdates.Checked;
@@ -601,12 +601,12 @@ var
   i: integer;
 
 begin
-  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёРµ "' + cbConnection.Text + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+  if Application.MessageBox(pchar('Удалить подключение "' + cbConnection.Text + '"?'), 'Подтверждение',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
 //  if (cbConnection.ItemIndex = CurrConnect) then
 //  begin
-//    Application.MessageBox('РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ С‚РµРєСѓС‰РµРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ! РЎРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ СЂР°Р·РѕСЂРІР°С‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ СЃ Р‘Р”.', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+//    Application.MessageBox('Невозможно удалить текущее подключение! Сначала нужно разорвать соединение с БД.', 'Ошибка', MB_OK + MB_ICONERROR);
 //    exit;
 //  end;
 
@@ -666,12 +666,12 @@ var
 
 begin
   currIdx := cbConnection.ItemIndex;
-  s := InputBox('РџРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёРµ', 'Р’РІРµРґРёС‚Рµ РёРјСЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ', cbConnection.Text);
+  s := InputBox('Переименовать подключение', 'Введите имя подключения', cbConnection.Text);
   if (s = cbConnection.Text) then exit;
   idx := cbConnection.Items.IndexOf(s);
   if (idx > -1) and (idx <> currIdx) then
   begin
-    Application.MessageBox(pchar('РџРѕРґРєР»СЋС‡РµРЅРёРµ "' + s + '" СѓР¶Рµ РµСЃС‚СЊ РІ СЃРїРёСЃРєРµ.'), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar('Подключение "' + s + '" уже есть в списке.'), 'Ошибка', MB_OK + MB_ICONERROR);
     exit;
   end;
 
@@ -760,7 +760,7 @@ var
 begin
   if Trim(DbDescr) = '' then exit;
 
-  // РµСЃР»Рё СѓРєР°Р·Р°РЅ main, С‚Рѕ РІСЃРµРіРґР° РІРѕР·РІСЂР°С‰Р°РµРј С‚РµРєСѓС‰РµРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ
+  // если указан main, то всегда возвращаем текущее подключение
   if AnsiLowerCase(DbDescr) = AnsiLowerCase(MainDescriptor) then
   begin
     result := GetCurrentConnection;
@@ -768,7 +768,7 @@ begin
   end;
 
   for i := 0 to Length(FConnections) - 1 do
-    // Р±РµСЂРµРј СЃРѕРµРґРёРЅРµРЅРёРµ РїРѕ РґРµСЃРєСЂРёРїС‚РѕСЂСѓ РїРѕСЂС‚Р°Р»Р° С‚Р°РєРѕРіРѕ Р¶Рµ С‚РёРїР° (СЂР°Р·СЂР°Р±, С‚РµСЃС‚, Р±РѕР№), РєР°Рє С‚РµРєСѓС‰РµРµ Р°РєС‚РёРІРЅРѕРµ, РёР»Рё РїРµСЂРІРѕРµ РїРѕРїР°РІС€РµРµСЃСЏ, РµСЃР»Рё Сѓ С‚РµРєСѓС‰РµРіРѕ С‚РёРї РЅРµ РѕРїСЂРµРґРµР»РµРЅ
+    // берем соединение по дескриптору портала такого же типа (разраб, тест, бой), как текущее активное, или первое попавшееся, если у текущего тип не определен
     if (AnsiLowerCase(DbDescr) = AnsiLowerCase(FConnections[i].PortalDescriptor)) and
       ((GetCurrentConnection.ConnType = FConnections[i].ConnType) or (GetCurrentConnection.ConnType = ctUndefined)) then
     begin
@@ -777,7 +777,7 @@ begin
     end;
 
   for i := 0 to Length(FConnections) - 1 do
-    // Р•СЃР»Рё СЃРѕРѕС‚РІРµС‚СЃРІСѓСЋС‰РµРіРѕ С‚РёРїР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ РЅРµ РЅР°С€Р»РѕСЃСЊ - Р±РµСЂРµРј РїРµСЂРІРѕРµ РїРѕРґС…РѕРґСЏС‰РµРµ, Сѓ РєРѕС‚РѕСЂРѕРіРѕ С‚РёРї РЅРµ РѕРїСЂРµРґРµР»РµРЅ
+    // Если соответсвующего типа подключения не нашлось - берем первое подходящее, у которого тип не определен
     if (AnsiLowerCase(DbDescr) = AnsiLowerCase(FConnections[i].PortalDescriptor)) and (FConnections[i].ConnType = ctUndefined) then
     begin
       result := FConnections[i];
@@ -806,7 +806,7 @@ begin
   result := -1;
   if Trim(DbDescr) = '' then exit;
 
-  // РµСЃР»Рё СѓРєР°Р·Р°РЅ main, С‚Рѕ РІСЃРµРіРґР° РІРѕР·РІСЂР°С‰Р°РµРј С‚РµРєСѓС‰РµРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ
+  // если указан main, то всегда возвращаем текущее подключение
   if AnsiLowerCase(DbDescr) = AnsiLowerCase(MainDescriptor) then
   begin
     result := CurrConnect;
@@ -864,7 +864,7 @@ begin
   TreeCacheConnect := cbTreeCacheConnect.Text;
   RememberHistory := chbRememberHistory.Checked;
   SelSqlAddTitle := chbSelSqlAddTitle.Checked;
-  // РіСЂРёРґ
+  // грид
   GridOptions.Flat := chbGridFlat.Checked;
   GridOptions.RowLines := chbGridRowLines.Checked;
   GridOptions.ColLines := chbGridColLines.Checked;
@@ -1170,8 +1170,8 @@ begin
     except
       on E: Exception do
       begin
-        Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ РїСЂРѕС‡РёС‚Р°С‚СЊ РЅР°СЃС‚СЂРѕР№РєРё РїСЂРѕРіСЂР°РјРјС‹! РЈСЃС‚Р°РЅРѕРІР»РµРЅС‹ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ.'#13#10 +
-          E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+        Application.MessageBox(pchar('Не удалось прочитать настройки программы! Установлены настройки по-умолчанию.'#13#10 +
+          E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
       end;
     end;
   finally
@@ -1209,7 +1209,7 @@ begin
         Grid.FrozenCols := ReadRegValueInt(reg, 'FrozenCols', Grid.FrozenCols);
         reg.CloseKey;
 
-        // РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё РІРµСЂРЅРѕРіРѕ РїРѕСЂСЏРґРєР° РєРѕР»РѕРЅРѕРє, РЅР°РґРѕ СЃРЅР°С‡Р°Р»Р° РёС… СЃРїРёСЃРѕРє СѓРїРѕСЂСЏРґРѕС‡РёС‚СЊ РїРѕ РёРЅРґРµРєСЃР°Рј
+        // для установки верного порядка колонок, надо сначала их список упорядочить по индексам
         SetLength(order, sl.Count);        
         for i := 0 to sl.Count - 1 do
         begin
@@ -1222,7 +1222,7 @@ begin
           end;
         end;
 
-        // РІРѕСЃСЃС‚Р°РЅРѕРІРёРј РїР°СЂР°РјРµС‚СЂС‹ РїРѕ РїРѕР»СЏРј, Сѓ РєРѕРіРѕ РёРЅРґРµРєСЃС‹ СЃРѕС…СЂР°РЅРµРЅС‹
+        // восстановим параметры по полям, у кого индексы сохранены
         for i := 0 to Length(order) - 1 do
         begin
           col := FindColumnByFieldName(Grid, order[i]);
@@ -1237,7 +1237,7 @@ begin
           end;
         end;
 
-        // РІРѕСЃСЃС‚Р°РЅРѕРІРёРј РїР°СЂР°РјРµС‚СЂС‹ РїРѕ РїРѕР»СЏРј, Сѓ РєРѕРіРѕ РёРЅРґРµРєСЃС‹ РїРѕС‡РµРјСѓ-С‚Рѕ РѕС‚СЃСѓС‚СЃС‚РІРѕРІР°Р»Рё РІ СЂРµРµСЃС‚СЂРµ
+        // восстановим параметры по полям, у кого индексы почему-то отсутствовали в реестре
         if b then
           for i := 0 to sl.Count - 1 do
           begin
@@ -1256,8 +1256,8 @@ begin
     except
       on E: Exception do
       begin
-        {Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ РїСЂРѕС‡РёС‚Р°С‚СЊ РЅР°СЃС‚СЂРѕР№РєРё С‚Р°Р±Р»РёС†С‹! РЈСЃС‚Р°РЅРѕРІР»РµРЅС‹ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ.'#13#10 +
-          E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);}
+        {Application.MessageBox(pchar('Не удалось прочитать настройки таблицы! Установлены настройки по-умолчанию.'#13#10 +
+          E.Message), 'Ошибка', MB_OK + MB_ICONERROR);}
       end;
     end;
   finally
@@ -1289,8 +1289,8 @@ var
   sl: TStringList;
     
 begin
-  if Application.MessageBox('РќР°СЃС‚СЂРѕР№РєРё РєРѕР»РѕРЅРѕРє РІСЃРµС… С‚Р°Р±Р»РёС† Р±СѓРґСѓС‚ СЃР±СЂРѕС€РµРЅС‹. РџСЂРѕРґРѕР»Р¶РёС‚СЊ?',
-    'РЎР±СЂРѕСЃ РЅР°СЃС‚СЂРѕРµРє', MB_YESNO + MB_ICONWARNING) = ID_NO then exit;
+  if Application.MessageBox('Настройки колонок всех таблиц будут сброшены. Продолжить?',
+    'Сброс настроек', MB_YESNO + MB_ICONWARNING) = ID_NO then exit;
 
   sl := TStringList.Create;
   reg := TRegistry.Create(KEY_READ);
@@ -1315,8 +1315,8 @@ end;
 
 procedure TFSettings.ResetGridOptions;
 begin
-  if Application.MessageBox('РќР°СЃС‚СЂРѕР№РєРё С‚Р°Р±Р»РёС† Р±СѓРґСѓС‚ СЃР±СЂРѕС€РµРЅС‹. РџСЂРѕРґРѕР»Р¶РёС‚СЊ?',
-    'РЎР±СЂРѕСЃ РЅР°СЃС‚СЂРѕРµРє', MB_YESNO + MB_ICONWARNING) = ID_NO then exit;
+  if Application.MessageBox('Настройки таблиц будут сброшены. Продолжить?',
+    'Сброс настроек', MB_YESNO + MB_ICONWARNING) = ID_NO then exit;
 
   GridOptsChanged := true;
   GridOptions.Assign(DefGridOptions);
@@ -1325,10 +1325,10 @@ end;
 
 procedure TFSettings.ResetSettings;
 begin
-  if Application.MessageBox('Р’ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РґР°РЅРЅРѕР№ РѕРїРµСЂР°С†РёРё Р±СѓРґСѓС‚ Р·Р°РіСЂСѓР¶РµРЅС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё.'#13#10 +
-    'Р’С‹ С‚РѕС‡РЅРѕ С…РѕС‚РёС‚Рµ СЃР±СЂРѕСЃРёС‚СЊ РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё?', 'РЎР±СЂРѕСЃ РЅР°СЃС‚СЂРѕРµРє', MB_YESNO + MB_ICONWARNING) = ID_NO then exit;
+  if Application.MessageBox('В результате данной операции будут загружены стандартные настройки.'#13#10 +
+    'Вы точно хотите сбросить все настройки?', 'Сброс настроек', MB_YESNO + MB_ICONWARNING) = ID_NO then exit;
 
-  // РІСЃРµ СѓРґР°Р»СЏС‚СЊ РЅРµР»СЊР·СЏ - РЅР°РґРѕ РѕСЃС‚Р°РІРёС‚СЊ СЃРїРёСЃРѕРє РєРѕРЅРЅРµРєС‚РѕРІ, РїРѕСЌС‚РѕРјСѓ СѓРґР°Р»СЏРµРј РІС‹Р±РѕСЂРѕС‡РЅРѕ
+  // все удалять нельзя - надо оставить список коннектов, поэтому удаляем выборочно
   //DeleteRegKey(PARAM_ROOT_KEY, PARAM_REG_KEY);
   DeleteRegKey(PARAM_ROOT_KEY, REG_KEY_WINDOW);
   DeleteRegKey(PARAM_ROOT_KEY, REG_KEY_CONFIG);
@@ -1341,7 +1341,7 @@ begin
   SetToControls;
   SaveToRegistry;
   r_ok := true;
-  Application.MessageBox(pchar('РЈСЃС‚Р°РЅРѕРІР»РµРЅС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё'), 'РЎР±СЂРѕСЃ РЅР°СЃС‚СЂРѕРµРє', MB_OK + MB_ICONINFORMATION);
+  Application.MessageBox(pchar('Установлены стандартные настройки'), 'Сброс настроек', MB_OK + MB_ICONINFORMATION);
 end;
 
 procedure TFSettings.SaveGridParams(Grid: TDBGridEh; FormName: string);
@@ -1379,7 +1379,7 @@ begin
     end;
   except
     {on E: Exception do
-      Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё С‚Р°Р±Р»РёС†С‹!'#13#10 + E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);}
+      Application.MessageBox(pchar('Не удалось сохранить настройки таблицы!'#13#10 + E.Message), 'Ошибка', MB_OK + MB_ICONERROR);}
   end;
 
   if Assigned(reg) then reg.Free;
@@ -1607,7 +1607,7 @@ begin
     end;
   except
     on E: Exception do
-      Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё РїСЂРѕРіСЂР°РјРјС‹!'#13#10 + E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar('Не удалось сохранить настройки программы!'#13#10 + E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
   end;
 
   if Assigned(reg) then reg.Free;
@@ -1843,7 +1843,7 @@ end;
 function TFSettings.TestConnectNoFB(var ErrMsg: string): boolean;
 begin
   result := false;
-  ErrMsg := 'РџРѕРґРєР»СЋС‡РµРЅРёРµ РЅРµ РЅР°СЃС‚СЂРѕРµРЅРѕ!';
+  ErrMsg := 'Подключение не настроено!';
 
   if SqlConn.Connected then SqlConn.Close;
   case cbServer.ItemIndex of
