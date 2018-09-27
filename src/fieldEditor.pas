@@ -258,7 +258,7 @@ begin
   else begin
     s := cbFieldName.Text;
     if Pos('.', s) > 0 then s := Copy(s, Pos('.', s) + 1, Length(s));
-    result := 'Поле ' + s + ' : ' + edTitle.Text;
+    result := 'РџРѕР»Рµ ' + s + ' : ' + edTitle.Text;
   end;
 end;
 
@@ -266,8 +266,8 @@ procedure TFFieldEditor.RegisterForm;
 begin
   case Mode of
     omAdd: ;
-    omEdit: Caption := GenCaption('Поле', 'редактирование', edPk.Text, cbFieldName.Text, edTitle.Text, true);
-    omView: Caption := GenCaption('Поле', 'просмотр', edPk.Text, cbFieldName.Text, edTitle.Text, true);
+    omEdit: Caption := GenCaption('РџРѕР»Рµ', 'СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ', edPk.Text, cbFieldName.Text, edTitle.Text, true);
+    omView: Caption := GenCaption('РџРѕР»Рµ', 'РїСЂРѕСЃРјРѕС‚СЂ', edPk.Text, cbFieldName.Text, edTitle.Text, true);
   end;
 
   FMain.RegisterChildForm(Self);
@@ -314,7 +314,7 @@ begin
           Screen.Cursor := crDefault;
         end;
 
-        // параметры поля
+        // РїР°СЂР°РјРµС‚СЂС‹ РїРѕР»СЏ
         if not dsFieldKeys.IsEmpty then
         begin
           cbTypeName.ItemIndex := cbTypeName.Items.IndexOf(FIELDTYPE_LookUp);
