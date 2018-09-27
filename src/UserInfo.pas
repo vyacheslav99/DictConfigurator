@@ -63,7 +63,7 @@ implementation
 uses main;
 
 const
-  USR_SEL_PAS = 'gbc.kzdrf'; // писюлявка
+  USR_SEL_PAS = 'gbc.kzdrf'; // РїРёСЃСЋР»СЏРІРєР°
 
 procedure TFUserInfo.btnCloseClick(Sender: TObject);
 begin
@@ -87,13 +87,13 @@ begin
   if UsrSelPas = USR_SEL_PAS then
   begin
     UsrSelPas := '';
-    s := InputBox('-= Режим Читов =-', 'Введите имя пользователя портала, под которым хотите поработать', FSettings.PortalUser);
+    s := InputBox('-= Р РµР¶РёРј Р§РёС‚РѕРІ =-', 'Р’РІРµРґРёС‚Рµ РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕСЂС‚Р°Р»Р°, РїРѕРґ РєРѕС‚РѕСЂС‹Рј С…РѕС‚РёС‚Рµ РїРѕСЂР°Р±РѕС‚Р°С‚СЊ', FSettings.PortalUser);
     if (Trim(s) <> '') and (AnsiLowerCase(s) <> AnsiLowerCase(FSettings.PortalUser)) then
     begin
       FSettings.PortalUser := Trim(s);
       if (FMain.Database.Connected) and
-        (Application.MessageBox(pchar('Текущий пользователь портала изменен! Чтобы изменения вступили в силу, нужно переподключиться! ' +
-          'Переподключиться сейчас?'), 'Внимание', MB_YESNO + MB_ICONWARNING) = ID_YES) then
+        (Application.MessageBox(pchar('РўРµРєСѓС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РїРѕСЂС‚Р°Р»Р° РёР·РјРµРЅРµРЅ! Р§С‚РѕР±С‹ РёР·РјРµРЅРµРЅРёСЏ РІСЃС‚СѓРїРёР»Рё РІ СЃРёР»Сѓ, РЅСѓР¶РЅРѕ РїРµСЂРµРїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ! ' +
+          'РџРµСЂРµРїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ СЃРµР№С‡Р°СЃ?'), 'Р’РЅРёРјР°РЅРёРµ', MB_YESNO + MB_ICONWARNING) = ID_YES) then
       begin
         FMain.AReconnectExecute(FMain.AReconnect);
         Close;
