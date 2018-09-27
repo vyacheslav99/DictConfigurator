@@ -289,7 +289,7 @@ type
     function LoadObjectList(type_: integer; var Err: string): boolean;
     function SaveTemplate(TmplText: string; TmplPk: Variant; Insert, ConvertToUni: boolean; var err: string): Variant;
     procedure SavePermissions(RefPk: Variant; RefName: string);
-    // само выполнение изменений
+    // СЃР°РјРѕ РІС‹РїРѕР»РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№
     procedure ExecUpdatePerm(Actn: integer);
     procedure ExecUpdateRefUsers;
     procedure ExecChangeOwner;
@@ -306,12 +306,12 @@ type
 implementation
 
 const
-  ACTION_DESCR0 = 'Создание, копирование из справочника или удаление прав должностей всем справочникам папки';
-  ACTION_DESCR1 = 'Создание, копирование из справочника или удаление прав ролей всем справочникам папки';
-  ACTION_DESCR2 = 'Выдача или удаление прав на конфигурацию всех справочников папки выбранным пользователям';
-  ACTION_DESCR3 = 'Замена владельца всех справочников (и их форм) папки на выбранного пользователя';
-  ACTION_DESCR4 = 'Перемещение всех справочников и папок в выбранную папку. Структура папок при переносе сохраняется';
-  ACTION_DESCR5 = 'Копирование прав должности всем указанным в списке должностям всем справочникам папки.';
+  ACTION_DESCR0 = 'РЎРѕР·РґР°РЅРёРµ, РєРѕРїРёСЂРѕРІР°РЅРёРµ РёР· СЃРїСЂР°РІРѕС‡РЅРёРєР° РёР»Рё СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚РµР№ РІСЃРµРј СЃРїСЂР°РІРѕС‡РЅРёРєР°Рј РїР°РїРєРё';
+  ACTION_DESCR1 = 'РЎРѕР·РґР°РЅРёРµ, РєРѕРїРёСЂРѕРІР°РЅРёРµ РёР· СЃРїСЂР°РІРѕС‡РЅРёРєР° РёР»Рё СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ СЂРѕР»РµР№ РІСЃРµРј СЃРїСЂР°РІРѕС‡РЅРёРєР°Рј РїР°РїРєРё';
+  ACTION_DESCR2 = 'Р’С‹РґР°С‡Р° РёР»Рё СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ РІСЃРµС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ РїР°РїРєРё РІС‹Р±СЂР°РЅРЅС‹Рј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРј';
+  ACTION_DESCR3 = 'Р—Р°РјРµРЅР° РІР»Р°РґРµР»СЊС†Р° РІСЃРµС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ (Рё РёС… С„РѕСЂРј) РїР°РїРєРё РЅР° РІС‹Р±СЂР°РЅРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ';
+  ACTION_DESCR4 = 'РџРµСЂРµРјРµС‰РµРЅРёРµ РІСЃРµС… СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ Рё РїР°РїРѕРє РІ РІС‹Р±СЂР°РЅРЅСѓСЋ РїР°РїРєСѓ. РЎС‚СЂСѓРєС‚СѓСЂР° РїР°РїРѕРє РїСЂРё РїРµСЂРµРЅРѕСЃРµ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ';
+  ACTION_DESCR5 = 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё РІСЃРµРј СѓРєР°Р·Р°РЅРЅС‹Рј РІ СЃРїРёСЃРєРµ РґРѕР»Р¶РЅРѕСЃС‚СЏРј РІСЃРµРј СЃРїСЂР°РІРѕС‡РЅРёРєР°Рј РїР°РїРєРё.';
 
 {$R *.dfm}
 
@@ -375,9 +375,9 @@ procedure TFGroupAction.btnCloseClick(Sender: TObject);
 begin
   if FRunning then
   begin
-    if Application.MessageBox('Прервать выполнение?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+    if Application.MessageBox('РџСЂРµСЂРІР°С‚СЊ РІС‹РїРѕР»РЅРµРЅРёРµ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
     begin
-      AddToLog(1, 'Текущая задача', '', 'Выполнение прервано пользователем');
+      AddToLog(1, 'РўРµРєСѓС‰Р°СЏ Р·Р°РґР°С‡Р°', '', 'Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРµСЂРІР°РЅРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј');
       CanStop := true;
     end;
   end else
@@ -401,10 +401,10 @@ begin
   tsCopyRoles.TabVisible := false;
 
   case cbAction.ItemIndex of
-    0:   // добавление прав должностей
+    0:   // РґРѕР±Р°РІР»РµРЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚РµР№
     begin
       lbDescr.Caption := ACTION_DESCR0;
-      tsPermissions.Caption := 'Параметры (права должностей)';
+      tsPermissions.Caption := 'РџР°СЂР°РјРµС‚СЂС‹ (РїСЂР°РІР° РґРѕР»Р¶РЅРѕСЃС‚РµР№)';
       tsPermissions.TabVisible := true;
       col := FindColumnByFieldName(dbgPermissions, 'ROLE_NAME');
       if Assigned(col) then col.TextEditing := false;
@@ -413,10 +413,10 @@ begin
       lcbDictChange(lcbDict);
       btnExec.Enabled := true;
     end;
-    1:   // добавление прав ролей
+    1:   // РґРѕР±Р°РІР»РµРЅРёРµ РїСЂР°РІ СЂРѕР»РµР№
     begin
       lbDescr.Caption := ACTION_DESCR1;
-      tsPermissions.Caption := 'Параметры (права ролей)';
+      tsPermissions.Caption := 'РџР°СЂР°РјРµС‚СЂС‹ (РїСЂР°РІР° СЂРѕР»РµР№)';
       tsPermissions.TabVisible := true;
       col := FindColumnByFieldName(dbgPermissions, 'ROLE_NAME');
       if Assigned(col) then col.TextEditing := true;
@@ -426,31 +426,31 @@ begin
       dbgPermissionsColEnter(dbgPermissions);
       btnExec.Enabled := true;
     end;
-    2:  // права на конфигурацию
+    2:  // РїСЂР°РІР° РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ
     begin
       lbDescr.Caption := ACTION_DESCR2;
-      tsRefUsers.Caption := 'Параметры (права на конфигурацию)';
+      tsRefUsers.Caption := 'РџР°СЂР°РјРµС‚СЂС‹ (РїСЂР°РІР° РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ)';
       tsRefUsers.TabVisible := true;
       btnExec.Enabled := true;
     end;
-    3:  // смена владельца
+    3:  // СЃРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°
     begin
       lbDescr.Caption := ACTION_DESCR3;
-      tsChangeOwner.Caption := 'Параметры (смена владельца)';
+      tsChangeOwner.Caption := 'РџР°СЂР°РјРµС‚СЂС‹ (СЃРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°)';
       tsChangeOwner.TabVisible := true;
       btnExec.Enabled := true;
     end;
-    4:  // перепривязка к другой папке
+    4:  // РїРµСЂРµРїСЂРёРІСЏР·РєР° Рє РґСЂСѓРіРѕР№ РїР°РїРєРµ
     begin
       lbDescr.Caption := ACTION_DESCR4;
-      tsChangeFolder.Caption := 'Параметры (привязка к папке)';
+      tsChangeFolder.Caption := 'РџР°СЂР°РјРµС‚СЂС‹ (РїСЂРёРІСЏР·РєР° Рє РїР°РїРєРµ)';
       tsChangeFolder.TabVisible := true;
       btnExec.Enabled := true;
     end;
-    5: // копирование прав должности выбранным должностям всем справочникам в папке
+    5: // РєРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё РІС‹Р±СЂР°РЅРЅС‹Рј РґРѕР»Р¶РЅРѕСЃС‚СЏРј РІСЃРµРј СЃРїСЂР°РІРѕС‡РЅРёРєР°Рј РІ РїР°РїРєРµ
     begin
       lbDescr.Caption := ACTION_DESCR5;
-      tsCopyRoles.Caption := 'Параметры (копирование прав должности)';
+      tsCopyRoles.Caption := 'РџР°СЂР°РјРµС‚СЂС‹ (РєРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё)';
       tsCopyRoles.TabVisible := true;
       btnExec.Enabled := true;
     end
@@ -502,11 +502,11 @@ begin
     if mtLogSTATUS.AsInteger = 2 then
     begin
       Flags := MB_OK + MB_ICONERROR;
-      Cap := 'Ошибка';
+      Cap := 'РћС€РёР±РєР°';
     end else
     begin
       Flags := MB_OK + MB_ICONEXCLAMATION;
-      Cap := 'Сообщение';
+      Cap := 'РЎРѕРѕР±С‰РµРЅРёРµ';
     end;
     Application.MessageBox(pchar(mtLogMESSAGE.AsString), pchar(Cap), Flags);
   end;
@@ -518,11 +518,11 @@ begin
     (TDBGridEh(Sender).SelectedField.FieldName = 'DEL_') or (TDBGridEh(Sender).SelectedField.FieldName = 'VIEW_REF') or
     (TDBGridEh(Sender).SelectedField.FieldName = 'VIEW_') or (TDBGridEh(Sender).SelectedField.FieldName = 'GRID_SAVE') then
   begin
-    lbRankTmplName.Caption := 'Шаблон ' + TDBGridEh(Sender).SelectedField.FieldName;
+    lbRankTmplName.Caption := 'РЁР°Р±Р»РѕРЅ ' + TDBGridEh(Sender).SelectedField.FieldName;
     LoadTemplate(mTemplate, TDBGridEh(Sender).SelectedField.AsVariant);
   end else
   begin
-    lbRankTmplName.Caption := 'Шаблон не выбран';
+    lbRankTmplName.Caption := 'РЁР°Р±Р»РѕРЅ РЅРµ РІС‹Р±СЂР°РЅ';
     mTemplate.Clear;
   end;
 end;
@@ -537,9 +537,9 @@ begin
       else if (Sender = dbgSelectedRanks) then sbAddRoleClick(sbAddRole);
     end else
     begin
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
-      if (ssCtrl in Shift) and ((Key = Ord('X')) or (Key = Ord('x')) or (Key = Ord('Ч')) or (Key = Ord('ч'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('X')) or (Key = Ord('x')) or (Key = Ord('Р§')) or (Key = Ord('С‡'))) then
         TDBGridEh(Sender).SelectedRows.Clear;
     end;
   end;
@@ -556,16 +556,16 @@ var
   r: boolean;
   
 begin
-  SetProgress(3, 'Получение списка объектов папки', 0);
+  SetProgress(3, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', 0);
   if not LoadObjectList(0, err) then
   begin
-    AddToLog(2, 'Получение списка объектов папки', '', err);
+    AddToLog(2, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', '', err);
     exit;
   end;
 
   if VarIsNull(lcbDevelUsers.KeyValue) then
   begin
-    AddToLog(2, 'Смена владельца', '', 'Не выбран новый владелец');
+    AddToLog(2, 'РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°', '', 'РќРµ РІС‹Р±СЂР°РЅ РЅРѕРІС‹Р№ РІР»Р°РґРµР»РµС†');
     exit;
   end;
 
@@ -580,7 +580,7 @@ begin
     if not CheckGrant(gaRights, mtObjectListPK.AsVariant, mtObjectListLOGIN.AsVariant, mtObjectListDESCRIPTOR.AsVariant,
       mtObjectListNAME.AsVariant, err) then
     begin
-      AddToLog(2, 'Смена владельца', mtObjectListFULLNAME.AsString, 'Недостаточно прав! ' + err);
+      AddToLog(2, 'РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°', mtObjectListFULLNAME.AsString, 'РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ! ' + err);
       mtObjectList.Next;
       continue;
     end;
@@ -595,21 +595,21 @@ begin
     if r then r := FMain.ExecSQL('update DYNAMIC_FORM set OWNER_USER_PK = ' + VarToStr(lcbDevelUsers.KeyValue) +
       ' where PK = (select GROUP_EDIT_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + mtObjectListPK.AsString +
       ' and GROUP_EDIT_FORM_PK <> -1)', err);
-    // объекту не меняем, чтоб виднобыло изначального владельца
+    // РѕР±СЉРµРєС‚Сѓ РЅРµ РјРµРЅСЏРµРј, С‡С‚РѕР± РІРёРґРЅРѕР±С‹Р»Рѕ РёР·РЅР°С‡Р°Р»СЊРЅРѕРіРѕ РІР»Р°РґРµР»СЊС†Р°
     {if r then r := FMain.ExecSQL('update DYNAMIC_FORM_OBJECT_TREE set OWNER_USER_PK = ' + VarToStr(lcbDevelUsers.KeyValue) +
       ' where FORM_PK = (select MAIN_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + mtObjectListPK.AsString + ')', err);}
 
     if r then
     begin
-      AddToLog(0, 'Смена владельца', mtObjectListFULLNAME.AsString, '');
-      FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate, 'Смена владельца. Старый владелец ' + mtObjectListLOGIN.AsString);
+      AddToLog(0, 'РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°', mtObjectListFULLNAME.AsString, '');
+      FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate, 'РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°. РЎС‚Р°СЂС‹Р№ РІР»Р°РґРµР»РµС† ' + mtObjectListLOGIN.AsString);
     end else
-      AddToLog(2, 'Смена владельца', mtObjectListFULLNAME.AsString, err);
+      AddToLog(2, 'РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°', mtObjectListFULLNAME.AsString, err);
 
     mtObjectList.Next;
   end;
 
-  SetProgress(3, 'Выполнено!', mtObjectList.RecNo);
+  SetProgress(3, 'Р’С‹РїРѕР»РЅРµРЅРѕ!', mtObjectList.RecNo);
   CanRefresh := true;
 end;
 
@@ -619,10 +619,10 @@ var
   ds: TpFIBDataSet;
   
 begin
-  SetProgress(5, 'Получение списка объектов папки', 0);
+  SetProgress(5, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', 0);
   if not LoadObjectList(0, err) then
   begin
-    AddToLog(2, 'Получение списка объектов папки', '', err);
+    AddToLog(2, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', '', err);
     exit;
   end;
 
@@ -637,7 +637,7 @@ begin
     if not CheckGrant(gaEdit, mtObjectListPK.AsVariant, mtObjectListLOGIN.AsVariant, mtObjectListDESCRIPTOR.AsVariant,
       mtObjectListNAME.AsVariant, err) then
     begin
-      AddToLog(2, 'Копирование прав должности', mtObjectListFULLNAME.AsString, 'Недостаточно прав! ' + err);
+      AddToLog(2, 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё', mtObjectListFULLNAME.AsString, 'РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ! ' + err);
       mtObjectList.Next;
       continue;
     end;
@@ -649,7 +649,7 @@ begin
     dsDictRoles.First;
 
     if dsDictRoles.IsEmpty then
-      AddToLog(1, 'Копирование прав должности', mtObjectListFULLNAME.AsString, 'В справочнике нет прав для исходной должности');
+      AddToLog(1, 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё', mtObjectListFULLNAME.AsString, 'Р’ СЃРїСЂР°РІРѕС‡РЅРёРєРµ РЅРµС‚ РїСЂР°РІ РґР»СЏ РёСЃС…РѕРґРЅРѕР№ РґРѕР»Р¶РЅРѕСЃС‚Рё');
 
     while not dsDictRoles.Eof do
     begin
@@ -669,7 +669,7 @@ begin
         except
           on e: Exception do
           begin
-            AddToLog(2, 'Копирование прав должности', mtObjectListFULLNAME.AsString, e.Message);
+            AddToLog(2, 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё', mtObjectListFULLNAME.AsString, e.Message);
             mtSelectedRanks.Next;
             continue;
           end;
@@ -685,12 +685,12 @@ begin
 
           if FMain.ExecSQL(sql, err) then
           begin
-            AddToLog(0, 'Копирование прав должности', mtObjectListFULLNAME.AsString, '');
+            AddToLog(0, 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё', mtObjectListFULLNAME.AsString, '');
             FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate);
           end else
-            AddToLog(2, 'Копирование прав должности', mtObjectListFULLNAME.AsString, err);
+            AddToLog(2, 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё', mtObjectListFULLNAME.AsString, err);
         end else
-          AddToLog(1, 'Копирование прав должности', mtObjectListFULLNAME.AsString, 'В справочнике уже есть права для должности ' +
+          AddToLog(1, 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё', mtObjectListFULLNAME.AsString, 'Р’ СЃРїСЂР°РІРѕС‡РЅРёРєРµ СѓР¶Рµ РµСЃС‚СЊ РїСЂР°РІР° РґР»СЏ РґРѕР»Р¶РЅРѕСЃС‚Рё ' +
             mtSelectedRanksNAME.AsString);
 
         mtSelectedRanks.Next;
@@ -700,7 +700,7 @@ begin
     mtObjectList.Next;
   end;
 
-  SetProgress(5, 'Выполнено!', mtObjectList.RecNo);
+  SetProgress(5, 'Р’С‹РїРѕР»РЅРµРЅРѕ!', mtObjectList.RecNo);
   CanRefresh := false;
 end;
 
@@ -712,14 +712,14 @@ var
   l: integer;
     
 begin
-  SetProgress(4, 'Получение списка объектов папки', 0);
+  SetProgress(4, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', 0);
 
   if chbMoveOnlyContent.Checked then l := 1
   else l := 2;
 
   if not LoadObjectList(l, err) then
   begin
-    AddToLog(2, 'Получение списка объектов папки', '', err);
+    AddToLog(2, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', '', err);
     exit;
   end;
 
@@ -733,7 +733,7 @@ begin
 
       if (not r) then
       begin
-        AddToLog(2, 'Перемещение в папку', Trim(lcbFolder.Text), 'Не удалось создать новую папку! ' + err);
+        AddToLog(2, 'РџРµСЂРµРјРµС‰РµРЅРёРµ РІ РїР°РїРєСѓ', Trim(lcbFolder.Text), 'РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ РїР°РїРєСѓ! ' + err);
         exit;
       end else
         FMain.AddToRefLog(cotFolder, lcbFolder.Text, rltCreate);
@@ -751,7 +751,7 @@ begin
     if not CheckGrant(gaEdit, mtObjectListPK.AsVariant, mtObjectListLOGIN.AsVariant, mtObjectListDESCRIPTOR.AsVariant,
       mtObjectListNAME.AsVariant, err) then
     begin
-      AddToLog(2, 'Перемещение в папку', mtObjectListFULLNAME.AsString, 'Недостаточно прав! ' + err);
+      AddToLog(2, 'РџРµСЂРµРјРµС‰РµРЅРёРµ РІ РїР°РїРєСѓ', mtObjectListFULLNAME.AsString, 'РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ! ' + err);
       mtObjectList.Next;
       continue;
     end;
@@ -765,16 +765,16 @@ begin
 
     if r then
     begin
-      AddToLog(0, 'Перемещение в папку', mtObjectListFULLNAME.AsString, '');
+      AddToLog(0, 'РџРµСЂРµРјРµС‰РµРЅРёРµ РІ РїР°РїРєСѓ', mtObjectListFULLNAME.AsString, '');
       if mtObjectListTYPE.AsInteger = 0 then FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate)
       else FMain.AddToRefLog(cotFolder, mtObjectListNAME.AsString, rltUpdate, 'PK ' + mtObjectListPK.AsString);
     end else
-      AddToLog(2, 'Перемещение в папку', mtObjectListFULLNAME.AsString, err);
+      AddToLog(2, 'РџРµСЂРµРјРµС‰РµРЅРёРµ РІ РїР°РїРєСѓ', mtObjectListFULLNAME.AsString, err);
 
     mtObjectList.Next;
   end;
 
-  SetProgress(4, 'Выполнено!', mtObjectList.RecNo);
+  SetProgress(4, 'Р’С‹РїРѕР»РЅРµРЅРѕ!', mtObjectList.RecNo);
   CanRefresh := true;
 end;
 
@@ -783,10 +783,10 @@ var
   err: string;
   
 begin
-  SetProgress(Actn, 'Получение списка объектов папки', 0);
+  SetProgress(Actn, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', 0);
   if not LoadObjectList(0, err) then
   begin
-    AddToLog(2, 'Получение списка объектов папки', '', err);
+    AddToLog(2, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', '', err);
     exit;
   end;
 
@@ -803,12 +803,12 @@ begin
       SavePermissions(mtObjectListPK.AsVariant, mtObjectListFULLNAME.AsString);
       FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate);
     end else
-      AddToLog(2, 'Привязка/удаление прав', mtObjectListFULLNAME.AsString, 'Недостаточно прав! ' + err);
+      AddToLog(2, 'РџСЂРёРІСЏР·РєР°/СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ', mtObjectListFULLNAME.AsString, 'РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ! ' + err);
       
     mtObjectList.Next;
   end;
 
-  SetProgress(Actn, 'Выполнено!', mtObjectList.RecNo);
+  SetProgress(Actn, 'Р’С‹РїРѕР»РЅРµРЅРѕ!', mtObjectList.RecNo);
 end;
 
 procedure TFGroupAction.ExecUpdateRefUsers;
@@ -816,10 +816,10 @@ var
   err, sql, s: string;
   
 begin
-  SetProgress(2, 'Получение списка объектов папки', 0);
+  SetProgress(2, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', 0);
   if not LoadObjectList(0, err) then
   begin
-    AddToLog(2, 'Получение списка объектов папки', '', err);
+    AddToLog(2, 'РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїР°РїРєРё', '', err);
     exit;
   end;
 
@@ -834,7 +834,7 @@ begin
     if not CheckGrant(gaRights, mtObjectListPK.AsVariant, mtObjectListLOGIN.AsVariant, mtObjectListDESCRIPTOR.AsVariant,
       mtObjectListNAME.AsVariant, err) then
     begin
-      AddToLog(2, 'Выдача/удаление прав на конфигурацию', mtObjectListFULLNAME.AsString, 'Недостаточно прав! ' + err);
+      AddToLog(2, 'Р’С‹РґР°С‡Р°/СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ', mtObjectListFULLNAME.AsString, 'РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ! ' + err);
       mtObjectList.Next;
       continue;
     end;
@@ -851,12 +851,12 @@ begin
 
       if mtRefUsersACTION.AsInteger = 0 then
       begin
-        s := 'Выдача прав на конфигурацию';
+        s := 'Р’С‹РґР°С‡Р° РїСЂР°РІ РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ';
         sql := 'update or insert into DYNAMIC_FORM_REF_USER (REF_PK, USER_PK) values (' + mtObjectListPK.AsString + ', ' +
           mtRefUsersPK.AsString + ') matching (REF_PK, USER_PK)';
       end else
       begin
-        s := 'Удаление прав на конфигурацию';
+        s := 'РЈРґР°Р»РµРЅРёРµ РїСЂР°РІ РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ';
         sql := 'delete from DYNAMIC_FORM_REF_USER where REF_PK = ' + mtObjectListPK.AsString + ' and USER_PK = ' +
           mtRefUsersPK.AsString;
       end;
@@ -864,7 +864,7 @@ begin
       if FMain.ExecSQL(sql, err) then
       begin
         AddToLog(0, s, mtObjectListFULLNAME.AsString, '');
-        FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate, s + '. Пользователь ' + mtRefUsersLOGIN.AsString);
+        FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate, s + '. РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ ' + mtRefUsersLOGIN.AsString);
       end else
         AddToLog(2, s, mtObjectListFULLNAME.AsString, err);
 
@@ -873,7 +873,7 @@ begin
     mtObjectList.Next;
   end;
 
-  SetProgress(2, 'Выполнено!', mtObjectList.RecNo);
+  SetProgress(2, 'Р’С‹РїРѕР»РЅРµРЅРѕ!', mtObjectList.RecNo);
   CanRefresh := FMain.chbGetOnlyUser.Checked;
 end;
 
@@ -975,7 +975,7 @@ begin
   dsTemplate.Close;
   if (result = '') then exit;
 
-  // теперь замены
+  // С‚РµРїРµСЂСЊ Р·Р°РјРµРЅС‹
   if chbReplaceMainObject.Checked then
     result := StringReplace(result, NameToReplace, NameThanReplace, [rfReplaceAll, rfIgnoreCase]);
 end;
@@ -1039,7 +1039,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
 
     try
       try
-        // справочники справочника
+        // СЃРїСЂР°РІРѕС‡РЅРёРєРё СЃРїСЂР°РІРѕС‡РЅРёРєР°
         ds := FMain.OpenSQL('select r.PK, r.DESCRIPTOR_, r.TITLE, u.LOGIN from DYNAMIC_FORM_REFERENCE r ' +
           'left join USERS u on u.PK = r.OWNER_USER_PK ' +
           'where r.PARENT_REFERENCE_PK = :REF_PK',
@@ -1066,7 +1066,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
 
           mtObjectList.Post;
 
-          // дочерние справочники
+          // РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
           result := AddReferenceByRef(ds.FieldByName('PK').AsInteger, err);
           if not result then exit;
           ds.Next;
@@ -1095,7 +1095,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
     
     try
       try
-        // справочники папки
+        // СЃРїСЂР°РІРѕС‡РЅРёРєРё РїР°РїРєРё
         ds := FMain.OpenSQL('select r.PK, r.DESCRIPTOR_, r.TITLE, u.LOGIN from DYNAMIC_FORM_REFERENCE r ' +
           'left join USERS u on u.PK = r.OWNER_USER_PK ' +
           'where r.FOLDER_PK = :FOLDER_PK',
@@ -1122,7 +1122,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
 
           mtObjectList.Post;
 
-          // дочерние справочники
+          // РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё
           result := AddReferenceByRef(ds.FieldByName('PK').AsInteger, err);
           if not result then exit;
           ds.Next;
@@ -1132,7 +1132,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
         FreeAndNil(ds);
         if CanStop then exit;
         
-        // теперь дочерние папки
+        // С‚РµРїРµСЂСЊ РґРѕС‡РµСЂРЅРёРµ РїР°РїРєРё
         if Recursive then
         begin
           ds := FMain.OpenSQL('select PK, NAME from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = :FOLDER_PK',
@@ -1173,7 +1173,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
     
     try
       try
-        // папки папки
+        // РїР°РїРєРё РїР°РїРєРё
         ds := FMain.OpenSQL('select PK, NAME from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = :FOLDER_PK',
           'FOLDER_PK=' + IntToStr(FldrPk));
 
@@ -1201,7 +1201,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
         FreeAndNil(ds);
         if CanStop then exit;
         
-        // теперь дочерние папки
+        // С‚РµРїРµСЂСЊ РґРѕС‡РµСЂРЅРёРµ РїР°РїРєРё
         if Recursive then
         begin
           ds := FMain.OpenSQL('select PK, NAME from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = :FOLDER_PK',
@@ -1242,7 +1242,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
 
     try
       try
-        // папка
+        // РїР°РїРєР°
         ds := FMain.OpenSQL('select PK, NAME from DYNAMIC_FORM_FOLDER where PK = :FOLDER_PK', 'FOLDER_PK=' + IntToStr(FldrPk));
         ds.First;
 
@@ -1278,17 +1278,17 @@ begin
   if CanStop then exit;
   
   case type_ of
-    // все справочники, привязанные к папке, ко всем вложенным папкам и все дочерние справочники, не привязанные к папкам
+    // РІСЃРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё, РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ Рє РїР°РїРєРµ, РєРѕ РІСЃРµРј РІР»РѕР¶РµРЅРЅС‹Рј РїР°РїРєР°Рј Рё РІСЃРµ РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё, РЅРµ РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ Рє РїР°РїРєР°Рј
     0: result := AddReferenceByFolder(FolderPk, true, Err);
     1:
     begin
-      // все справочники, привязанные к этой папке и все их дочерние справочники, не привязанные к папке
+      // РІСЃРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё, РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ Рє СЌС‚РѕР№ РїР°РїРєРµ Рё РІСЃРµ РёС… РґРѕС‡РµСЂРЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРё, РЅРµ РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ Рє РїР°РїРєРµ
       result := AddReferenceByFolder(FolderPk, false, Err);
-      // все папки, непосредственно привязанные к этой папке
+      // РІСЃРµ РїР°РїРєРё, РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ Рє СЌС‚РѕР№ РїР°РїРєРµ
       if result then
         result := AddFolderByFolder(FolderPk, false, Err);
     end;
-    // только указанная папка
+    // С‚РѕР»СЊРєРѕ СѓРєР°Р·Р°РЅРЅР°СЏ РїР°РїРєР°
     2: result := AddFolder(FolderPk, Err);
   end;
 end;
@@ -1363,11 +1363,11 @@ begin
     (dbgPermissions.SelectedField.FieldName = 'DEL_') or (dbgPermissions.SelectedField.FieldName = 'VIEW_REF') or
     (dbgPermissions.SelectedField.FieldName = 'VIEW_') or (dbgPermissions.SelectedField.FieldName = 'GRID_SAVE') then
   begin
-    lbRankTmplName.Caption := 'Шаблон ' + dbgPermissions.SelectedField.FieldName;
+    lbRankTmplName.Caption := 'РЁР°Р±Р»РѕРЅ ' + dbgPermissions.SelectedField.FieldName;
     LoadTemplate(mTemplate, dbgPermissions.SelectedField.AsVariant);
   end else
   begin
-    lbRankTmplName.Caption := 'Шаблон не выбран';
+    lbRankTmplName.Caption := 'РЁР°Р±Р»РѕРЅ РЅРµ РІС‹Р±СЂР°РЅ';
     mTemplate.Clear;
   end;
 end;
@@ -1436,7 +1436,7 @@ procedure TFGroupAction.SavePermissions(RefPk: Variant; RefName: string);
       if tpk = '' then tpk := SaveTemplate(GetTemplateText(FieldSrc.Value, NameToReplace, NameThanReplace), Null, true, ConvToUni, err);
       if (not VarIsNull(tpk)) then keyList.Values[FieldSrc.AsString] := VarToStr(tpk);
       Query.ParamByName(ParamName).Value := tpk;
-      if err <> '' then AddToLog(2, 'Привязка шаблона ' + ParamName, RefName, err);
+      if err <> '' then AddToLog(2, 'РџСЂРёРІСЏР·РєР° С€Р°Р±Р»РѕРЅР° ' + ParamName, RefName, err);
     end else
       Query.ParamByName(ParamName).Value := FieldSrc.Value;
   end;
@@ -1497,7 +1497,7 @@ begin
   if chbReplaceMainObject.Checked then NameThanReplace := _getMainObjectName(RefPk, err);
   if err <> '' then
   begin
-    AddToLog(2, 'Определение главного объекта БД', RefName, err);
+    AddToLog(2, 'РћРїСЂРµРґРµР»РµРЅРёРµ РіР»Р°РІРЅРѕРіРѕ РѕР±СЉРµРєС‚Р° Р‘Р”', RefName, err);
     err := '';
   end;
 
@@ -1515,33 +1515,33 @@ begin
         continue;
       end;
 
-      // удаление прав
+      // СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ
       if mt.FieldByName('ACTION').AsInteger = 1 then
       begin
         if not FMain.ExecSQL('delete from ' + t + ' where REFERENCE_PK = ' + VarToStr(RefPk) + ' and ROLE_PK = ' +
           mt.FieldByName('ROLE_PK').AsString, err) then
-          AddToLog(2, 'Удаление прав', RefName, err)
+          AddToLog(2, 'РЈРґР°Р»РµРЅРёРµ РїСЂР°РІ', RefName, err)
         else
-          AddToLog(0, 'Удаление прав', RefName, '');
+          AddToLog(0, 'РЈРґР°Р»РµРЅРёРµ РїСЂР°РІ', RefName, '');
       end else
       begin
-        // добавление прав
+        // РґРѕР±Р°РІР»РµРЅРёРµ РїСЂР°РІ
         if chbReplaceMainObject.Checked then NameToReplace := _getMainObjectName(mt.FieldByName('REF_PK').Value, err);
         if err <> '' then
         begin
-          AddToLog(2, 'Определение главного объекта БД', mt.FieldByName('REF_NAME').AsString, err);
+          AddToLog(2, 'РћРїСЂРµРґРµР»РµРЅРёРµ РіР»Р°РІРЅРѕРіРѕ РѕР±СЉРµРєС‚Р° Р‘Р”', mt.FieldByName('REF_NAME').AsString, err);
           err := '';
         end;
 
         case cbExistAction.ItemIndex of
-          0:  // пропускать
+          0:  // РїСЂРѕРїСѓСЃРєР°С‚СЊ
             if _permExists(t, VarToStr(RefPk), mt.FieldByName('ROLE_PK').AsString) then
             begin
-              AddToLog(1, 'Привязка прав', RefName, 'Права для должности/роли ' + mt.FieldByName('ROLE_NAME').AsString + ' уже есть');
+              AddToLog(1, 'РџСЂРёРІСЏР·РєР° РїСЂР°РІ', RefName, 'РџСЂР°РІР° РґР»СЏ РґРѕР»Р¶РЅРѕСЃС‚Рё/СЂРѕР»Рё ' + mt.FieldByName('ROLE_NAME').AsString + ' СѓР¶Рµ РµСЃС‚СЊ');
               mt.Next;
               Continue;
             end;
-          1: ;  // заменять
+          1: ;  // Р·Р°РјРµРЅСЏС‚СЊ
         end;
 
         try
@@ -1561,9 +1561,9 @@ begin
 
           q.ExecQuery;
           FMain.Transact.CommitRetaining;
-          AddToLog(0, 'Привязка прав', RefName, '');
+          AddToLog(0, 'РџСЂРёРІСЏР·РєР° РїСЂР°РІ', RefName, '');
         except
-          on e: Exception do AddToLog(2, 'Привязка прав', RefName, e.Message);
+          on e: Exception do AddToLog(2, 'РџСЂРёРІСЏР·РєР° РїСЂР°РІ', RefName, e.Message);
         end;
       end;
       mt.Next;
@@ -1661,7 +1661,7 @@ begin
   ds := TMemTableEh(dbgPermissions.DataSource.DataSet);
   if (not ds.Active) or ds.IsEmpty then exit;
 
-  if Application.MessageBox(pchar('Очистить список?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+  if Application.MessageBox(pchar('РћС‡РёСЃС‚РёС‚СЊ СЃРїРёСЃРѕРє?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
     ds.EmptyTable;
 end;
 
@@ -1669,7 +1669,7 @@ procedure TFGroupAction.sbClearRefListClick(Sender: TObject);
 begin
   if (not mtRefUsers.Active) or mtRefUsers.IsEmpty then exit;
 
-  if Application.MessageBox(pchar('Очистить список?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+  if Application.MessageBox(pchar('РћС‡РёСЃС‚РёС‚СЊ СЃРїРёСЃРѕРє?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
     mtRefUsers.EmptyTable;
 end;
 
@@ -1681,7 +1681,7 @@ begin
   ds := TMemTableEh(dbgSelectedRanks.DataSource.DataSet);
   if (not ds.Active) or ds.IsEmpty then exit;
 
-  if Application.MessageBox(pchar('Очистить список?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+  if Application.MessageBox(pchar('РћС‡РёСЃС‚РёС‚СЊ СЃРїРёСЃРѕРє?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
     ds.EmptyTable;
 end;
 
@@ -1701,13 +1701,13 @@ begin
 
   if dbgPermissions.SelectedRows.Count > 0 then
   begin
-    if Application.MessageBox(pchar('Убрать из списка ' + IntToStr(dbgPermissions.SelectedRows.Count) + ' выбранных записей?'),
-      'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+    if Application.MessageBox(pchar('РЈР±СЂР°С‚СЊ РёР· СЃРїРёСЃРєР° ' + IntToStr(dbgPermissions.SelectedRows.Count) + ' РІС‹Р±СЂР°РЅРЅС‹С… Р·Р°РїРёСЃРµР№?'),
+      'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
       dbgPermissions.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('Убрать из списка ' + VarToStr(iif(cbAction.ItemIndex = 0, 'должность', 'роль')) + ' "' +
-      ds.FieldByName('ROLE_NAME').AsString + '"?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+    if Application.MessageBox(pchar('РЈР±СЂР°С‚СЊ РёР· СЃРїРёСЃРєР° ' + VarToStr(iif(cbAction.ItemIndex = 0, 'РґРѕР»Р¶РЅРѕСЃС‚СЊ', 'СЂРѕР»СЊ')) + ' "' +
+      ds.FieldByName('ROLE_NAME').AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
       ds.Delete;
   end;
 end;
@@ -1718,12 +1718,12 @@ begin
 
   if dbgRefUsers.SelectedRows.Count > 0 then
   begin
-    if Application.MessageBox(pchar('Убрать из списка ' + IntToStr(dbgRefUsers.SelectedRows.Count) + ' выбранных записей?'),
-      'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+    if Application.MessageBox(pchar('РЈР±СЂР°С‚СЊ РёР· СЃРїРёСЃРєР° ' + IntToStr(dbgRefUsers.SelectedRows.Count) + ' РІС‹Р±СЂР°РЅРЅС‹С… Р·Р°РїРёСЃРµР№?'),
+      'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
       dbgRefUsers.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('Убрать из списка пользователя "' + mtRefUsersNAME.AsString + '"?'), 'Подтверждение',
+    if Application.MessageBox(pchar('РЈР±СЂР°С‚СЊ РёР· СЃРїРёСЃРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ "' + mtRefUsersNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
       MB_YESNO + MB_ICONQUESTION) = ID_YES then
       mtRefUsers.Delete;
   end;
@@ -1739,12 +1739,12 @@ begin
 
   if dbgSelectedRanks.SelectedRows.Count > 0 then
   begin
-    if Application.MessageBox(pchar('Убрать из списка ' + IntToStr(dbgSelectedRanks.SelectedRows.Count) + ' выбранных записей?'),
-      'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES then
+    if Application.MessageBox(pchar('РЈР±СЂР°С‚СЊ РёР· СЃРїРёСЃРєР° ' + IntToStr(dbgSelectedRanks.SelectedRows.Count) + ' РІС‹Р±СЂР°РЅРЅС‹С… Р·Р°РїРёСЃРµР№?'),
+      'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES then
       dbgSelectedRanks.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('Убрать из списка должность "' + ds.FieldByName('NAME').AsString + '"?'), 'Подтверждение',
+    if Application.MessageBox(pchar('РЈР±СЂР°С‚СЊ РёР· СЃРїРёСЃРєР° РґРѕР»Р¶РЅРѕСЃС‚СЊ "' + ds.FieldByName('NAME').AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
       MB_YESNO + MB_ICONQUESTION) = ID_YES then
       ds.Delete;
   end;
@@ -1762,14 +1762,14 @@ begin
   begin
     mtLog.EmptyTable;
     btnExec.Enabled := false;
-    btnClose.Caption := 'Прервать';
+    btnClose.Caption := 'РџСЂРµСЂРІР°С‚СЊ';
     SetProgress(-1, '', 0);
     tsProgress.TabVisible := true;
     pcMain.ActivePage := tsProgress;
   end else
   begin
     btnExec.Enabled := cbAction.ItemIndex > -1;
-    btnClose.Caption := 'Закрыть';
+    btnClose.Caption := 'Р—Р°РєСЂС‹С‚СЊ';
     //SetProgress(-1, '', 0);
     if mtLog.Active then mtLog.First;
   end;
@@ -1780,7 +1780,7 @@ end;
 
 procedure TFGroupAction.SetFolderPk(Value: Variant);
 begin
-  if VarIsNull(Value) then raise Exception.Create('Не выбрана папка!');
+  if VarIsNull(Value) then raise Exception.Create('РќРµ РІС‹Р±СЂР°РЅР° РїР°РїРєР°!');
   FFolderPk := Value;
 end;
 
@@ -1806,12 +1806,12 @@ begin
   else Total := ProgressBar.Max;
   
   case Actn of
-    0: lbAction.Caption := 'Выдача/удаление прав должностям';
-    1: lbAction.Caption := 'Выдача/удаление прав ролям';
-    2: lbAction.Caption := 'Выдача/удаление прав на конфигурацию';
-    3: lbAction.Caption := 'Смена владельца';
-    4: lbAction.Caption := 'Перемещение в другую папку';
-    5: lbAction.Caption := 'Копирование прав должности';
+    0: lbAction.Caption := 'Р’С‹РґР°С‡Р°/СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚СЏРј';
+    1: lbAction.Caption := 'Р’С‹РґР°С‡Р°/СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ СЂРѕР»СЏРј';
+    2: lbAction.Caption := 'Р’С‹РґР°С‡Р°/СѓРґР°Р»РµРЅРёРµ РїСЂР°РІ РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ';
+    3: lbAction.Caption := 'РЎРјРµРЅР° РІР»Р°РґРµР»СЊС†Р°';
+    4: lbAction.Caption := 'РџРµСЂРµРјРµС‰РµРЅРёРµ РІ РґСЂСѓРіСѓСЋ РїР°РїРєСѓ';
+    5: lbAction.Caption := 'РљРѕРїРёСЂРѕРІР°РЅРёРµ РїСЂР°РІ РґРѕР»Р¶РЅРѕСЃС‚Рё';
     else begin
       lbAction.Caption := '';
       lbObject.Caption := '';
