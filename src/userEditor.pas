@@ -100,8 +100,8 @@ procedure TFUserEditor.RegisterForm;
 begin
   case Mode of
     omAdd: ;
-    omEdit: Caption := GenCaption('', 'редактирование', edPk.Text, edLogin.Text, edName.Text, true);
-    omView: Caption := GenCaption('', 'просмотр', edPk.Text, edLogin.Text, edName.Text, true);
+    omEdit: Caption := GenCaption('', 'СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ', edPk.Text, edLogin.Text, edName.Text, true);
+    omView: Caption := GenCaption('', 'РїСЂРѕСЃРјРѕС‚СЂ', edPk.Text, edLogin.Text, edName.Text, true);
   end;
 
   FMain.RegisterChildForm(Self);
