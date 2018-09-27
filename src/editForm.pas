@@ -283,7 +283,7 @@ begin
         mtFormFields.Edit;
       end else
       begin
-        if Application.MessageBox('Редактируемая запись была удалена! Восстановить?', 'Подтверждение',
+        if Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°! Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
           MB_YESNO + MB_ICONWARNING) = ID_YES then
         begin
           mtFormFields.Append;
@@ -335,7 +335,7 @@ begin
         mtGroups.Edit;
       end else
       begin
-        if Application.MessageBox('Редактируемая запись была удалена! Восстановить?', 'Подтверждение',
+        if Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°! Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
           MB_YESNO + MB_ICONWARNING) = ID_YES then
         begin
           mtGroups.Append;
@@ -383,7 +383,7 @@ begin
       ds.Edit;
     end else
     begin
-      Application.MessageBox('Редактируемая запись была удалена!', 'Ошибка', MB_OK + MB_ICONERROR);
+      Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°!', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
       exit;
     end;
 
@@ -422,7 +422,7 @@ var
 begin
   if FMain.SetFocusOpenedWindow(dsFormPK.AsInteger, TFPreviewForm.ClassName) then exit;
   pf := TFPreviewForm.Create(Self, cftPreview, omView, dsFormPK.AsVariant, FMain.OnChildFormClose);
-  pf.Caption := edFormTitle.Text + ' - просмотр';
+  pf.Caption := edFormTitle.Text + ' - РїСЂРѕСЃРјРѕС‚СЂ';
   if pf.WindowState <> wsMaximized then
   begin
     if (not VarIsNull(edFormWidth.Value)) and (edFormWidth.Value > 0) then pf.Width := edFormWidth.Value
@@ -443,7 +443,7 @@ begin
   if Mode = omView then exit;
 
   if FSettings.ConfirmSave and
-    (Application.MessageBox('Сохранить изменения формы в базу данных?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+    (Application.MessageBox('РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ С„РѕСЂРјС‹ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
 
   Success := SaveData;
   if Success then
@@ -461,7 +461,7 @@ var
 
 begin
   col := FindColumnByFieldName(dbgFormFields, 'PARAMETERS');
-  FJsonReader := OpenJsonEditor(mtFormFieldsPARAMETERS, 'Поле: ' + iif(mtFormFieldsOBJECT_NAME.IsNull, '', mtFormFieldsOBJECT_NAME.AsString + '.') +
+  FJsonReader := OpenJsonEditor(mtFormFieldsPARAMETERS, 'РџРѕР»Рµ: ' + iif(mtFormFieldsOBJECT_NAME.IsNull, '', mtFormFieldsOBJECT_NAME.AsString + '.') +
     mtFormFieldsFIELD_NAME.AsString + '  ' + mtFormFieldsTITLE.AsString + '  ' + mtFormFieldsTYPE_NAME.AsString + ' : ' + col.Title.Hint);
 end;
 
@@ -500,7 +500,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddClick(sbAdd);
     VK_RETURN: if ssShift in Shift then sbEditClick(sbEdit);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -512,7 +512,7 @@ var
 
 begin
   col := FindColumnByFieldName(dbgGroups, 'STYLE_COLUMNS');
-  FJsonReader := OpenJsonEditor(mtGroupsSTYLE_COLUMNS, 'Группа: ' + mtGroupsORDER_.AsString + '.' + mtGroupsTITLE.AsString + ' : ' + col.Title.Hint);
+  FJsonReader := OpenJsonEditor(mtGroupsSTYLE_COLUMNS, 'Р“СЂСѓРїРїР°: ' + mtGroupsORDER_.AsString + '.' + mtGroupsTITLE.AsString + ' : ' + col.Title.Hint);
 end;
 
 procedure TFEditForm.dbgGroupsDblClick(Sender: TObject);
@@ -526,7 +526,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddGroupClick(sbAddGroup);
     VK_RETURN: if ssShift in Shift then sbEditGroupClick(sbEditGroup);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -707,12 +707,12 @@ begin
       try
         if Assigned(opt) then opt.Value := json.ValueOf(json.Keys[i]);
       except
-        {on e: Exception do Application.MessageBox(pchar('Не удалось задать значение поля ' + opt.Name + '. Ошибка: ' + e.Message),
-          'Ошибка', MB_OK + MB_ICONERROR);}
+        {on e: Exception do Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РґР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРѕР»СЏ ' + opt.Name + '. РћС€РёР±РєР°: ' + e.Message),
+          'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);}
       end;
     end;
 
-    // нужно в правильном порядке выставить опции, зависящие от BaseDescriptor (только те, которые меняются при его смене)
+    // РЅСѓР¶РЅРѕ РІ РїСЂР°РІРёР»СЊРЅРѕРј РїРѕСЂСЏРґРєРµ РІС‹СЃС‚Р°РІРёС‚СЊ РѕРїС†РёРё, Р·Р°РІРёСЃСЏС‰РёРµ РѕС‚ BaseDescriptor (С‚РѕР»СЊРєРѕ С‚Рµ, РєРѕС‚РѕСЂС‹Рµ РјРµРЅСЏСЋС‚СЃСЏ РїСЂРё РµРіРѕ СЃРјРµРЅРµ)
     sl.Text := OPT_baseDescriptor + FIELDTYPEDELIM + OPT_fkTable + FIELDTYPEDELIM + OPT_fkField + FIELDTYPEDELIM + OPT_displayField;
     for i := 0 to sl.Count - 1 do
     begin
@@ -723,8 +723,8 @@ begin
           opt.Value := json.ValueOf(opt.Name);
           if Assigned(opt.OnOptChange) then opt.OnOptChange(opt);
         except
-          {on e: Exception do Application.MessageBox(pchar('Не удалось задать значение поля ' + opt.Name + '. Ошибка: ' + e.Message),
-            'Ошибка', MB_OK + MB_ICONERROR);}
+          {on e: Exception do Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РґР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРѕР»СЏ ' + opt.Name + '. РћС€РёР±РєР°: ' + e.Message),
+            'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);}
         end;
       end;
     end;
@@ -873,7 +873,7 @@ begin
   if not IsLoadingGrid then
   begin
     if mtFormFieldsTITLE.IsNull or mtFormFieldsFIELD_NAME.IsNull or mtFormFieldsPARAMETERS.IsNull then
-      raise Exception.Create('Не все обязательные поля заполнены!');
+      raise Exception.Create('РќРµ РІСЃРµ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ Р·Р°РїРѕР»РЅРµРЅС‹!');
        
     mtFormFieldsCHANGED.AsBoolean := true;
   end;
@@ -905,7 +905,7 @@ procedure TFEditForm.mtGroupsBeforePost(DataSet: TDataSet);
 begin
   if not IsLoadingGrid then
   begin
-    if mtGroupsTITLE.IsNull then raise Exception.Create('Не все обязательные поля заполнены!');
+    if mtGroupsTITLE.IsNull then raise Exception.Create('РќРµ РІСЃРµ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ Р·Р°РїРѕР»РЅРµРЅС‹!');
     mtGroupsCHANGED.AsBoolean := true;
   end;
 end;
@@ -917,9 +917,9 @@ begin
   begin
     if mtFormFields.State in [dsEdit, dsInsert] then
     begin
-      case Application.MessageBox(pchar('Невозможно сохранить данные, пока таблица полей в режиме редактирования! Сначала нужно сохранить ' +
-        'или отменить изменения в таблице. Сохранить изменения [YES], оменить [NO], или отложить сохранение формы [CANCEL] ' +
-        '(сохранить эти данные можно будет позже)?'), 'Подтверждение', MB_YESNOCANCEL + MB_ICONQUESTION) of
+      case Application.MessageBox(pchar('РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ РґР°РЅРЅС‹Рµ, РїРѕРєР° С‚Р°Р±Р»РёС†Р° РїРѕР»РµР№ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ! РЎРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ ' +
+        'РёР»Рё РѕС‚РјРµРЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ. РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ [YES], РѕРјРµРЅРёС‚СЊ [NO], РёР»Рё РѕС‚Р»РѕР¶РёС‚СЊ СЃРѕС…СЂР°РЅРµРЅРёРµ С„РѕСЂРјС‹ [CANCEL] ' +
+        '(СЃРѕС…СЂР°РЅРёС‚СЊ СЌС‚Рё РґР°РЅРЅС‹Рµ РјРѕР¶РЅРѕ Р±СѓРґРµС‚ РїРѕР·Р¶Рµ)?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNOCANCEL + MB_ICONQUESTION) of
         ID_YES: mtFormFields.Post;
         ID_NO: mtFormFields.Cancel;
         ID_CANCEL:
@@ -941,9 +941,9 @@ begin
   begin
     if mtGroups.State in [dsEdit, dsInsert] then
     begin
-      case Application.MessageBox(pchar('Невозможно сохранить данные, пока таблица групп в режиме редактирования! Сначала нужно сохранить ' +
-        'или отменить изменения в таблице. Сохранить изменения [YES], оменить [NO], или отложить сохранение формы [CANCEL] ' +
-        '(сохранить эти данные можно будет позже)?'), 'Подтверждение', MB_YESNOCANCEL + MB_ICONQUESTION) of
+      case Application.MessageBox(pchar('РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ РґР°РЅРЅС‹Рµ, РїРѕРєР° С‚Р°Р±Р»РёС†Р° РіСЂСѓРїРї РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ! РЎРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ ' +
+        'РёР»Рё РѕС‚РјРµРЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ. РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ [YES], РѕРјРµРЅРёС‚СЊ [NO], РёР»Рё РѕС‚Р»РѕР¶РёС‚СЊ СЃРѕС…СЂР°РЅРµРЅРёРµ С„РѕСЂРјС‹ [CANCEL] ' +
+        '(СЃРѕС…СЂР°РЅРёС‚СЊ СЌС‚Рё РґР°РЅРЅС‹Рµ РјРѕР¶РЅРѕ Р±СѓРґРµС‚ РїРѕР·Р¶Рµ)?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNOCANCEL + MB_ICONQUESTION) of
         ID_YES: mtGroups.Post;
         ID_NO: mtGroups.Cancel;
         ID_CANCEL:
@@ -997,7 +997,7 @@ begin
   if Trim(edFormAlias.Text) = '' then
   begin
     result := false;
-    Application.MessageBox('Дескриптор формы не может быть пустым!', 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox('Р”РµСЃРєСЂРёРїС‚РѕСЂ С„РѕСЂРјС‹ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј!', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     exit;
   end;
 
@@ -1024,7 +1024,7 @@ begin
     else result := false;
   end;
 
-  if (err <> '') then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+  if (err <> '') then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
 
   if result then
   begin
@@ -1045,18 +1045,18 @@ begin
 
   if Mode = omView then exit;
 
-  // удаление полей
+  // СѓРґР°Р»РµРЅРёРµ РїРѕР»РµР№
   if DeletedFields.Count > 0 then
   begin
     if not FMain.ExecSQL('delete from DYNAMIC_FORM_FIELD where PK in (' + TextToString(DeletedFields.Text) + ')', err) then
     begin
-      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
       exit;
     end;
     DeletedFields.Clear;
   end;
 
-  // вставка/обновление
+  // РІСЃС‚Р°РІРєР°/РѕР±РЅРѕРІР»РµРЅРёРµ
   try
     mtFormFields.First;
     while not mtFormFields.Eof do
@@ -1101,21 +1101,21 @@ begin
       mtFormFields.Next;
     end;
   except
-    on E: Exception do Application.MessageBox(pchar(E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
+    on E: Exception do Application.MessageBox(pchar(E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
   end;
 
-  // удаление групп
+  // СѓРґР°Р»РµРЅРёРµ РіСЂСѓРїРї
   if DeletedGroups.Count > 0 then
   begin
     if not FMain.ExecSQL('delete from DYNAMIC_FORM_FIELD_GROUP where PK in (' + TextToString(DeletedGroups.Text) + ')', err) then
     begin
-      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
       exit;
     end;
     DeletedGroups.Clear;
   end;
 
-  // вставка/обновление
+  // РІСЃС‚Р°РІРєР°/РѕР±РЅРѕРІР»РµРЅРёРµ
   try
     mtGroups.First;
     while not mtGroups.Eof do
@@ -1148,7 +1148,7 @@ begin
       mtGroups.Next;
     end;
   except
-    on E: Exception do Application.MessageBox(pchar(E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
+    on E: Exception do Application.MessageBox(pchar(E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
   end;
 end;
 
@@ -1159,13 +1159,13 @@ begin
 
   if dbgFormFields.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('Удалить все отмеченные поля (' + IntToStr(dbgFormFields.SelectedRows.Count) + ')?'), 'Подтверждение',
+    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ РїРѕР»СЏ (' + IntToStr(dbgFormFields.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgFormFields.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('Удалить поле "' + mtFormFieldsTITLE.AsString + '"?'), 'Подтверждение',
+    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РїРѕР»Рµ "' + mtFormFieldsTITLE.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     mtFormFields.Delete;
@@ -1179,13 +1179,13 @@ begin
 
   if dbgGroups.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('Удалить все отмеченные группы (' + IntToStr(dbgGroups.SelectedRows.Count) + ')?'), 'Подтверждение',
+    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ РіСЂСѓРїРїС‹ (' + IntToStr(dbgGroups.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgGroups.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('Удалить группу "' + mtGroupsTITLE.AsString + '"?'), 'Подтверждение',
+    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РіСЂСѓРїРїСѓ "' + mtGroupsTITLE.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     mtGroups.Delete;
@@ -1209,14 +1209,14 @@ begin
     exit;
   end;
 
-  // открытие формы редактирования поля
+  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїРѕР»СЏ
   if FMain.SetFocusOpenedWindow(mtFormFieldsPK.AsInteger, TFFieldEditor.ClassName) then exit;
   FFieldEditor := TFFieldEditor.Create(Self, cftEditor, m, mtFormFieldsPK.AsVariant, FMain.OnChildFormClose);
   FFieldEditor.OnClose := OnFieldEditorClose;
   FFieldEditor.dsoGroup.DataSet := dsFieldGroups;
   FFieldEditor.dsoFilterGroup.DataSet := dsLFilterGroups;
   FFieldEditor.EditingRec := mtFormFields.GetBookmark;
-  FFieldEditor.Caption := 'Редактирование поля';
+  FFieldEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕР»СЏ';
   FFieldEditor.edPk.Text := mtFormFieldsPK.AsString;
   FFieldEditor.cbFieldName.Style := csSimple;
   FFieldEditor.cbFieldName.Text := mtFormFieldsFIELD_NAME.AsString;
@@ -1267,13 +1267,13 @@ begin
     exit;
   end;
 
-  // открытие формы редактирования группы
+  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РіСЂСѓРїРїС‹
   if FMain.SetFocusOpenedWindow(mtGroupsPK.AsInteger, TFGroupEditor.ClassName) then exit;
   FGroupEditor := TFGroupEditor.Create(Self, cftEditor, m, mtGroupsPK.AsVariant, FMain.OnChildFormClose);
   FGroupEditor.OnClose := OnGroupEditorClose;
   FGroupEditor.dsoParentGroup.DataSet := dsFieldGroups;
   FGroupEditor.EditingRec := mtGroups.GetBookmark;
-  FGroupEditor.Caption := 'Редактирование группы';
+  FGroupEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РіСЂСѓРїРїС‹';
   FGroupEditor.edPk.Text := mtGroupsPK.AsString;
   FGroupEditor.edTitle.Text := mtGroupsTITLE.AsString;
   FGroupEditor.cbParentGroup.KeyValue := mtGroups.FieldByName('PARENT_PK').Value;
@@ -1301,14 +1301,14 @@ var
 
 begin
   if Mode = omView then exit;
-  // открытие формы редактирования поля
+  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїРѕР»СЏ
   AutoIncFields;
   FFieldEditor := TFFieldEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FFieldEditor.OnClose := OnFieldEditorClose;
   FFieldEditor.dsoGroup.DataSet := dsFieldGroups;
   FFieldEditor.dsoFilterGroup.DataSet := dsLFilterGroups;
   FFieldEditor.EditingRec := nil;
-  FFieldEditor.Caption := 'Новое поле';
+  FFieldEditor.Caption := 'РќРѕРІРѕРµ РїРѕР»Рµ';
   FFieldEditor.edPk.Text := '';
   FFieldEditor.cbFieldName.Style := csSimple;
   FFieldEditor.cbFieldName.Text := '';
@@ -1347,13 +1347,13 @@ var
 
 begin
   if Mode = omView then exit;
-  // открытие формы редактирования группы
+  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РіСЂСѓРїРїС‹
   AutoIncGroups;
   FGroupEditor := TFGroupEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FGroupEditor.OnClose := OnGroupEditorClose;
   FGroupEditor.dsoParentGroup.DataSet := dsFieldGroups;
   FGroupEditor.EditingRec := nil;
-  FGroupEditor.Caption := 'Новая группа';
+  FGroupEditor.Caption := 'РќРѕРІР°СЏ РіСЂСѓРїРїР°';
   FGroupEditor.edPk.Text := '';
   FGroupEditor.edTitle.Text := '';
   FGroupEditor.cbParentGroup.KeyValue := Null;
@@ -1383,11 +1383,11 @@ begin
     dsForm.ParamByName('PK').Value := Properties.PK;
     dsForm.Open;
     if dsForm.IsEmpty then
-      raise Exception.Create('Не найдена форма с PK ' + VarToStr(Properties.PK) + '! Возможно она была пересоздана и ее PK поменялся.');
+      raise Exception.Create('РќРµ РЅР°Р№РґРµРЅР° С„РѕСЂРјР° СЃ PK ' + VarToStr(Properties.PK) + '! Р’РѕР·РјРѕР¶РЅРѕ РѕРЅР° Р±С‹Р»Р° РїРµСЂРµСЃРѕР·РґР°РЅР° Рё РµРµ PK РїРѕРјРµРЅСЏР»СЃСЏ.');
     edFormPk.Text := VarToStr(Properties.PK);
     edFormAlias.Text := VarToStr(Properties.Descriptor);
     edFormTitle.Text := VarToStr(Properties.Title);
-    Caption := GenCaption('Форма', iif(Mode = omEdit, 'редактирование', 'просмотр'), edFormPk.Text, edFormAlias.Text, edFormTitle.Text,
+    Caption := GenCaption('Р¤РѕСЂРјР°', iif(Mode = omEdit, 'СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ', 'РїСЂРѕСЃРјРѕС‚СЂ'), edFormPk.Text, edFormAlias.Text, edFormTitle.Text,
       FSettings.TreeShowDescriptor);
     edFormWidth.Value := dsFormWIDTH.Value;
     edFormHeight.Value := dsFormHEIGHT.Value;
@@ -1413,8 +1413,8 @@ end;
 
 procedure TFEditForm.tbRefreshClick(Sender: TObject);
 begin
-  if (Mode = omView) or (Application.MessageBox('При перезагрузке данных формы все несохраненные изменения будут потеряны! Продолжить?',
-    'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES) then _Reload;
+  if (Mode = omView) or (Application.MessageBox('РџСЂРё РїРµСЂРµР·Р°РіСЂСѓР·РєРµ РґР°РЅРЅС‹С… С„РѕСЂРјС‹ РІСЃРµ РЅРµСЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ Р±СѓРґСѓС‚ РїРѕС‚РµСЂСЏРЅС‹! РџСЂРѕРґРѕР»Р¶РёС‚СЊ?',
+    'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES) then _Reload;
 end;
 
 procedure TFEditForm._Reload;
@@ -1435,7 +1435,7 @@ begin
       tbGenSQL.Enabled := false;
       tbRefresh.Enabled := false;
       btnRefresh.Enabled := false;
-      Caption := 'Новая форма';
+      Caption := 'РќРѕРІР°СЏ С„РѕСЂРјР°';
       edFormAlias.ReadOnly := false;
       edFormAlias.Color := clWindow;
       edFormTitle.ReadOnly := false;
@@ -1463,7 +1463,7 @@ begin
       tbGenSQL.Enabled := true;
       tbRefresh.Enabled := true;
       btnRefresh.Enabled := true;
-      Caption := 'Редактирование формы';
+      Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ С„РѕСЂРјС‹';
       edFormAlias.ReadOnly := false;
       edFormAlias.Color := clWindow;
       edFormTitle.ReadOnly := false;
@@ -1491,7 +1491,7 @@ begin
       tbGenSQL.Enabled := true;
       tbRefresh.Enabled := true;
       btnRefresh.Enabled := true;
-      Caption := 'Свойства формы';
+      Caption := 'РЎРІРѕР№СЃС‚РІР° С„РѕСЂРјС‹';
       edFormAlias.ReadOnly := true;
       edFormAlias.Color := clBtnFace;
       edFormTitle.ReadOnly := true;
