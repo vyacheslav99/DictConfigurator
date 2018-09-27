@@ -213,7 +213,7 @@ begin
   case QueryType of
     qtTables:
     begin
-      // только таблицы
+      // С‚РѕР»СЊРєРѕ С‚Р°Р±Р»РёС†С‹
       case ServerType of
         stFirebird: result := 'select RDB$RELATION_NAME NAME, ''TABLE'' TYPE_ from RDB$RELATIONS where ' +
           'RDB$SYSTEM_FLAG = 0 and RDB$VIEW_BLR is null order by RDB$RELATION_NAME';
@@ -229,7 +229,7 @@ begin
     end;
     qtViews:
     begin
-      // таблицы и представления
+      // С‚Р°Р±Р»РёС†С‹ Рё РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ
       case ServerType of
         stFirebird: result := 'select RDB$RELATION_NAME NAME, (case when RDB$VIEW_BLR is null then ''TABLE'' else ''VIEW'' end) TYPE_ ' +
           'from RDB$RELATIONS where RDB$SYSTEM_FLAG = 0 order by /*TYPE_,*/ RDB$RELATION_NAME';
@@ -249,7 +249,7 @@ begin
     end;
     qtProcedures:
     begin
-      // таблицы, представления, процедуры
+      // С‚Р°Р±Р»РёС†С‹, РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ, РїСЂРѕС†РµРґСѓСЂС‹
       case ServerType of
         stFirebird: result := 'select NAME, TYPE_ from ( ' +
           'select (case when RDB$VIEW_BLR is null then 0 else 1 end) OBJ_TYPE, RDB$RELATION_NAME NAME, ' +
@@ -283,7 +283,7 @@ begin
     end;
     qtFields:
     begin
-      // поля таблицы/представления или выходные параметры процедуры
+      // РїРѕР»СЏ С‚Р°Р±Р»РёС†С‹/РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РёР»Рё РІС‹С…РѕРґРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РїСЂРѕС†РµРґСѓСЂС‹
       case ServerType of
         stFirebird: result := 'select FIELD_NAME from ( ' +
           'select RDB$FIELD_NAME FIELD_NAME, RDB$FIELD_POSITION NUM from RDB$RELATION_FIELDS ' +
@@ -302,7 +302,7 @@ begin
     end;
     qtFieldType:
     begin
-      // тип поля и др. данные по полю
+      // С‚РёРї РїРѕР»СЏ Рё РґСЂ. РґР°РЅРЅС‹Рµ РїРѕ РїРѕР»СЋ
       case ServerType of
         stFirebird: result := 'select f.RDB$FIELD_NAME FIELD_NAME, ' +
           'case ft.RDB$SYSTEM_FLAG ' +
@@ -416,7 +416,7 @@ begin
     end;
     qtProcParams:
     begin
-      // входные параметры процедуры
+      // РІС…РѕРґРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РїСЂРѕС†РµРґСѓСЂС‹
       case ServerType of
         stFirebird: result := 'select RDB$PARAMETER_NAME PARAM_NAME from RDB$PROCEDURE_PARAMETERS ' +
           'where RDB$PROCEDURE_NAME = upper(:NAME) and RDB$SYSTEM_FLAG = 0 and RDB$PARAMETER_TYPE = 0 order by RDB$PARAMETER_NUMBER';
@@ -430,7 +430,7 @@ begin
     end;
     qtPrimaryKeys:
     begin
-      // поля первичного ключа таблицы
+      // РїРѕР»СЏ РїРµСЂРІРёС‡РЅРѕРіРѕ РєР»СЋС‡Р° С‚Р°Р±Р»РёС†С‹
       case ServerType of
         stFirebird: result := 'select distinct rc.RDB$CONSTRAINT_NAME CONSTRAINT_NAME, trim(i.RDB$FIELD_NAME) FIELD_NAME ' +
           'from RDB$RELATION_CONSTRAINTS rc ' +
@@ -453,7 +453,7 @@ begin
     end;
     qtFieldForeignKeys:
     begin
-      // подробности по внешнему ключу по полю
+      // РїРѕРґСЂРѕР±РЅРѕСЃС‚Рё РїРѕ РІРЅРµС€РЅРµРјСѓ РєР»СЋС‡Сѓ РїРѕ РїРѕР»СЋ
       case ServerType of
         stFirebird: result := 'select distinct trim(e.RDB$FIELD_NAME) FIELD_NAME, c.RDB$RELATION_NAME FK_TABLE, trim(d.RDB$FIELD_NAME) FK_FIELD ' +
           'from RDB$REF_CONSTRAINTS b ' +
@@ -487,7 +487,7 @@ begin
     end;
     qtReference:
     begin
-      // список справочников
+      // СЃРїРёСЃРѕРє СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ
       case ServerType of
         stFirebird: result := 'select DESCRIPTOR_, TITLE ||  '' ['' || DESCRIPTOR_ || '']'' NAME from DYNAMIC_FORM_REFERENCE order by TITLE';
         stOracle, stPostgreSQL, stMySQL: result := '';
@@ -495,7 +495,7 @@ begin
     end;
     qtRefFields:
     begin
-      // список полей справочника: таблица.поле
+      // СЃРїРёСЃРѕРє РїРѕР»РµР№ СЃРїСЂР°РІРѕС‡РЅРёРєР°: С‚Р°Р±Р»РёС†Р°.РїРѕР»Рµ
       case ServerType of
         stFirebird: result := 'select o.NAME || ''.'' || fld.FIELD_NAME FIELD_NAME from DYNAMIC_FORM_REFERENCE r ' +
           'join DYNAMIC_FORM_FIELD fld on fld.FORM_PK = r.MAIN_FORM_PK ' +
@@ -506,7 +506,7 @@ begin
     end;
     qtRefFields2:
     begin
-      // список полей справочника: таблица/поле
+      // СЃРїРёСЃРѕРє РїРѕР»РµР№ СЃРїСЂР°РІРѕС‡РЅРёРєР°: С‚Р°Р±Р»РёС†Р°/РїРѕР»Рµ
       case ServerType of
         stFirebird: result :=
           'select o.NAME || ''/'' || fld.FIELD_NAME FIELD_NAME from DYNAMIC_FORM_REFERENCE r ' +
@@ -532,7 +532,7 @@ begin
   begin
     connParams := FSettings.ConnByDbDescr[BaseDescriptor];
     if (connParams.Host = '') or (connParams.DataBase = '') or (connParams.UserName = '') then
-      raise Exception.Create('Подключение для дескриптора "' + BaseDescriptor + '" не задано или не настроено!');
+      raise Exception.Create('РџРѕРґРєР»СЋС‡РµРЅРёРµ РґР»СЏ РґРµСЃРєСЂРёРїС‚РѕСЂР° "' + BaseDescriptor + '" РЅРµ Р·Р°РґР°РЅРѕ РёР»Рё РЅРµ РЅР°СЃС‚СЂРѕРµРЅРѕ!');
 
     result := TUniConnection.Create(FOwner);
     result.LoginPrompt := false;
@@ -589,7 +589,7 @@ var
 begin
   connParams := FSettings.ConnByIndex[ConnIndex];
   if (connParams.Host = '') or (connParams.DataBase = '') or (connParams.UserName = '') then
-    raise Exception.Create('Подключение "' + IntToStr(ConnIndex) + '" не задано или не настроено!');
+    raise Exception.Create('РџРѕРґРєР»СЋС‡РµРЅРёРµ "' + IntToStr(ConnIndex) + '" РЅРµ Р·Р°РґР°РЅРѕ РёР»Рё РЅРµ РЅР°СЃС‚СЂРѕРµРЅРѕ!');
 
   result := FindConnection(connParams.Alias, idx);
 
@@ -691,7 +691,7 @@ begin
   end;
 end;
 
-{ прочее }
+{ РїСЂРѕС‡РµРµ }
 
 function FindColumnByFieldName(Grid: TDBGridEh; FieldName: string): TColumnEh;
 var
@@ -827,7 +827,7 @@ end;
 
 function TConnectChecker.GetItem(Index: integer): TConnectionItem;
 begin
-  if (Index < 0) or (Index >= Count) then raise Exception.Create('Индекс вышел за границу массива');
+  if (Index < 0) or (Index >= Count) then raise Exception.Create('РРЅРґРµРєСЃ РІС‹С€РµР» Р·Р° РіСЂР°РЅРёС†Сѓ РјР°СЃСЃРёРІР°');
   result := FConnections[Index];
 end;
 
@@ -912,7 +912,7 @@ constructor TConnectionItem.Create(AParent: TConnectChecker; AConnection: TObjec
 begin
   inherited Create;
 
-  if not Assigned(AParent) then raise Exception.Create('Не задан параметр Parent');
+  if not Assigned(AParent) then raise Exception.Create('РќРµ Р·Р°РґР°РЅ РїР°СЂР°РјРµС‚СЂ Parent');
 
   FParent := AParent;
   PingTimer := TTimer.Create(nil);
@@ -954,7 +954,7 @@ end;
 procedure TConnectionItem.SetConnection(Value: TObject);
 begin
   if (not Assigned(Value)) or ((not (Value is TpFIBDatabase)) and (not (Value is TUniConnection))) then
-    raise Exception.Create('Connection должен быть экземпляром TpFIBDatabase или TUniConnection');
+    raise Exception.Create('Connection РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СЌРєР·РµРјРїР»СЏСЂРѕРј TpFIBDatabase РёР»Рё TUniConnection');
 
   FConnection := Value;
 
