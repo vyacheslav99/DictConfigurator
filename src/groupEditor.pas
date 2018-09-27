@@ -90,7 +90,7 @@ procedure TFGroupEditor.cbParentGroupChange(Sender: TObject);
 begin
   if (not VarIsNull(cbParentGroup.KeyValue)) and (edPk.Text <> '') and (VarToStr(cbParentGroup.KeyValue) = edPk.Text) then
   begin
-    Application.MessageBox('Нельзя в качестве контейнера выбирать самого себя!', 'Ошибка', MB_OK + MB_ICONERROR);
+    Application.MessageBox('РќРµР»СЊР·СЏ РІ РєР°С‡РµСЃС‚РІРµ РєРѕРЅС‚РµР№РЅРµСЂР° РІС‹Р±РёСЂР°С‚СЊ СЃР°РјРѕРіРѕ СЃРµР±СЏ!', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
     cbParentGroup.KeyValue := Null;
   end;
 
@@ -135,8 +135,8 @@ procedure TFGroupEditor.RegisterForm;
 begin
   case Mode of
     omAdd: ;
-    omEdit: Caption := GenCaption('Группа', 'редактирование', edPk.Text, '', edTitle.Text, false);
-    omView: Caption := GenCaption('Группа', 'просмотр', edPk.Text, '', edTitle.Text, false);
+    omEdit: Caption := GenCaption('Р“СЂСѓРїРїР°', 'СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ', edPk.Text, '', edTitle.Text, false);
+    omView: Caption := GenCaption('Р“СЂСѓРїРїР°', 'РїСЂРѕСЃРјРѕС‚СЂ', edPk.Text, '', edTitle.Text, false);
   end;
 
   FMain.RegisterChildForm(Self);
@@ -212,7 +212,7 @@ begin
   if Mode = omAdd then
     result := Caption
   else
-    result := 'Группа ' + edOrder.Text + '.' + edTitle.Text;
+    result := 'Р“СЂСѓРїРїР° ' + edOrder.Text + '.' + edTitle.Text;
 end;
 
 end.
