@@ -23,7 +23,7 @@ type
     EditingRec: TBookmark;
     BaseDescriptor: string;
     Mode: TOpenMode;
-    // свойства поля
+    // СЃРІРѕР№СЃС‚РІР° РїРѕР»СЏ
     Pk: Variant;
     Title: string;
     Order: integer;
@@ -135,7 +135,7 @@ begin
         Fields.Edit;
       end else
       begin
-        if Application.MessageBox('Редактируемая запись была удалена! Восстановить?', 'Подтверждение',
+        if Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°! Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
           MB_YESNO + MB_ICONWARNING) = ID_YES then
         begin
           Fields.Append;
@@ -152,8 +152,8 @@ begin
         Fields.FieldByName('OBJECT_PK').Value := Objects.FieldByName('PK').Value
       else begin
         try
-          // такой вариант не катит, надо искать среди всех объектов DYNAMIC_FORM_OBJECT_TREE по имени.
-          // А все потому, что поле ChildTable на самом деле может ссылаться на любой объект, даже вобще никак не связанный со справочником
+          // С‚Р°РєРѕР№ РІР°СЂРёР°РЅС‚ РЅРµ РєР°С‚РёС‚, РЅР°РґРѕ РёСЃРєР°С‚СЊ СЃСЂРµРґРё РІСЃРµС… РѕР±СЉРµРєС‚РѕРІ DYNAMIC_FORM_OBJECT_TREE РїРѕ РёРјРµРЅРё.
+          // Рђ РІСЃРµ РїРѕС‚РѕРјСѓ, С‡С‚Рѕ РїРѕР»Рµ ChildTable РЅР° СЃР°РјРѕРј РґРµР»Рµ РјРѕР¶РµС‚ СЃСЃС‹Р»Р°С‚СЊСЃСЏ РЅР° Р»СЋР±РѕР№ РѕР±СЉРµРєС‚, РґР°Р¶Рµ РІРѕР±С‰Рµ РЅРёРєР°Рє РЅРµ СЃРІСЏР·Р°РЅРЅС‹Р№ СЃРѕ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРј
           {ds := FMain.OpenSQL('select o.PK from DYNAMIC_FORM_REFERENCE r join DYNAMIC_FORM_OBJECT_TREE o on o.FORM_PK = r.MAIN_FORM_PK ' +
             'where r.PARENT_REFERENCE_PK = :PK and o.NAME = :NAME', 'PK=' + dsDictPK.AsString + #13#10 + 'NAME=' +
             mtFormFieldsOBJECT_NAME.AsString); }
@@ -240,7 +240,7 @@ begin
           Screen.Cursor := crDefault;
         end;
 
-        // параметры поля
+        // РїР°СЂР°РјРµС‚СЂС‹ РїРѕР»СЏ
         if not dsFieldKeys.IsEmpty then
         begin
           TypeName := FIELDTYPE_LookUp;
