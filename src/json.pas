@@ -26,7 +26,7 @@ type
     FKey: string;
     FIndex: integer;
     FValue: Variant;
-    FKeys: TJsonList; // массив FKeys не соответсвует массиву FValues! Он просто для хранения списка ключей
+    FKeys: TJsonList; // РјР°СЃСЃРёРІ FKeys РЅРµ СЃРѕРѕС‚РІРµС‚СЃРІСѓРµС‚ РјР°СЃСЃРёРІСѓ FValues! РћРЅ РїСЂРѕСЃС‚Рѕ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРїРёСЃРєР° РєР»СЋС‡РµР№
     FValues: TJsonArray;
     FLevel: integer;
     function FindInArray(Arr: array of string; str: string): integer;
@@ -82,10 +82,10 @@ type
 implementation
 
 const
-  AnsiCharTable: array[0..72] of string = ('\', '/', '"', '<', '>', #13#10, #9, 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж',
-    'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э',
-    'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у',
-    'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я');
+  AnsiCharTable: array[0..72] of string = ('\', '/', '"', '<', '>', #13#10, #9, 'Рђ', 'Р‘', 'Р’', 'Р“', 'Р”', 'Р•', 'РЃ', 'Р–',
+    'Р—', 'Р', 'Р™', 'Рљ', 'Р›', 'Рњ', 'Рќ', 'Рћ', 'Рџ', 'Р ', 'РЎ', 'Рў', 'РЈ', 'Р¤', 'РҐ', 'Р¦', 'Р§', 'РЁ', 'Р©', 'РЄ', 'Р«', 'Р¬', 'Р­',
+    'Р®', 'РЇ', 'Р°', 'Р±', 'РІ', 'Рі', 'Рґ', 'Рµ', 'С‘', 'Р¶', 'Р·', 'Рё', 'Р№', 'Рє', 'Р»', 'Рј', 'РЅ', 'Рѕ', 'Рї', 'СЂ', 'СЃ', 'С‚', 'Сѓ',
+    'С„', 'С…', 'С†', 'С‡', 'С€', 'С‰', 'СЉ', 'С‹', 'СЊ', 'СЌ', 'СЋ', 'СЏ');
   UniCharTable: array[0..72] of string = ('\\', '\/', '\"', '\u003c', '\u003e', '\n', '\t', '\u0410', '\u0411', '\u0412',
     '\u0413', '\u0414', '\u0415', '\u0401', '\u0416', '\u0417', '\u0418', '\u0419', '\u041a', '\u041b', '\u041c', '\u041d',
     '\u041e', '\u041f', '\u0420', '\u0421', '\u0422', '\u0423', '\u0424', '\u0425', '\u0426', '\u0427', '\u0428', '\u0429',
@@ -100,8 +100,8 @@ function TJson.Add(_type: TJsonDataType; _value: Variant; _Key: string): TJson;
 begin
   _Key := Trim(_Key);
   case FDataType of
-    jdtNull, jdtStr, jdtInt, jdtBool, jdtFloat, jdtDate: raise Exception.Create('Данный узел не может содержать дочерние узлы!');
-    jdtDict: if (_Key = '') then raise Exception.Create('Невозможно добавить узел к объекту Dict: не указан ключ!');
+    jdtNull, jdtStr, jdtInt, jdtBool, jdtFloat, jdtDate: raise Exception.Create('Р”Р°РЅРЅС‹Р№ СѓР·РµР» РЅРµ РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹!');
+    jdtDict: if (_Key = '') then raise Exception.Create('РќРµРІРѕР·РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СѓР·РµР» Рє РѕР±СЉРµРєС‚Сѓ Dict: РЅРµ СѓРєР°Р·Р°РЅ РєР»СЋС‡!');
     jdtList: ;
   end;
 
@@ -172,7 +172,7 @@ var
   i: integer;
   
 begin
-  // Source - экземпляр TJson
+  // Source - СЌРєР·РµРјРїР»СЏСЂ TJson
   if (not Assigned(Source)) or (not (Source is TJson)) then exit;
 
   Clear;
@@ -242,7 +242,7 @@ var
 begin
   if (_Index < 0) or (_Index >= Length(FValues)) then exit;
 
-  // удаление элемента
+  // СѓРґР°Р»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р°
   k := FValues[_Index].FKey;
   FValues[_Index].Free;
   for i := _Index + 1 to Length(FValues) - 1 do
@@ -250,7 +250,7 @@ begin
 
   SetLength(FValues, Length(FValues) - 1);
 
-  // если есть ключ - удалить и его
+  // РµСЃР»Рё РµСЃС‚СЊ РєР»СЋС‡ - СѓРґР°Р»РёС‚СЊ Рё РµРіРѕ
   if KeyExists(k) then DeleteKey(k);
 end;
 
@@ -261,7 +261,7 @@ var
 begin
   if not KeyExists(_Key) then exit;
 
-  // сначала удалить элемент
+  // СЃРЅР°С‡Р°Р»Р° СѓРґР°Р»РёС‚СЊ СЌР»РµРјРµРЅС‚
   n := IndexOfKey(_Key);
 
   FValues[n].Free;
@@ -270,7 +270,7 @@ begin
 
   SetLength(FValues, Length(FValues) - 1);
 
-  // теперь удалить ключ из списка
+  // С‚РµРїРµСЂСЊ СѓРґР°Р»РёС‚СЊ РєР»СЋС‡ РёР· СЃРїРёСЃРєР°
   DeleteKey(_Key);
 end;
 
@@ -481,7 +481,7 @@ begin
         FValue := StrToFloat(StringReplace(SourceString, '.', ',', []));
         FDataType := jdtFloat;
       except
-        // ничего не делаем - объект остается пустым
+        // РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј - РѕР±СЉРµРєС‚ РѕСЃС‚Р°РµС‚СЃСЏ РїСѓСЃС‚С‹Рј
         exit;
       end;
     end;
@@ -521,11 +521,11 @@ begin
       SetLength(l, 0);
     end;
     jdtStr: FValue := PyUnicodeToAnsi(ExtractInternalStr(SourceString, '"'));
-    jdtInt, jdtFloat: ; // уже установлено
+    jdtInt, jdtFloat: ; // СѓР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ
     jdtBool:
       if (AnsiLowerCase(SourceString) = 'true') then FValue := true
       else FValue := false;
-    jdtDate: ; // этот тип автоматом не определяется
+    jdtDate: ; // СЌС‚РѕС‚ С‚РёРї Р°РІС‚РѕРјР°С‚РѕРј РЅРµ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ
   end;
 end;
 
@@ -649,7 +649,7 @@ end;
 procedure TJson.SetValue(_type: TJsonDataType; _value: Variant);
 begin
   if FDataType in [jdtDict, jdtList] then
-    raise Exception.Create('Тип элемента "Dict" и "List" не может содержать простое значеие!');
+    raise Exception.Create('РўРёРї СЌР»РµРјРµРЅС‚Р° "Dict" Рё "List" РЅРµ РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РїСЂРѕСЃС‚РѕРµ Р·РЅР°С‡РµРёРµ!');
 
   FDataType := _type;
   if VarIsNull(_value) and (_type <> jdtNull) then FDataType := jdtNull;
@@ -659,7 +659,7 @@ end;
 procedure TJson.SetValue(_value: Variant);
 begin
   if FDataType in [jdtDict, jdtList] then
-    raise Exception.Create('Тип элемента "Dict" и "List" не может содержать простое значеие!');
+    raise Exception.Create('РўРёРї СЌР»РµРјРµРЅС‚Р° "Dict" Рё "List" РЅРµ РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РїСЂРѕСЃС‚РѕРµ Р·РЅР°С‡РµРёРµ!');
 
   FValue := _value;
 end;
