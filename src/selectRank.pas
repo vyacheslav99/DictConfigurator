@@ -256,9 +256,9 @@ begin
     VK_INSERT: if (Sender = dbgUnitStruct) and (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddClick(sbAdd);
     VK_F3: Find(TDBGridEh(Sender), true);
     else begin
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
-      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('А')) or (Key = Ord('а'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('Рђ')) or (Key = Ord('Р°'))) then
         Find(TDBGridEh(Sender));
     end;
   end;
@@ -288,7 +288,7 @@ begin
 
   if (not AContinue) or (DBFindDialog.cbFindText.Text = '') then
   begin
-    // если новый, то показать диалог
+    // РµСЃР»Рё РЅРѕРІС‹Р№, С‚Рѕ РїРѕРєР°Р·Р°С‚СЊ РґРёР°Р»РѕРі
     if Assigned(Grid.SelectedField) then col := Grid.FindFieldColumn(Grid.SelectedField.FieldName);
     if Assigned(col) then defCol := col.Title.Caption;
     if DBFindDialog.ShowDialog(Grid, defCol) <> mrOk then exit;
