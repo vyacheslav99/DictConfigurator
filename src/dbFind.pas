@@ -82,7 +82,7 @@ begin
   cbColumnName.Items.Clear;
 
   FieldsList.Add('*');
-  cbColumnName.Items.Add('(βρε)');
+  cbColumnName.Items.Add('(Π²ΡΠµ)');
 
   for i := 0 to Grid.Columns.Count - 1 do
   begin
