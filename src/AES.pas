@@ -36,7 +36,7 @@ type
   PAESExpandedKey192 = ^TAESExpandedKey192;
   PAESExpandedKey256 = ^TAESExpandedKey256;
 
-// процедуры-обертки для шифрования - их юзать в обычных случаях
+// РїСЂРѕС†РµРґСѓСЂС‹-РѕР±РµСЂС‚РєРё РґР»СЏ С€РёС„СЂРѕРІР°РЅРёСЏ - РёС… СЋР·Р°С‚СЊ РІ РѕР±С‹С‡РЅС‹С… СЃР»СѓС‡Р°СЏС…
 procedure EncryptAESStream(Dest, Source: TStream; Key: string; KeySizeMode: TAESKeySize);
 procedure DecryptAESStream(Dest, Source: TStream; Key: string; KeySizeMode: TAESKeySize);
 function EncryptAES(Source, Key: string; KeySizeMode: TAESKeySize): string;
@@ -2469,7 +2469,7 @@ begin
   end;
 end;
 
-// процедуры-обертки для шифрования - их юзать в обычных случаях
+// РїСЂРѕС†РµРґСѓСЂС‹-РѕР±РµСЂС‚РєРё РґР»СЏ С€РёС„СЂРѕРІР°РЅРёСЏ - РёС… СЋР·Р°С‚СЊ РІ РѕР±С‹С‡РЅС‹С… СЃР»СѓС‡Р°СЏС…
 procedure EncryptAESStream(Dest, Source: TStream; Key: string; KeySizeMode: TAESKeySize);
 var
   sz: integer;
