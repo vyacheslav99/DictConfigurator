@@ -59,8 +59,8 @@ var
   ords: array of boolean;
   
 begin
-  // false, smUpEh - по возрастанию (ASC), стрелка вверх, A->Z
-  // true, smDownEh - по убыванию (DESC), стрелка вниз, Z->A
+  // false, smUpEh - РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ (ASC), СЃС‚СЂРµР»РєР° РІРІРµСЂС…, A->Z
+  // true, smDownEh - РїРѕ СѓР±С‹РІР°РЅРёСЋ (DESC), СЃС‚СЂРµР»РєР° РІРЅРёР·, Z->A
 
   for i := 0 to ComponentCount - 1 do
     if Components[i] is TDBGridEh then
@@ -124,7 +124,7 @@ begin
   if NoMDI then FormStyle := fsNormal
   else FormStyle := fsMDIChild;
 
-  // позиция
+  // РїРѕР·РёС†РёСЏ
   Left := 1;
   Top := 1;
 
@@ -138,7 +138,7 @@ begin
   FProperties.PK := AObjectPK;
   RestoreFormState;
 
-  // параметры грида
+  // РїР°СЂР°РјРµС‚СЂС‹ РіСЂРёРґР°
   SetGridsOptions(FSettings.GridOptions);
 end;
 
@@ -237,7 +237,7 @@ begin
   if FirstProps then OldProperties.Assign(Value);
   FProperties.Assign(Value);
   FirstProps := false;
-  // у MemTableEh почему-то после такого сносит крышу и он перестает сортировать по нажатию на шапку колонки
+  // Сѓ MemTableEh РїРѕС‡РµРјСѓ-С‚Рѕ РїРѕСЃР»Рµ С‚Р°РєРѕРіРѕ СЃРЅРѕСЃРёС‚ РєСЂС‹С€Сѓ Рё РѕРЅ РїРµСЂРµСЃС‚Р°РµС‚ СЃРѕСЂС‚РёСЂРѕРІР°С‚СЊ РїРѕ РЅР°Р¶Р°С‚РёСЋ РЅР° С€Р°РїРєСѓ РєРѕР»РѕРЅРєРё
   //RestoreGridSort;
   ClearGridSort;
 end;
