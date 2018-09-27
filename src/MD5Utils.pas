@@ -19,22 +19,22 @@ type
     procedure AfterConstruction; override;
   end;
 
-  // Считает контрольную сумму файла
+  // РЎС‡РёС‚Р°РµС‚ РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ С„Р°Р№Р»Р°
   function CalcFileCheckSum(const aHandle: Integer; aSize: Integer; const aControlStr: string): string; overload;
   function CalcFileCheckSum(const aFileName, aControlStr: string): string; overload;
-  // Дописываем контрольную сумму в конец файла
+  // Р”РѕРїРёСЃС‹РІР°РµРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РІ РєРѕРЅРµС† С„Р°Р№Р»Р°
   function FileWriteCheckSum(const aHandle: Integer): string;
-  // Проверяем контрольную сумму
+  // РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ
   function FileCheckSumControl(const aHandle: Integer): Boolean;
 
 const
-  // используется только в dailymd/impstatmd
+  // РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ dailymd/impstatmd
   cSecureMD5 = '-=+SeCuRiTyMaKeWeIgHt+=-';
 
 implementation
 
 const
-  cErrorMsg = 'Функция вычисления суммы MD5 %s инициализирована.';
+  cErrorMsg = 'Р¤СѓРЅРєС†РёСЏ РІС‹С‡РёСЃР»РµРЅРёСЏ СЃСѓРјРјС‹ MD5 %s РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅР°.';
   cCheckSumLength = 32;
   cFileBlockSize = $400; //1'048'576
 
@@ -49,7 +49,7 @@ var
   i: Integer;
 begin
   if fInited then
-    raise Exception.CreateFmt(cErrorMsg, ['уже']);
+    raise Exception.CreateFmt(cErrorMsg, ['СѓР¶Рµ']);
   for i := 0 to 15 do Byte(MD5Digest[i]) := i + 1;
   MD5Init(MD5Context);
   fInited := True;
@@ -58,7 +58,7 @@ end;
 procedure TMD5Util.AddBuffer(aBuf: Pointer; aLen: Integer);
 begin
   if not fInited then
-    raise Exception.CreateFmt(cErrorMsg, ['не']);
+    raise Exception.CreateFmt(cErrorMsg, ['РЅРµ']);
   MD5UpdateBuffer(MD5Context, aBuf, aLen);
 end;
 
@@ -150,13 +150,13 @@ begin
   if aHandle = 0 then Exit;
   FileSize := FileSeek(aHandle, 0, soFromEnd);
   if FileSize <= cCheckSumLength then Exit;
-  { переместимся на первый печатный символ }
+  { РїРµСЂРµРјРµСЃС‚РёРјСЃСЏ РЅР° РїРµСЂРІС‹Р№ РїРµС‡Р°С‚РЅС‹Р№ СЃРёРјРІРѕР» }
   n := 0;
   FileSeek(aHandle, -1, soFromEnd);
   FileRead(aHandle, FChar, 1);
   while Ord(FChar) <= 32 do begin
     Inc(n);
-    { дошли до начала файла }
+    { РґРѕС€Р»Рё РґРѕ РЅР°С‡Р°Р»Р° С„Р°Р№Р»Р° }
     if n > FileSize then begin
       Result := False;
       Exit;
