@@ -144,7 +144,7 @@ begin
         begin
           ctrl := TLabel.Create(Self);
           ctrl.Parent := AParent;
-          TLabel(ctrl).Caption := 'Тут строка с данными';
+          TLabel(ctrl).Caption := 'РўСѓС‚ СЃС‚СЂРѕРєР° СЃ РґР°РЅРЅС‹РјРё';
           if LeftAlign then
           begin
             TLabel(ctrl).AutoSize := false;
@@ -265,7 +265,7 @@ begin
         begin
           ctrl := TButton.Create(Self);
           ctrl.Parent := AParent;
-          TButton(ctrl).Caption := 'Обзор...';
+          TButton(ctrl).Caption := 'РћР±Р·РѕСЂ...';
           ctrl.Height := 25;
           if LeftAlign then
           begin
@@ -286,7 +286,7 @@ begin
       ds.Next;
     end;
   except
-    on e: Exception do Application.MessageBox(pchar(e.Message), 'Ошибка', MB_OK + MB_ICONERROR);
+    on e: Exception do Application.MessageBox(pchar(e.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
   end;
   ds.Close;
   ds.Free;
@@ -390,7 +390,7 @@ begin
       end;
     end;
   except
-    on e: Exception do Application.MessageBox(pchar(e.Message), 'Ошибка', MB_OK + MB_ICONERROR);
+    on e: Exception do Application.MessageBox(pchar(e.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
   end;
 
   ds.Close;
