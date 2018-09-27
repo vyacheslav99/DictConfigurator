@@ -41,7 +41,7 @@ type
     FieldType: string;
     RawValue: Variant;
     Params: TCtrlParams;
-    // контролы
+    // РєРѕРЅС‚СЂРѕР»С‹
     ConcObj: TComboBox;
     FieldObj: TComboBox;
     ExprObj: TComboBox;
@@ -51,7 +51,7 @@ type
     FHeight: integer;
     FFontColor: TColor;
     FLabels: array of TStaticText;
-    // свойства
+    // СЃРІРѕР№СЃС‚РІР°
     procedure SetTop(val: integer);
     procedure SetValue(val: Variant);
     function GetValue: Variant;
@@ -69,7 +69,7 @@ type
     procedure CreateValueObject;
     procedure LoadFieldTypeParams(ParamsStr: string);
     function GetParamValue(ValName: string): string;
-    //реакция на события
+    //СЂРµР°РєС†РёСЏ РЅР° СЃРѕР±С‹С‚РёСЏ
     procedure ConcatObjChange(Sender: TObject);
     procedure FieldObjChange(Sender: TObject);
     procedure TypeObjChange(Sender: TObject);
@@ -174,10 +174,10 @@ function GetExpression(s: string): TExpression;
 begin
   if s = '=' then result := exEqual
   else if s = '<>' then result := exNotEqual
-  else if (UpperCase(s) = 'LIKE') or (AnsiLowerCase(s) = 'содержит') then result := exLike
-  else if (UpperCase(s) = 'NOT LIKE') or (AnsiLowerCase(s) = 'не содержит') then result := exNotLike
-  else if (UpperCase(s) = 'IN') or (AnsiLowerCase(s) = 'один из') then result := exIn
-  else if (UpperCase(s) = 'NOT IN') or (AnsiLowerCase(s) = 'не один из') then result := exNotIn
+  else if (UpperCase(s) = 'LIKE') or (AnsiLowerCase(s) = 'СЃРѕРґРµСЂР¶РёС‚') then result := exLike
+  else if (UpperCase(s) = 'NOT LIKE') or (AnsiLowerCase(s) = 'РЅРµ СЃРѕРґРµСЂР¶РёС‚') then result := exNotLike
+  else if (UpperCase(s) = 'IN') or (AnsiLowerCase(s) = 'РѕРґРёРЅ РёР·') then result := exIn
+  else if (UpperCase(s) = 'NOT IN') or (AnsiLowerCase(s) = 'РЅРµ РѕРґРёРЅ РёР·') then result := exNotIn
   else if s = '>' then result := exLarge
   else if s = '<' then result := exSmall
   else if s = '>=' then result := exEqLarge
@@ -217,8 +217,8 @@ end;
 function GetConcat(s: string): TConcat;
 begin
   result := ccAnd;
-  if (UpperCase(s) = 'OR') or (AnsiUpperCase(s) = 'ИЛИ') then result := ccOr
-  else if (UpperCase(s) = 'AND') or (AnsiUpperCase(s) = 'И') then result := ccAnd;
+  if (UpperCase(s) = 'OR') or (AnsiUpperCase(s) = 'РР›Р') then result := ccOr
+  else if (UpperCase(s) = 'AND') or (AnsiUpperCase(s) = 'Р') then result := ccAnd;
 end;
 
 { TRecordStd }
@@ -241,9 +241,9 @@ var
 
 begin
   if not Assigned(AParent) then
-    raise Exception.Create('Не удалось создать строку: отсутствует объект владелец элемента!');
+    raise Exception.Create('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ СЃС‚СЂРѕРєСѓ: РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РѕР±СЉРµРєС‚ РІР»Р°РґРµР»РµС† СЌР»РµРјРµРЅС‚Р°!');
   if not Assigned(AFields) then
-    raise Exception.Create('Не удалось создать строку: не указан список полей!');
+    raise Exception.Create('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ СЃС‚СЂРѕРєСѓ: РЅРµ СѓРєР°Р·Р°РЅ СЃРїРёСЃРѕРє РїРѕР»РµР№!');
 
   inherited Create;
 
@@ -264,7 +264,7 @@ begin
     FLabels[i] := TStaticText.Create(AParent.Owner);
     FLabels[i].Parent := AParent;
     FLabels[i].ParentFont := false;
-    FLabels[i].Transparent := false; // чтобы применялся цвет шрифта
+    FLabels[i].Transparent := false; // С‡С‚РѕР±С‹ РїСЂРёРјРµРЅСЏР»СЃСЏ С†РІРµС‚ С€СЂРёС„С‚Р°
     FLabels[i].Visible := false;
     FLabels[i].AutoSize := false;
     FLabels[i].Color := clBtnFace;
@@ -306,8 +306,8 @@ begin
     Parent := AParent;
     Left := TFTmplConstructor(Parent.Owner).lbCapConcat.Left;
     Width := TFTmplConstructor(Parent.Owner).lbCapConcat.Width;
-    Items.Add('И');
-    Items.Add('ИЛИ');
+    Items.Add('Р');
+    Items.Add('РР›Р');
     Style := csDropDownList;
     ItemIndex := Ord(ConcRule);
     Visible := true;
@@ -338,8 +338,8 @@ begin
     Parent := AParent;
     Left := TFTmplConstructor(Parent.Owner).lbCapInputType.Left;
     Width := TFTmplConstructor(Parent.Owner).lbCapInputType.Width;
-    Items.Add('Ввод значения');
-    Items.Add('Вошедший пользователь');
+    Items.Add('Р’РІРѕРґ Р·РЅР°С‡РµРЅРёСЏ');
+    Items.Add('Р’РѕС€РµРґС€РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ');
     Style := csDropDownList;
     ItemIndex := 0;
     Visible := true;
@@ -351,7 +351,7 @@ begin
     Parent := AParent;
     Left := TFTmplConstructor(Parent.Owner).lbCapExpr.Left;
     Width := TFTmplConstructor(Parent.Owner).lbCapExpr.Width;
-    Items.Add('<нет>');
+    Items.Add('<РЅРµС‚>');
     Items.Add('=');
     Items.Add('<>');
     Items.Add('LIKE');
@@ -618,9 +618,9 @@ var
   s, sql: string;
 
 begin
-  // ключевой метод: устанавливает поле и его параметры, задает значения элементов управления
-  // вызывается при установке поля пользователем в контроле со списком полей
-  // или программно из формы при парсинге существующего выражения (точнее из конструктора)
+  // РєР»СЋС‡РµРІРѕР№ РјРµС‚РѕРґ: СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РїРѕР»Рµ Рё РµРіРѕ РїР°СЂР°РјРµС‚СЂС‹, Р·Р°РґР°РµС‚ Р·РЅР°С‡РµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ
+  // РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё СѓСЃС‚Р°РЅРѕРІРєРµ РїРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РІ РєРѕРЅС‚СЂРѕР»Рµ СЃРѕ СЃРїРёСЃРєРѕРј РїРѕР»РµР№
+  // РёР»Рё РїСЂРѕРіСЂР°РјРјРЅРѕ РёР· С„РѕСЂРјС‹ РїСЂРё РїР°СЂСЃРёРЅРіРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ (С‚РѕС‡РЅРµРµ РёР· РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°)
 
   SetLength(Params, 0);
   FieldPK := Null;
@@ -903,7 +903,7 @@ end;
 
 procedure TFTmplConstructor.btnClearClick(Sender: TObject);
 begin
-  if Application.MessageBox('Удалить все строки???', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox('РЈРґР°Р»РёС‚СЊ РІСЃРµ СЃС‚СЂРѕРєРё???', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
   ClearRecords;
   ShowPreview;
 end;
@@ -1098,7 +1098,7 @@ begin
       s := Trim(s);
     end;
     
-  //теперь симыол %
+  //С‚РµРїРµСЂСЊ СЃРёРјС‹РѕР» %
   if Length(s) > 0 then
     while (s[1] = '%') do
     begin
@@ -1120,7 +1120,7 @@ end;
 function TFTmplConstructor.Execute(AFields: TMemTableEh; TmplType: TTemplateType; Tmpl: string = ''): boolean;
 begin
   if (not Assigned(AFields)) or (not AFields.Active) then
-    raise Exception.Create('Недоступен набор полей для работы с шаблонами!');
+    raise Exception.Create('РќРµРґРѕСЃС‚СѓРїРµРЅ РЅР°Р±РѕСЂ РїРѕР»РµР№ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С€Р°Р±Р»РѕРЅР°РјРё!');
 
   TemplateType := TmplType;
   FString := Tmpl;
@@ -1297,7 +1297,7 @@ begin
     end;
   except
     on e: Exception do
-      Application.MessageBox(pchar('Не удалось разобрать текущий шаблон!'#13#10 + e.Message), 'Ошибка', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar('РќРµ СѓРґР°Р»РѕСЃСЊ СЂР°Р·РѕР±СЂР°С‚СЊ С‚РµРєСѓС‰РёР№ С€Р°Р±Р»РѕРЅ!'#13#10 + e.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
   end;
 
   conditions.Free;
@@ -1332,7 +1332,7 @@ begin
   s := StringReplace(StringReplace(s, '<?', #3, [rfReplaceAll]), '?>', #4, [rfReplaceAll]);
   while i <= Length(s) do
   begin
-    if s[i] = #39 then //одинарная кавычка или символ экранирования'
+    if s[i] = #39 then //РѕРґРёРЅР°СЂРЅР°СЏ РєР°РІС‹С‡РєР° РёР»Рё СЃРёРјРІРѕР» СЌРєСЂР°РЅРёСЂРѕРІР°РЅРёСЏ'
       bracket := not bracket;
     if (not bracket) and ((s[i] = '=') or (s[i] = '<') or (s[i] = '>')) then
     begin
