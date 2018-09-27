@@ -107,8 +107,8 @@ begin
   for i := 0 to Length(RecordsBase) - 1 do
     if RecordsBase[i].Used then result.Add(RecordsBase[i].GetValue);
 
-  // из-за составных лукап полей в result-е может оказаться одна строка, содержащая #13#10,
-  // которую надо разделить на 2 строки таким вот способом (как ни странно - это работает)
+  // РёР·-Р·Р° СЃРѕСЃС‚Р°РІРЅС‹С… Р»СѓРєР°Рї РїРѕР»РµР№ РІ result-Рµ РјРѕР¶РµС‚ РѕРєР°Р·Р°С‚СЊСЃСЏ РѕРґРЅР° СЃС‚СЂРѕРєР°, СЃРѕРґРµСЂР¶Р°С‰Р°СЏ #13#10,
+  // РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ СЂР°Р·РґРµР»РёС‚СЊ РЅР° 2 СЃС‚СЂРѕРєРё С‚Р°РєРёРј РІРѕС‚ СЃРїРѕСЃРѕР±РѕРј (РєР°Рє РЅРё СЃС‚СЂР°РЅРЅРѕ - СЌС‚Рѕ СЂР°Р±РѕС‚Р°РµС‚)
   s := result.Text;
   result.Text := s;
 end;
@@ -119,7 +119,7 @@ var
 
 begin
   if (not Assigned(AGrid)) or (not Assigned(AGrid.DataSource)) or (not Assigned(AGrid.DataSource.DataSet)) then
-    raise Exception.Create('Отсутствует набор данных!');
+    raise Exception.Create('РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РЅР°Р±РѕСЂ РґР°РЅРЅС‹С…!');
 
   SetGrid(AGrid);
   for i := 0 to ScrollBox.ComponentCount - 1 do
@@ -240,7 +240,7 @@ var
 
 begin
   if (not Assigned(AColumn)) or (not Assigned(AColumn.Field)) then
-    raise Exception.Create('Не привязана колонка или поле к колонке!');
+    raise Exception.Create('РќРµ РїСЂРёРІСЏР·Р°РЅР° РєРѕР»РѕРЅРєР° РёР»Рё РїРѕР»Рµ Рє РєРѕР»РѕРЅРєРµ!');
 
   asf := nil;
   SetColumn(AColumn);
