@@ -5392,9 +5392,9 @@ object FEditDict: TFEditDict
     SelectSQL.Strings = (
       
         'select PK, OWNER_USER_PK, TITLE, ALIAS_FORM, CREATE_, MODIFY, WI' +
-        'DTH, HEIGHT, LEFT_ALIGN, LABEL_WIDTH'
-      'from DYNAMIC_FORM'
-      'where PK = :PK')
+        'DTH, HEIGHT, LEFT_ALIGN, '
+      '  LABEL_WIDTH, coalesce(GUID, uuid_to_char(gen_uuid())) GUID'
+      'from DYNAMIC_FORM where PK = :PK')
     Transaction = FMain.Transact
     Database = FMain.Database
     Left = 112
@@ -5434,6 +5434,11 @@ object FEditDict: TFEditDict
     object dsFormLABEL_WIDTH: TFIBIntegerField
       FieldName = 'LABEL_WIDTH'
     end
+    object dsFormGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsFormFields: TpFIBDataSet
     SelectSQL.Strings = (
@@ -5449,7 +5454,9 @@ object FEditDict: TFEditDict
       
         '  f.STYLE_COLUMN, f.EDIT_IN_TABLE, f.SHOW_IN_GROUP_EDIT, f.EXCEL' +
         '_IMPORT, f.MATCH, f.LOCKED, f.GROUP_PK,'
-      '  o.NAME OBJECT_NAME, f.FILTER_GROUP'
+      
+        '  o.NAME OBJECT_NAME, f.FILTER_GROUP, coalesce(f.GUID, uuid_to_c' +
+        'har(gen_uuid())) GUID'
       'from DYNAMIC_FORM_FIELD f'
       '  left join DYNAMIC_FORM_OBJECT_TREE o on o.PK = f.OBJECT_PK'
       'where f.FORM_PK = :FORM_PK'
@@ -5572,6 +5579,11 @@ object FEditDict: TFEditDict
     end
     object dsFormFieldsFILTER_GROUP: TFIBIntegerField
       FieldName = 'FILTER_GROUP'
+    end
+    object dsFormFieldsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object dsoFormFields: TDataSource
@@ -5716,6 +5728,10 @@ object FEditDict: TFEditDict
       Size = 300
       Lookup = True
     end
+    object mtFormFieldsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object qEditField: TpFIBQuery
     Transaction = FMain.Transact
@@ -5735,7 +5751,8 @@ object FEditDict: TFEditDict
         'ILTER, SHOW_IN_START_FORM,'
       
         '  STYLE_COLUMN, EDIT_IN_TABLE, SHOW_IN_GROUP_EDIT, EXCEL_IMPORT,' +
-        ' MATCH, LOCKED, MODIFY, FILTER_GROUP)'
+        ' MATCH, LOCKED, MODIFY, '
+      '  FILTER_GROUP, GUID)'
       
         'values (:PK, :OWNER_USER_PK, :GROUP_PK, :GROUP_COLUMN, :OBJECT_P' +
         'K, :ORDER_, :TITLE,'
@@ -5750,7 +5767,8 @@ object FEditDict: TFEditDict
         'M, :STYLE_COLUMN,'
       
         '  :EDIT_IN_TABLE, :SHOW_IN_GROUP_EDIT, :EXCEL_IMPORT, :MATCH, :L' +
-        'OCKED, current_timestamp, :FILTER_GROUP)'
+        'OCKED, current_timestamp, '
+      '  :FILTER_GROUP, :GUID)'
       'matching (PK)')
     Left = 416
     Top = 235
@@ -5763,7 +5781,9 @@ object FEditDict: TFEditDict
       
         '  STYLE_INTERNAL, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBL' +
         'E, COLLAPSED, LEFT_ALIGN,'
-      '  LABEL_WIDTH, CREATE_'
+      
+        '  LABEL_WIDTH, CREATE_, coalesce(GUID, uuid_to_char(gen_uuid()))' +
+        ' GUID'
       'from DYNAMIC_FORM_FIELD_GROUP'
       'where FORM_PK = :FORM_PK'
       'order by ORDER_')
@@ -5834,6 +5854,11 @@ object FEditDict: TFEditDict
     end
     object dsGroupsCREATE_: TFIBDateTimeField
       FieldName = 'CREATE_'
+    end
+    object dsGroupsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtGroups: TMemTableEh
@@ -5913,6 +5938,10 @@ object FEditDict: TFEditDict
     object mtGroupsCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtGroupsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoGroups: TDataSource
     DataSet = mtGroups
@@ -5956,14 +5985,14 @@ object FEditDict: TFEditDict
         'AL, CREATE_, MODIFY, IS_VISIBLE,'
       
         '  COLUMN_, STYLE_COLUMNS, ADD_VISIBLE, COLLAPSED, LEFT_ALIGN, LA' +
-        'BEL_WIDTH)'
+        'BEL_WIDTH, GUID)'
       
         'values (:PK, :PARENT_PK, :OWNER_USER_PK, :FORM_PK, :ORDER_, :TIT' +
         'LE, :DESCRIPTION, :COUNT_COLUMN,'
       
         '  :STYLE_EXTERNAL, :STYLE_INTERNAL, :CREATE_, :MODIFY, :IS_VISIB' +
         'LE, :COLUMN_, :STYLE_COLUMNS,'
-      '  :ADD_VISIBLE, :COLLAPSED, :LEFT_ALIGN, :LABEL_WIDTH)'
+      '  :ADD_VISIBLE, :COLLAPSED, :LEFT_ALIGN, :LABEL_WIDTH, :GUID)'
       'matching (PK)')
     Left = 448
     Top = 235
@@ -5984,7 +6013,8 @@ object FEditDict: TFEditDict
         ', USE_MEM, COUNT_ON_PAGE,'
       
         '  DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILT' +
-        'ER_BOUND, CHECK_SELECT'
+        'ER_BOUND, CHECK_SELECT,'
+      '  coalesce(GUID, uuid_to_char(gen_uuid())) GUID'
       'from DYNAMIC_FORM_REFERENCE'
       'where PK = :PK')
     Transaction = FMain.Transact
@@ -6115,13 +6145,19 @@ object FEditDict: TFEditDict
     object dsDictCHECK_SELECT: TFIBIntegerField
       FieldName = 'CHECK_SELECT'
     end
+    object dsDictGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsObjectTree: TpFIBDataSet
     SelectSQL.Strings = (
       
         'select PK, OWNER_USER_PK, TITLE, NAME, OBJECT_TYPE, JOIN_PARENT_' +
         'PK,'
-      '  IS_MULTI_JOIN, JOIN_FIELDS, PARAMETERS, DELETED, INNER_JOIN'
+      '  IS_MULTI_JOIN, JOIN_FIELDS, PARAMETERS, DELETED, INNER_JOIN, '
+      '  coalesce(GUID, uuid_to_char(gen_uuid())) GUID'
       'from DYNAMIC_FORM_OBJECT_TREE '
       'where FORM_PK = :FORM_PK'
       'order by PK')
@@ -6174,6 +6210,11 @@ object FEditDict: TFEditDict
     end
     object dsObjectTreeINNER_JOIN: TFIBIntegerField
       FieldName = 'INNER_JOIN'
+    end
+    object dsObjectTreeGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object dsParentDicts: TpFIBDataSet
@@ -6342,6 +6383,10 @@ object FEditDict: TFEditDict
     object mtObjectTreeINNER_JOIN: TIntegerField
       FieldName = 'INNER_JOIN'
     end
+    object mtObjectTreeGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
     object mtObjectTreeCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
@@ -6462,13 +6507,13 @@ object FEditDict: TFEditDict
       
         '  OBJECT_TYPE, FORM_PK, JOIN_PARENT_PK, IS_MULTI_JOIN, JOIN_FIEL' +
         'DS, PARAMETERS,'
-      '  DELETED, INNER_JOIN, MODIFY)'
+      '  DELETED, INNER_JOIN, MODIFY, GUID)'
       
         'values (:PK, :OWNER_USER_PK, :TITLE, :NAME, :OBJECT_TYPE, :FORM_' +
         'PK, :JOIN_PARENT_PK,'
       
         '  :IS_MULTI_JOIN, :JOIN_FIELDS, :PARAMETERS, :DELETED, :INNER_JO' +
-        'IN, current_timestamp)'
+        'IN, current_timestamp, :GUID)'
       'matching (PK)')
     Left = 384
     Top = 235
@@ -6477,9 +6522,9 @@ object FEditDict: TFEditDict
     SelectSQL.Strings = (
       
         'select PK, OWNER_USER_PK, TITLE, ALIAS_FORM, CREATE_, MODIFY, WI' +
-        'DTH, HEIGHT, LEFT_ALIGN, LABEL_WIDTH'
-      'from DYNAMIC_FORM'
-      'where PK = :PK')
+        'DTH, HEIGHT, LEFT_ALIGN, '
+      '  LABEL_WIDTH, coalesce(GUID, uuid_to_char(gen_uuid())) GUID'
+      'from DYNAMIC_FORM where PK = :PK')
     Transaction = FMain.Transact
     Database = FMain.Database
     Left = 144
@@ -6519,6 +6564,11 @@ object FEditDict: TFEditDict
     object dsStartFormLABEL_WIDTH: TFIBIntegerField
       FieldName = 'LABEL_WIDTH'
     end
+    object dsStartFormGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object mtInputParams: TMemTableEh
     Params = <>
@@ -6544,9 +6594,9 @@ object FEditDict: TFEditDict
     SelectSQL.Strings = (
       
         'select PK, OWNER_USER_PK, TITLE, ALIAS_FORM, CREATE_, MODIFY, WI' +
-        'DTH, HEIGHT, LEFT_ALIGN, LABEL_WIDTH'
-      'from DYNAMIC_FORM'
-      'where PK = :PK')
+        'DTH, HEIGHT, LEFT_ALIGN, '
+      '  LABEL_WIDTH, coalesce(GUID, uuid_to_char(gen_uuid())) GUID'
+      'from DYNAMIC_FORM where PK = :PK')
     Transaction = FMain.Transact
     Database = FMain.Database
     Left = 176
@@ -6586,13 +6636,20 @@ object FEditDict: TFEditDict
     object dsGrEditFormLABEL_WIDTH: TFIBIntegerField
       FieldName = 'LABEL_WIDTH'
     end
+    object dsGrEditFormGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsPermRoles: TpFIBDataSet
     SelectSQL.Strings = (
       
         'select p.PK, p.ROLE_PK, r.NAME ROLE_NAME, p.ADD_, p.EDIT_, p.DEL' +
         '_, p.VIEW_REF, p.CONFIG_, p.VIEW_,'
-      '  p.EXPORT, p.IMPORT, p.GRID_SAVE'
+      
+        '  p.EXPORT, p.IMPORT, p.GRID_SAVE, coalesce(p.GUID, uuid_to_char' +
+        '(gen_uuid())) GUID'
       'from DYNAMIC_FORM_PERMISSIONS p'
       '  join ROLES r on r.PK = p.ROLE_PK'
       'where p.REFERENCE_PK = :REF_PK'
@@ -6639,6 +6696,11 @@ object FEditDict: TFEditDict
     end
     object dsPermRolesGRID_SAVE: TFIBIntegerField
       FieldName = 'GRID_SAVE'
+    end
+    object dsPermRolesGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtPermRoles: TMemTableEh
@@ -6692,6 +6754,10 @@ object FEditDict: TFEditDict
     object mtPermRolesGRID_SAVE: TIntegerField
       FieldName = 'GRID_SAVE'
     end
+    object mtPermRolesGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
     object mtPermRolesCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
@@ -6739,11 +6805,11 @@ object FEditDict: TFEditDict
       
         'update or insert into DYNAMIC_FORM_PERMISSIONS (PK, REFERENCE_PK' +
         ', ROLE_PK, ADD_, EDIT_, DEL_, '
-      '  VIEW_REF, VIEW_, CONFIG_, EXPORT, IMPORT, GRID_SAVE)'
+      '  VIEW_REF, VIEW_, CONFIG_, EXPORT, IMPORT, GRID_SAVE, GUID)'
       
         'values (:PK, :REFERENCE_PK, :ROLE_PK, :ADD_, :EDIT_, :DEL_, :VIE' +
         'W_REF, :VIEW_, :CONFIG_,'
-      '  :EXPORT, :IMPORT, :GRID_SAVE)'
+      '  :EXPORT, :IMPORT, :GRID_SAVE, :GUID)'
       'matching (PK)')
     Left = 480
     Top = 235
@@ -6753,7 +6819,9 @@ object FEditDict: TFEditDict
       
         'select p.PK, p.ROLE_PK, u.NAME ROLE_NAME, p.ADD_, p.EDIT_, p.DEL' +
         '_, p.VIEW_REF, p.CONFIG_, p.VIEW_,'
-      '  p.EXPORT, p.IMPORT, p.GRID_SAVE'
+      
+        '  p.EXPORT, p.IMPORT, p.GRID_SAVE, coalesce(p.GUID, uuid_to_char' +
+        '(gen_uuid())) GUID'
       'from DYNAMIC_FORM_PERM_RANKS p'
       '  join UNIT_STRUCT u on u.PK = p.ROLE_PK'
       'where p.REFERENCE_PK = :REF_PK'
@@ -6801,6 +6869,11 @@ object FEditDict: TFEditDict
     object dsPermRanksGRID_SAVE: TFIBIntegerField
       FieldName = 'GRID_SAVE'
     end
+    object dsPermRanksGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object mtPermRanks: TMemTableEh
     Params = <>
@@ -6847,6 +6920,10 @@ object FEditDict: TFEditDict
     object mtPermRanksGRID_SAVE: TIntegerField
       FieldName = 'GRID_SAVE'
     end
+    object mtPermRanksGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
     object mtPermRanksCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
@@ -6877,11 +6954,11 @@ object FEditDict: TFEditDict
       
         'update or insert into DYNAMIC_FORM_PERM_RANKS (PK, REFERENCE_PK,' +
         ' ROLE_PK, ADD_, EDIT_, DEL_, '
-      '  VIEW_REF, VIEW_, CONFIG_, EXPORT, IMPORT, GRID_SAVE)'
+      '  VIEW_REF, VIEW_, CONFIG_, EXPORT, IMPORT, GRID_SAVE, GUID)'
       
         'values (:PK, :REFERENCE_PK, :ROLE_PK, :ADD_, :EDIT_, :DEL_, :VIE' +
         'W_REF, :VIEW_, :CONFIG_,'
-      '  :EXPORT, :IMPORT, :GRID_SAVE)'
+      '  :EXPORT, :IMPORT, :GRID_SAVE, :GUID)'
       'matching (PK)')
     Left = 512
     Top = 235
@@ -6927,7 +7004,8 @@ object FEditDict: TFEditDict
         '_FIELD,'
       
         '  c.ADDITIONAL_FIELD_ROTATE, c.Y_TITLE, c.GROUP_PK, c.GROUP_ORDE' +
-        'R'
+        'R, '
+      '  coalesce(c.GUID, uuid_to_char(gen_uuid())) GUID'
       'from DYNAMIC_FORM_CHARTS c'
       '  join DYNAMIC_FORM_FIELD xf on xf.PK = c.X_FIELD_PK'
       '  join DYNAMIC_FORM_OBJECT_TREE xo on xo.PK = xf.OBJECT_PK'
@@ -7011,6 +7089,11 @@ object FEditDict: TFEditDict
     end
     object dsChartGROUP_ORDER: TFIBIntegerField
       FieldName = 'GROUP_ORDER'
+    end
+    object dsChartGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtChart: TMemTableEh
@@ -7107,6 +7190,10 @@ object FEditDict: TFEditDict
     object mtChartGROUP_ORDER: TIntegerField
       FieldName = 'GROUP_ORDER'
     end
+    object mtChartGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
     object mtChartCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
@@ -7126,21 +7213,24 @@ object FEditDict: TFEditDict
       
         '  GROUP_FUNCTION, SERIES_DIF, TITLE, CHART_TYPE, ORDER_, X_AXIS_' +
         'ROTATE, ADDITIONAL_FIELD,'
-      '  ADDITIONAL_FIELD_ROTATE, Y_TITLE, GROUP_PK, GROUP_ORDER)'
+      '  ADDITIONAL_FIELD_ROTATE, Y_TITLE, GROUP_PK, GROUP_ORDER, GUID)'
       
         'values (:PK, :REFERENC_PK, :X_FIELD_PK, :Y_FIELD_PK, :GROUP_FUNC' +
         'TION, :SERIES_DIF, :TITLE,'
       
         '  :CHART_TYPE, :ORDER_, :X_AXIS_ROTATE, :ADDITIONAL_FIELD, :ADDI' +
         'TIONAL_FIELD_ROTATE, :Y_TITLE,'
-      '  :GROUP_PK, :GROUP_ORDER)'
+      '  :GROUP_PK, :GROUP_ORDER, :GUID)'
       'matching (PK)')
     Left = 544
     Top = 235
   end
   object dsChartGroup: TpFIBDataSet
     SelectSQL.Strings = (
-      'select PK, TITLE, ORIENTATION from DYNAMIC_FORM_CHART_GROUPS'
+      
+        'select PK, TITLE, ORIENTATION, coalesce(GUID, uuid_to_char(gen_u' +
+        'uid())) GUID'
+      'from DYNAMIC_FORM_CHART_GROUPS'
       'where REFERENCE_PK = :REF_PK')
     Transaction = FMain.Transact
     Database = FMain.Database
@@ -7157,6 +7247,11 @@ object FEditDict: TFEditDict
     end
     object dsChartGroupORIENTATION: TFIBStringField
       FieldName = 'ORIENTATION'
+      EmptyStrToNull = True
+    end
+    object dsChartGroupGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
@@ -7179,6 +7274,10 @@ object FEditDict: TFEditDict
     object mtChartGroupCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtChartGroupGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoChartGroup: TDataSource
     DataSet = mtChartGroup
@@ -7191,8 +7290,8 @@ object FEditDict: TFEditDict
     SQL.Strings = (
       
         'update or insert into DYNAMIC_FORM_CHART_GROUPS (PK, REFERENCE_P' +
-        'K, TITLE, ORIENTATION)'
-      'values (:PK, :REFERENCE_PK, :TITLE, :ORIENTATION)'
+        'K, TITLE, ORIENTATION, GUID)'
+      'values (:PK, :REFERENCE_PK, :TITLE, :ORIENTATION, :GUID)'
       'matching (PK)')
     Left = 576
     Top = 235
@@ -7201,7 +7300,8 @@ object FEditDict: TFEditDict
     SelectSQL.Strings = (
       
         'select g.PK, g.TITLE, g.REFERENCE_PK, r.DESCRIPTOR_, r.TITLE REF' +
-        '_TITLE'
+        '_TITLE, '
+      '  coalesce(g.GUID, uuid_to_char(gen_uuid())) GUID'
       'from DYNAMIC_FORM_CHART_GROUPS g'
       '  join DYNAMIC_FORM_REFERENCE r on r.PK = g.REFERENCE_PK'
       '-- where REFERENCE_PK = :REF_PK')
@@ -7231,6 +7331,11 @@ object FEditDict: TFEditDict
       Size = 255
       EmptyStrToNull = True
     end
+    object dsChartGroupsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object pmGrid: TPopupMenu
     Left = 200
@@ -7251,7 +7356,10 @@ object FEditDict: TFEditDict
   end
   object dsFilterConfig: TpFIBDataSet
     SelectSQL.Strings = (
-      'select PK, NAME, FILTER_VALUE from DYNAMIC_FORM_FILTER_CONFIG'
+      
+        'select PK, NAME, FILTER_VALUE, coalesce(GUID, uuid_to_char(gen_u' +
+        'uid())) GUID'
+      'from DYNAMIC_FORM_FILTER_CONFIG'
       'where REF_PK = :REF_PK')
     Transaction = FMain.Transact
     Database = FMain.Database
@@ -7269,6 +7377,11 @@ object FEditDict: TFEditDict
     object dsFilterConfigFILTER_VALUE: TFIBStringField
       FieldName = 'FILTER_VALUE'
       Size = 5000
+      EmptyStrToNull = True
+    end
+    object dsFilterConfigGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
@@ -7293,6 +7406,10 @@ object FEditDict: TFEditDict
     object mtFilterConfigCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtFilterConfigGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoFilterConfig: TDataSource
     DataSet = mtFilterConfig
@@ -7305,8 +7422,8 @@ object FEditDict: TFEditDict
     SQL.Strings = (
       
         'update or insert into DYNAMIC_FORM_FILTER_CONFIG (PK, NAME, REF_' +
-        'PK, FILTER_VALUE)'
-      'values (:PK, :NAME, :REF_PK, :FILTER_VALUE)'
+        'PK, FILTER_VALUE, GUID)'
+      'values (:PK, :NAME, :REF_PK, :FILTER_VALUE, :GUID)'
       'matching (PK)')
     Left = 608
     Top = 235
@@ -7318,15 +7435,16 @@ object FEditDict: TFEditDict
         ' '#39#1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1079#1072#1076#1077#1081#1089#1090#1074#1086#1074#1072#1085#39' end TYPE_NAME,'
       
         '  PK, NAME, SCEN_TYPE, DESCRIPTOR_, NO_MES, REF_PK, REF_DESCRIPT' +
-        'OR, TITLE from ('
+        'OR, TITLE, coalesce(GUID, uuid_to_char(gen_uuid())) GUID'
+      'from ('
       
         'select 0 TYPE_, PK, NAME, SCEN_TYPE, DESCRIPTOR_, NO_MES, REF_PK' +
-        ', null REF_DESCRIPTOR, null TITLE from WIZARD_SCENS'
+        ', null REF_DESCRIPTOR, null TITLE, GUID from WIZARD_SCENS'
       'where REF_PK = :REF_PK'
       'union'
       
         'select 1 TYPE_, s.PK, s.NAME, s.SCEN_TYPE, s.DESCRIPTOR_, s.NO_M' +
-        'ES, s.REF_PK, r.DESCRIPTOR_ REF_DESCRIPTOR, r.TITLE'
+        'ES, s.REF_PK, r.DESCRIPTOR_ REF_DESCRIPTOR, r.TITLE, s.GUID'
       'from WIZARD_SATES st'
       '  join WIZARD_SCENS s on s.PK = st.SCEN_PK'
       '  join DYNAMIC_FORM_REFERENCE r on r.MAIN_FORM_PK = st.FORM_PK'
@@ -7380,6 +7498,11 @@ object FEditDict: TFEditDict
       Size = 255
       EmptyStrToNull = True
     end
+    object dsWizardGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsoWizard: TDataSource
     DataSet = dsWizard
@@ -7405,7 +7528,9 @@ object FEditDict: TFEditDict
       
         'select ID_EV, ID_DF_REFERENCE, TITLE_EV, EVENT_REFERENCE, POSITI' +
         'ON_EV, IMAGE_NAME_EV, VIEW_TO_MENU,'
-      '  CLASS_NAME, IS_VIZARD, ALIAS_DF, LINK_METHOD'
+      
+        '  CLASS_NAME, IS_VIZARD, ALIAS_DF, LINK_METHOD, coalesce(GUID, u' +
+        'uid_to_char(gen_uuid())) GUID'
       'from DYNAMIC_FORM_OTHER_EVENT'
       'where ID_DF_REFERENCE = :REF_PK'
       'order by POSITION_EV, TITLE_EV')
@@ -7455,6 +7580,11 @@ object FEditDict: TFEditDict
     object dsOtherEventsLINK_METHOD: TFIBStringField
       FieldName = 'LINK_METHOD'
       Size = 256
+      EmptyStrToNull = True
+    end
+    object dsOtherEventsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
@@ -7534,6 +7664,10 @@ object FEditDict: TFEditDict
     end
     object mtOtherEventsID_DF_REFERENCE: TIntegerField
       FieldName = 'ID_DF_REFERENCE'
+    end
+    object mtOtherEventsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
     end
   end
   object dsoOtherEvents: TDataSource
@@ -7657,13 +7791,13 @@ object FEditDict: TFEditDict
         'ERENCE, TITLE_EV, EVENT_REFERENCE,'
       
         '  POSITION_EV, IMAGE_NAME_EV, VIEW_TO_MENU, CLASS_NAME, IS_VIZAR' +
-        'D, ALIAS_DF, LINK_METHOD)'
+        'D, ALIAS_DF, LINK_METHOD, GUID)'
       
         'values (:ID_EV, :ID_DF_REFERENCE, :TITLE_EV, :EVENT_REFERENCE, :' +
         'POSITION_EV, :IMAGE_NAME_EV,'
       
         '  :VIEW_TO_MENU, :CLASS_NAME, :IS_VIZARD, :ALIAS_DF, :LINK_METHO' +
-        'D)'
+        'D, :GUID)'
       'matching (ID_EV)')
     Left = 640
     Top = 235
@@ -7671,8 +7805,9 @@ object FEditDict: TFEditDict
   object dsFilterGroup: TpFIBDataSet
     SelectSQL.Strings = (
       
-        'select PK, TITLE, ORDER_, COLLAPSED from DYNAMIC_FORM_FILTER_GRO' +
-        'UP'
+        'select PK, TITLE, ORDER_, COLLAPSED, coalesce(GUID, uuid_to_char' +
+        '(gen_uuid())) GUID'
+      'from DYNAMIC_FORM_FILTER_GROUP'
       'where FORM_PK = :FORM_PK')
     Transaction = FMain.Transact
     Database = FMain.Database
@@ -7693,6 +7828,11 @@ object FEditDict: TFEditDict
     object dsFilterGroupCOLLAPSED: TFIBStringField
       FieldName = 'COLLAPSED'
       Size = 1
+      EmptyStrToNull = True
+    end
+    object dsFilterGroupGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
@@ -7719,6 +7859,10 @@ object FEditDict: TFEditDict
     object mtFilterGroupCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtFilterGroupGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoFilterGroup: TDataSource
     DataSet = mtFilterGroup
@@ -7731,10 +7875,10 @@ object FEditDict: TFEditDict
     SQL.Strings = (
       
         'update or insert into DYNAMIC_FORM_FILTER_GROUP (PK, FORM_PK, TI' +
-        'TLE, ORDER_, COLLAPSED, OWNER_USER_PK)'
+        'TLE, ORDER_, COLLAPSED, OWNER_USER_PK, GUID)'
       
         'values (:PK, :FORM_PK, :TITLE, :ORDER_, :COLLAPSED, :OWNER_USER_' +
-        'PK)'
+        'PK, :GUID)'
       'matching (PK)')
     Left = 672
     Top = 235
@@ -7763,7 +7907,8 @@ object FEditDict: TFEditDict
   end
   object dsPostFilter: TpFIBDataSet
     SelectSQL.Strings = (
-      'select f.PK, f.FILTER_CONFIG_PK, f.POST_PK, u.NAME POST_NAME'
+      'select f.PK, f.FILTER_CONFIG_PK, f.POST_PK, u.NAME POST_NAME, '
+      '  coalesce(f.GUID, uuid_to_char(gen_uuid())) GUID'
       'from DYNAMIC_FROM_POST_FILTER f'
       '  join DYNAMIC_FORM_FILTER_CONFIG c on c.PK = f.FILTER_CONFIG_PK'
       '  join UNIT_STRUCT u on u.PK = f.POST_PK'
@@ -7786,6 +7931,11 @@ object FEditDict: TFEditDict
     object dsPostFilterPOST_NAME: TFIBStringField
       FieldName = 'POST_NAME'
       Size = 255
+      EmptyStrToNull = True
+    end
+    object dsPostFilterGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
@@ -7811,6 +7961,10 @@ object FEditDict: TFEditDict
     object mtPostFilterCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtPostFilterGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoPostFilter: TDataSource
     DataSet = mtPostFilter
@@ -7821,8 +7975,10 @@ object FEditDict: TFEditDict
     Transaction = FMain.Transact
     Database = FMain.Database
     SQL.Strings = (
-      'insert into DYNAMIC_FROM_POST_FILTER (POST_PK, FILTER_CONFIG_PK)'
-      'values (:POST_PK, :FILTER_CONFIG_PK)')
+      
+        'insert into DYNAMIC_FROM_POST_FILTER (POST_PK, FILTER_CONFIG_PK,' +
+        ' GUID)'
+      'values (:POST_PK, :FILTER_CONFIG_PK, :GUID)')
     Left = 704
     Top = 235
   end
