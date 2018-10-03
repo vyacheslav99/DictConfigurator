@@ -160,6 +160,10 @@ type
     AExportToCsv: TAction;
     Excel1: TMenuItem;
     csv1: TMenuItem;
+    dsFormFieldsGUID: TFIBStringField;
+    dsGroupsGUID: TFIBStringField;
+    mtFormFieldsGUID: TStringField;
+    mtGroupsGUID: TStringField;
     procedure mtFormFieldsAfterInsert(DataSet: TDataSet);
     procedure mtFormFieldsBeforeDelete(DataSet: TDataSet);
     procedure mtFormFieldsBeforePost(DataSet: TDataSet);
@@ -203,6 +207,7 @@ type
     RequestProcParams: boolean;
     DeletedFields: TStringList;
     DeletedGroups: TStringList;
+    FormGUID: string;
     constructor Create(ADictForm: TChildForm; AOwner: TComponent);
     destructor Destroy; override;
     procedure OnGroupEditorClose(Sender: TObject; var Action: TCloseAction);
@@ -758,6 +763,7 @@ begin
       raise Exception.Create('Не все обязательные поля заполнены!');
 
     mtFormFieldsCHANGED.AsBoolean := true;
+    if mtFormFieldsGUID.IsNull then mtFormFieldsGUID.AsString := CreateGuid;
   end;
 end;
 
@@ -789,6 +795,7 @@ begin
   begin
     if mtGroupsTITLE.IsNull then raise Exception.Create('Не все обязательные поля заполнены!');
     mtGroupsCHANGED.AsBoolean := true;
+    if mtGroupsGUID.IsNull then mtGroupsGUID.AsString := CreateGuid;
   end;
 end;
 
