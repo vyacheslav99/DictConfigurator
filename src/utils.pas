@@ -54,6 +54,10 @@ const
   DBDESC_FB_ENS = 'ens';}
   DEF_DBDESCRIPTORS = DBDESC_FB + #13#10'oracle'#13#10'ens';
 
+  GUID_WARNING = 'Невозможно собрать скрипт изменений, так как некоторые объекты конфигурации не имеют GUID! '#13#10 +
+    'Чтобы можно было пользоваться данной возможностью, сначала необходимо выгрузить полный скрипт создания конфигурации '#13#10 +
+    'и накатить его на ВСЕ базы данных (в том числе и на ту, откуда он был выгружен).';
+
 type
   TFindOption = (foMatchCase, foToExistence, foWholeString, foAnyWord, foAllWords);
   TFindOptions = set of TFindOption;
@@ -198,6 +202,7 @@ function FormatNum(num: integer): string; overload;
 function GenRandString(genrule, vlength: integer): string;
 function AnsiToDos(AnsiStr: string): string;
 function TextToString(Text: string; Decorator: string = ''; Delimiter: string = ','): string;
+function ArrayToString(arr: array of string; Decorator: string = ''; Delimiter: string = ','): string;
 function SplitLongString(str: string; Delim: char; sz: integer): TStringList;
 procedure SplitPathByHost(var Path: string; var Host: string);
 function FindInArray(Arr: array of string; str: string): integer;
@@ -216,6 +221,7 @@ function FindInGrid(Grid: TDBGridEh; FindStr, FieldName: string; FindOptions: TF
   NoEndQuery: boolean = false): boolean;
 function SlCustomSort(List: TStringList; Index1, Index2: integer): integer;
 function BytesToStr(b: int64): string;
+function CreateGuid(NoDash: boolean = false): string;
 
 var
   DWndHandle: Cardinal;
@@ -1269,6 +1275,20 @@ begin
   end;
 end;
 
+function ArrayToString(arr: array of string; Decorator: string = ''; Delimiter: string = ','): string;
+var
+  i: integer;
+
+begin
+  result := '';
+
+  for i := 0 to Length(arr) - 1 do
+  begin
+    if i = 0 then result := Decorator + arr[i] + Decorator
+    else result := result + Delimiter + Decorator + arr[i] + Decorator;
+  end;
+end;
+
 function SplitLongString(str: string; Delim: char; sz: integer): TStringList;
 var
   i: integer;
@@ -1824,6 +1844,18 @@ begin
      Result := Format('%.2f Кб', [b / KB])
    else
      Result := IntToStr(b) + ' б';
+end;
+
+function CreateGuid(NoDash: boolean = false): string;
+var
+  ID: TGUID;
+
+begin
+  Result := '';
+  if CoCreateGuid(ID) = S_OK then
+    Result := StringReplace(StringReplace(GUIDToString(ID), '{', '', [rfReplaceAll]), '}', '', [rfReplaceAll]);
+
+  if NoDash then result := StringReplace(result, '-', '', [rfReplaceAll]);
 end;
 
 end.
