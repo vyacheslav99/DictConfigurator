@@ -1024,7 +1024,9 @@ object frmEditForm: TfrmEditForm
       
         '  f.STYLE_COLUMN, f.EDIT_IN_TABLE, f.SHOW_IN_GROUP_EDIT, f.EXCEL' +
         '_IMPORT, f.MATCH, f.LOCKED, f.GROUP_PK,'
-      '  o.NAME OBJECT_NAME, f.FILTER_GROUP'
+      
+        '  o.NAME OBJECT_NAME, f.FILTER_GROUP, coalesce(f.GUID, uuid_to_c' +
+        'har(gen_uuid())) GUID'
       'from DYNAMIC_FORM_FIELD f'
       '  left join DYNAMIC_FORM_OBJECT_TREE o on o.PK = f.OBJECT_PK'
       'where f.FORM_PK = :FORM_PK'
@@ -1147,6 +1149,11 @@ object frmEditForm: TfrmEditForm
     end
     object dsFormFieldsFILTER_GROUP: TFIBIntegerField
       FieldName = 'FILTER_GROUP'
+    end
+    object dsFormFieldsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtFormFields: TMemTableEh
@@ -1285,6 +1292,10 @@ object frmEditForm: TfrmEditForm
       Size = 300
       Lookup = True
     end
+    object mtFormFieldsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoFormFields: TDataSource
     DataSet = mtFormFields
@@ -1299,7 +1310,9 @@ object frmEditForm: TfrmEditForm
       
         '  STYLE_INTERNAL, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBL' +
         'E, COLLAPSED, LEFT_ALIGN,'
-      '  LABEL_WIDTH, CREATE_'
+      
+        '  LABEL_WIDTH, CREATE_, coalesce(GUID, uuid_to_char(gen_uuid()))' +
+        ' GUID'
       'from DYNAMIC_FORM_FIELD_GROUP'
       'where FORM_PK = :FORM_PK'
       'order by ORDER_')
@@ -1370,6 +1383,11 @@ object frmEditForm: TfrmEditForm
     end
     object dsGroupsCREATE_: TFIBDateTimeField
       FieldName = 'CREATE_'
+    end
+    object dsGroupsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtGroups: TMemTableEh
@@ -1449,6 +1467,10 @@ object frmEditForm: TfrmEditForm
     object mtGroupsCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtGroupsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoGroups: TDataSource
     DataSet = mtGroups
@@ -1479,7 +1501,7 @@ object frmEditForm: TfrmEditForm
     Transaction = FMain.Transact
     Database = FMain.Database
     Left = 296
-    Top = 172
+    Top = 171
     oFetchAll = True
     object dsLFilterGroupsPK: TFIBIntegerField
       FieldName = 'PK'
