@@ -29,6 +29,8 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure ASelectAllExecute(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnCloseClick(Sender: TObject);
   private
     procedure CopyToClipboard;
   public
@@ -46,6 +48,12 @@ end;
 procedure TFScriptEditor.ASelectAllExecute(Sender: TObject);
 begin
   smScript.SelectAll;
+end;
+
+procedure TFScriptEditor.btnCloseClick(Sender: TObject);
+begin
+  ModalResult := mrCancel;
+  Close;
 end;
 
 procedure TFScriptEditor.btnCopyToClipboardClick(Sender: TObject);
@@ -81,6 +89,13 @@ end;
 procedure TFScriptEditor.FormActivate(Sender: TObject);
 begin
   FMain.ActivateActions(ActionList, true);
+end;
+
+procedure TFScriptEditor.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  // сейчас форма используется не модально, просто как информационное окно по принципу открыл и забыл
+  // при необходимости использовать в качестве модального диалога не забудь закомментировать это
+  Action := caFree;
 end;
 
 procedure TFScriptEditor.FormCreate(Sender: TObject);
