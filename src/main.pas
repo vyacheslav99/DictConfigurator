@@ -1337,8 +1337,7 @@ begin
   // предупреждение для справочников
   if (TNodeDictInfo(GetCurrentTreeView.Selected.Data).ObjType = cotDict) and
     (Application.MessageBox(pchar('Внимание!!! Вместе с выбранным справочником в скрипт попадут ВСЕ ЕГО ДОЧЕРНИЕ И РОДИТЕЛЬСКИЕ справочники! ' +
-      'А так же будут УДАЛЕНЫ ВСЕ ПРИВЯЗАННЫЕ СЦЕНАРИИ, которые нужно будет выгрузить и перенакатить отдельным скриптом!'#13#10 + 'Вам оно нужно???'),
-      'Предупреждение', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
+      'А так же будут ПЕРЕСОЗДАНЫ ВСЕ ПРИВЯЗАННЫЕ СЦЕНАРИИ!'#13#10 + 'Вам оно нужно???'), 'Предупреждение', MB_YESNO + MB_ICONWARNING) <> ID_YES) then exit;
 
   SetSaveDialogToSQL;
   if SaveDialog.Execute then SaveToSQL(GetCurrentTreeView.Selected, SaveDialog.FileName);
@@ -4575,7 +4574,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select PK, REFERENCE_PK, TITLE, ORIENTATION from DYNAMIC_FORM_CHART_GROUPS where PK = ' + IntToStr(Pk));
+    ds1 := OpenSQL('select PK, REFERENCE_PK, TITLE, ORIENTATION, GUID from DYNAMIC_FORM_CHART_GROUPS where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if IsMain then Script.Add('/* DYNAMIC_FORM_CHART_GROUPS */');
@@ -4589,9 +4588,10 @@ begin
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM_REFERENCE'' into :PARAMS;');
     Script.Add('  execute procedure DICT_GET_INT (PARAMS, ' + VariantToDBStr(ds1.FieldByName('REFERENCE_PK').Value, false) +
       ', null) returning_values :FK_REF;');
-    Script.Add('  insert into DYNAMIC_FORM_CHART_GROUPS (REFERENCE_PK, TITLE, ORIENTATION) values (:FK_REF, ' +
+    Script.Add('  insert into DYNAMIC_FORM_CHART_GROUPS (REFERENCE_PK, TITLE, ORIENTATION, GUID) values (:FK_REF, ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('TITLE').AsString), true) + ', ' +
-      VariantToDBStr(ds1.FieldByName('ORIENTATION').Value, true) + ') returning PK into :PK;');
+      VariantToDBStr(ds1.FieldByName('ORIENTATION').Value, true) + ', ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) +
+      ''') returning PK into :PK;');
     Script.Add('  PARAMS = '''';');
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM_CHART_GROUPS'' into :PARAMS;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
@@ -4611,7 +4611,7 @@ var
 begin
   try
     ds1 := OpenSQL('select PK, REFERENC_PK, X_FIELD_PK, Y_FIELD_PK, GROUP_FUNCTION, SERIES_DIF, TITLE, CHART_TYPE, ORDER_, ' +
-      'X_AXIS_ROTATE, ADDITIONAL_FIELD, ADDITIONAL_FIELD_ROTATE, Y_TITLE, GROUP_PK, GROUP_ORDER from DYNAMIC_FORM_CHARTS ' +
+      'X_AXIS_ROTATE, ADDITIONAL_FIELD, ADDITIONAL_FIELD_ROTATE, Y_TITLE, GROUP_PK, GROUP_ORDER, GUID from DYNAMIC_FORM_CHARTS ' +
       'where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -4642,7 +4642,7 @@ begin
     Script.Add('  execute procedure DICT_GET_INT (PARAMS, ' + VariantToDBStr(ds1.FieldByName('GROUP_PK').Value, false) +
       ', null) returning_values :FK_GROUP;');
     Script.Add('  insert into DYNAMIC_FORM_CHARTS (REFERENC_PK, X_FIELD_PK, Y_FIELD_PK, GROUP_FUNCTION, SERIES_DIF, TITLE, CHART_TYPE, ORDER_, ' +
-      'X_AXIS_ROTATE, ADDITIONAL_FIELD, ADDITIONAL_FIELD_ROTATE, Y_TITLE, GROUP_PK, GROUP_ORDER) values (:FK_REF, :FK_X, :FK_Y, ' +
+      'X_AXIS_ROTATE, ADDITIONAL_FIELD, ADDITIONAL_FIELD_ROTATE, Y_TITLE, GROUP_PK, GROUP_ORDER, GUID) values (:FK_REF, :FK_X, :FK_Y, ' +
       VariantToDBStr(ds1.FieldByName('GROUP_FUNCTION').Value, true) + ', :FK_DIF, ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('TITLE').AsString), true) + ', ' + VariantToDBStr(ds1.FieldByName('CHART_TYPE').Value, true) +
       ', ' + VariantToDBStr(ReplaceQuote(ds1.FieldByName('ORDER_').AsString), true) + ', ' +
@@ -4650,7 +4650,8 @@ begin
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('ADDITIONAL_FIELD').AsString), true) + ', ' +
       VariantToDBStr(ds1.FieldByName('ADDITIONAL_FIELD_ROTATE').Value, false) + ', ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('Y_TITLE').AsString), true) + ', :FK_GROUP, ' +
-      VariantToDBStr(ds1.FieldByName('GROUP_ORDER').Value, false) + ');');
+      VariantToDBStr(ds1.FieldByName('GROUP_ORDER').Value, false) + ', ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) +
+      ''');');
     Script.Add('end^');
     Script.Add('');
   finally
@@ -4874,7 +4875,7 @@ begin
     ds1 := OpenSQL('select PK, OWNER_USER_PK, TITLE, CREATE_, ORDER_BY, DESCRIPTOR_, PARENT_REFERENCE_PK, MAIN_FORM_PK, START_FORM_PK, ' +
       'BASE_DESCRIPTOR, FOLDER_PK, PARENT_ID_FIELD, ID_FIELD, EXPAND_REF, COLLAPSE_FILTER, SHOW_CHILD_REF, GROUPING, CON_ORIENT, ' +
       'BRIEF_NOTE, EDITABLE, SET_DISTINCT, REF_SIZE, GROUP_EDIT_FORM_PK, SHOW_ONLY_ADMIN, INSERT_COUNT, EXPAND_TREE, USE_MEM, ' +
-      'COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT from DYNAMIC_FORM_REFERENCE where ' +
+      'COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT, GUID from DYNAMIC_FORM_REFERENCE where ' +
       'PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -4905,7 +4906,7 @@ begin
 
     // документ
     if not ds1.FieldByName('BRIEF_NOTE').IsNull then
-      ds2 := OpenSQL('select PK, CONTENT from DYNAMIC_FORM_DOCUMENT where PK = ' + ds1.FieldByName('BRIEF_NOTE').AsString);
+      ds2 := OpenSQL('select PK, CONTENT, GUID from DYNAMIC_FORM_DOCUMENT where PK = ' + ds1.FieldByName('BRIEF_NOTE').AsString);
 
     // справочник
     Script.Add('/* DYNAMIC_FORM_REFERENCE */');
@@ -4940,41 +4941,15 @@ begin
     if Assigned(ds2) and ds2.Active and (not ds2.IsEmpty) then
     begin
       Script.Add('  if (not exists(select PK from DYNAMIC_FORM_DOCUMENT where PK = ' + ds2.FieldByName('PK').AsString + ')) then');
-      Script.Add('    insert into DYNAMIC_FORM_DOCUMENT (PK, CONTENT) values (' + ds2.FieldByName('PK').AsString + ', ''' +
-        ReplaceQuote(ds2.FieldByName('CONTENT').AsString) + ''');');
+      Script.Add('    insert into DYNAMIC_FORM_DOCUMENT (PK, CONTENT, GUID) values (' + ds2.FieldByName('PK').AsString + ', ''' +
+        ReplaceQuote(ds2.FieldByName('CONTENT').AsString) + ''', ''' +
+        iif(ds2.FieldByName('GUID').IsNull, CreateGuid, ds2.FieldByName('GUID').AsString) + ''');');
     end;
 
-    Script.Add('  if (exists(select PK from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds1.FieldByName('DESCRIPTOR_').AsString + ''')) then');
-    Script.Add('  begin');
-    Script.Add('    select PK from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds1.FieldByName('DESCRIPTOR_').AsString + ''' into :PK;');
-    Script.Add('    update DYNAMIC_FORM_REFERENCE set OWNER_USER_PK = ' + ds1.FieldByName('OWNER_USER_PK').AsString + ', TITLE = ''' +
-      ReplaceQuote(ds1.FieldByName('TITLE').AsString) + ''', MODIFY = current_timestamp, ORDER_BY = ' +
-      VariantToDBStr(ReplaceQuote(ds1.FieldByName('ORDER_BY').AsString), true) +
-      ', PARENT_REFERENCE_PK = :FK_PARENT, MAIN_FORM_PK = :FK_MAIN_FORM, START_FORM_PK = :FK_START_FORM, BASE_DESCRIPTOR = ''' +
-      ds1.FieldByName('BASE_DESCRIPTOR').AsString + ''', FOLDER_PK = :FK_FOLDER, PARENT_ID_FIELD = ' +
-      VariantToDBStr(ds1.FieldByName('PARENT_ID_FIELD').Value, true) + ', ID_FIELD = ' +
-      VariantToDBStr(ds1.FieldByName('ID_FIELD').Value, true) + ', EXPAND_REF = ' + VariantToDBStr(ds1.FieldByName('EXPAND_REF').Value, true) +
-      ', COLLAPSE_FILTER = ' + VariantToDBStr(ds1.FieldByName('COLLAPSE_FILTER').Value, true) + ', SHOW_CHILD_REF = ' +
-      VariantToDBStr(ds1.FieldByName('SHOW_CHILD_REF').Value, true) + ', GROUPING = ' +
-      VariantToDBStr(ReplaceQuote(ds1.FieldByName('GROUPING').AsString), true) + ', CON_ORIENT = ' +
-      VariantToDBStr(ds1.FieldByName('CON_ORIENT').Value, false) + ', BRIEF_NOTE = ' +
-      VariantToDBStr(ds1.FieldByName('BRIEF_NOTE').Value, false) + ', EDITABLE = ' + VariantToDBStr(ds1.FieldByName('EDITABLE').Value, false) +
-      ', SET_DISTINCT = ''' + ds1.FieldByName('SET_DISTINCT').AsString + ''', REF_SIZE = ' +
-      VariantToDBStr(ds1.FieldByName('REF_SIZE').Value, false) + ', GROUP_EDIT_FORM_PK = :FK_GROUP_FORM, SHOW_ONLY_ADMIN = ' +
-      VariantToDBStr(ds1.FieldByName('SHOW_ONLY_ADMIN').Value, false) + ', INSERT_COUNT = ' +
-      VariantToDBStr(ds1.FieldByName('INSERT_COUNT').Value, false) + ', EXPAND_TREE = ' +
-      VariantToDBStr(ds1.FieldByName('EXPAND_TREE').Value, false) + ', USE_MEM = ' + VariantToDBStr(ds1.FieldByName('USE_MEM').Value, false) +
-      ', COUNT_ON_PAGE = ' + VariantToDBStr(ds1.FieldByName('COUNT_ON_PAGE').Value, false) + ', DEFERRED_IMPORTS = ' +
-      VariantToDBStr(ds1.FieldByName('DEFERRED_IMPORTS').Value, false) + ', AUTOSAVEINTERVAL = ' +
-      VariantToDBStr(ds1.FieldByName('AUTOSAVEINTERVAL').Value, false) + ', SKIP_DUPLICATES = ' +
-      VariantToDBStr(ds1.FieldByName('SKIP_DUPLICATES').Value, true) + ', SHOW_FILTER_BOUND = ' +
-      VariantToDBStr(ds1.FieldByName('SHOW_FILTER_BOUND').Value, true) + ', CHECK_SELECT = ' +
-      VariantToDBStr(ds1.FieldByName('CHECK_SELECT').Value, false) + ' where DESCRIPTOR_ = ''' + ds1.FieldByName('DESCRIPTOR_').AsString + ''';');
-    Script.Add('  end else');
-    Script.Add('    insert into DYNAMIC_FORM_REFERENCE (OWNER_USER_PK, TITLE, CREATE_, ORDER_BY, DESCRIPTOR_, PARENT_REFERENCE_PK, MAIN_FORM_PK, ' +
+    Script.Add('  insert into DYNAMIC_FORM_REFERENCE (OWNER_USER_PK, TITLE, CREATE_, ORDER_BY, DESCRIPTOR_, PARENT_REFERENCE_PK, MAIN_FORM_PK, ' +
       'START_FORM_PK, BASE_DESCRIPTOR, FOLDER_PK, PARENT_ID_FIELD, ID_FIELD, EXPAND_REF, COLLAPSE_FILTER, SHOW_CHILD_REF, GROUPING, CON_ORIENT, ' +
       'BRIEF_NOTE, EDITABLE, SET_DISTINCT, REF_SIZE, GROUP_EDIT_FORM_PK, SHOW_ONLY_ADMIN, INSERT_COUNT, EXPAND_TREE, USE_MEM, ' +
-      'COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT) values (' +
+      'COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT, GUID) values (' +
       ds1.FieldByName('OWNER_USER_PK').AsString + ', ''' + ReplaceQuote(ds1.FieldByName('TITLE').AsString) + ''', ' +
       VariantToDBStr(ds1.FieldByName('CREATE_').AsString, true) + ', ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('ORDER_BY').AsString), true) + ', ''' + ds1.FieldByName('DESCRIPTOR_').AsString +
@@ -4990,7 +4965,8 @@ begin
       VariantToDBStr(ds1.FieldByName('COUNT_ON_PAGE').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('DEFERRED_IMPORTS').Value, false) +
       ', ' + VariantToDBStr(ds1.FieldByName('AUTOSAVEINTERVAL').Value, false) + ', ' +
       VariantToDBStr(ds1.FieldByName('SKIP_DUPLICATES').Value, true) + ', ' + VariantToDBStr(ds1.FieldByName('SHOW_FILTER_BOUND').Value, true) +
-      ', ' + VariantToDBStr(ds1.FieldByName('CHECK_SELECT').Value, false) + ') returning PK into :PK;');
+      ', ' + VariantToDBStr(ds1.FieldByName('CHECK_SELECT').Value, false) + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  pDYNAMIC_FORM_REFERENCE = pDYNAMIC_FORM_REFERENCE || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_REFERENCE'', :pDYNAMIC_FORM_REFERENCE) matching (VAR_NAME);');
     Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK) values (1, ''' + ds1.FieldByName('DESCRIPTOR_').AsString +
@@ -5128,7 +5104,8 @@ begin
     FreeAndNil(ds1);
 
     // DYNAMIC_FORM_TREE_INDEX
-    ds1 := OpenSQL('select ELEMENT_ID from DYNAMIC_FORM_TREE_INDEX where REFERENCE_ID = ' + IntToStr(Pk) + ' order by ELEMENT_ID');
+    // это делать как раз не надо, потому что данные разные и оно просто бессмысленно
+   { ds1 := OpenSQL('select ELEMENT_ID from DYNAMIC_FORM_TREE_INDEX where REFERENCE_ID = ' + IntToStr(Pk) + ' order by ELEMENT_ID');
     ds1.First;
     while not ds1.Eof do
     begin
@@ -5136,7 +5113,7 @@ begin
       ds1.Next;
     end;
     ds1.Close;
-    FreeAndNil(ds1);
+    FreeAndNil(ds1); }
 
     // дочерние справочники
     ds1 := OpenSQL('select PK from DYNAMIC_FORM_REFERENCE where PARENT_REFERENCE_PK = ' + IntToStr(Pk) + ' order by PK');
@@ -5200,7 +5177,7 @@ var
 begin
   try
     ds1 := OpenSQL('select PK, PARENT_PK, OWNER_USER_PK, FORM_PK, ORDER_, TITLE, DESCRIPTION, COUNT_COLUMN, STYLE_EXTERNAL, STYLE_INTERNAL, ' +
-      'CREATE_, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBLE, COLLAPSED, LEFT_ALIGN, LABEL_WIDTH from DYNAMIC_FORM_FIELD_GROUP ' +
+      'CREATE_, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBLE, COLLAPSED, LEFT_ALIGN, LABEL_WIDTH, GUID from DYNAMIC_FORM_FIELD_GROUP ' +
       'where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -5222,7 +5199,7 @@ begin
     Script.Add('  execute procedure DICT_GET_INT (pDYNAMIC_FORM_FIELD_GROUP, ' + VariantToDBStr(ds1.FieldByName('PARENT_PK').Value, false) +
       ', null) returning_values :FK_GROUP;');
     Script.Add('  insert into DYNAMIC_FORM_FIELD_GROUP (PARENT_PK, OWNER_USER_PK, FORM_PK, ORDER_, TITLE, DESCRIPTION, COUNT_COLUMN, ' +
-      'STYLE_EXTERNAL, STYLE_INTERNAL, CREATE_, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBLE, COLLAPSED, LEFT_ALIGN, LABEL_WIDTH) ' +
+      'STYLE_EXTERNAL, STYLE_INTERNAL, CREATE_, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBLE, COLLAPSED, LEFT_ALIGN, LABEL_WIDTH, GUID) ' +
       'values (' + ':FK_GROUP, ' + ds1.FieldByName('OWNER_USER_PK').AsString + ', :FK_FORM, ' + ds1.FieldByName('ORDER_').AsString +
       ', ''' + ReplaceQuote(ds1.FieldByName('TITLE').AsString) + ''', ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('DESCRIPTION').AsString), true) + ', ' + ds1.FieldByName('COUNT_COLUMN').AsString + ', ''' +
@@ -5231,7 +5208,7 @@ begin
       ds1.FieldByName('COLUMN_').AsString + ', ''' + ReplaceQuote(ds1.FieldByName('STYLE_COLUMNS').AsString) + ''', ' +
       VariantToDBStr(ds1.FieldByName('ADD_VISIBLE').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('COLLAPSED').Value, false) + ', ' +
       VariantToDBStr(ds1.FieldByName('LEFT_ALIGN').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('LABEL_WIDTH').Value, false) +
-      ') returning PK into :PK;');
+      ', ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  pDYNAMIC_FORM_FIELD_GROUP = pDYNAMIC_FORM_FIELD_GROUP || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_FIELD_GROUP'', :pDYNAMIC_FORM_FIELD_GROUP) ' +
       'matching (VAR_NAME);');
@@ -5256,7 +5233,7 @@ begin
     ds1 := OpenSQL('select PK, OWNER_USER_PK, GROUP_PK, GROUP_COLUMN, OBJECT_PK, ORDER_, TITLE, DESCRIPTION, TYPE_NAME, FIELD_NAME, ' +
       'STYLE_EXTERNAL, STYLE, PARAMETERS, CREATE_, FORM_PK, GRID_ORDER, GRID_WIDTH, EXCEL_EXPORT, FILTER_ORDER, IS_FILTER, SHOW_IN_START_FORM, ' +
       'STYLE_COLUMN, SHOW_IN_GROUP_EDIT, EXCEL_IMPORT, MATCH, LOCKED, FILTER_GROUP, IS_VISIBLE, GRID_VISIBLE, EDITABLE, ' +
-      'ADD_EDITABLE, IS_VISIBLE_ADD, EDIT_IN_TABLE from DYNAMIC_FORM_FIELD where PK = ' + IntToStr(Pk));
+      'ADD_EDITABLE, IS_VISIBLE_ADD, EDIT_IN_TABLE, GUID from DYNAMIC_FORM_FIELD where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if IsMain then Script.Add('/* DYNAMIC_FORM_FIELD */');
@@ -5302,7 +5279,7 @@ begin
     Script.Add('  insert into DYNAMIC_FORM_FIELD (OWNER_USER_PK, GROUP_PK, GROUP_COLUMN, OBJECT_PK, ORDER_, TITLE, DESCRIPTION, TYPE_NAME, ' +
       'FIELD_NAME, STYLE_EXTERNAL, STYLE, PARAMETERS, CREATE_, IS_VISIBLE, FORM_PK, GRID_VISIBLE, GRID_ORDER, GRID_WIDTH, EDITABLE, ADD_EDITABLE, ' +
       'EXCEL_EXPORT, IS_VISIBLE_ADD, FILTER_ORDER, IS_FILTER, SHOW_IN_START_FORM, STYLE_COLUMN, EDIT_IN_TABLE, SHOW_IN_GROUP_EDIT, ' +
-      'EXCEL_IMPORT, MATCH, LOCKED, FILTER_GROUP) values (' + ds1.FieldByName('OWNER_USER_PK').AsString + ', :FK_GROUP, ' +
+      'EXCEL_IMPORT, MATCH, LOCKED, FILTER_GROUP, GUID) values (' + ds1.FieldByName('OWNER_USER_PK').AsString + ', :FK_GROUP, ' +
       ds1.FieldByName('GROUP_COLUMN').AsString + ', :FK_OBJECT, ' + ds1.FieldByName('ORDER_').AsString + ', ''' +
       ReplaceQuote(ds1.FieldByName('TITLE').AsString) + ''', ''' + ReplaceQuote(ds1.FieldByName('DESCRIPTION').AsString) + ''', ''' +
       ds1.FieldByName('TYPE_NAME').AsString + ''', ''' + ds1.FieldByName('FIELD_NAME').AsString + ''', ''' +
@@ -5315,7 +5292,7 @@ begin
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('STYLE_COLUMN').AsString), true) + ', :FK_TMP_EDIT_IN_TABLE, ' +
       ds1.FieldByName('SHOW_IN_GROUP_EDIT').AsString + ', ' + VariantToDBStr(ds1.FieldByName('EXCEL_IMPORT').Value, false) + ', ' +
       VariantToDBStr(ds1.FieldByName('MATCH').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('LOCKED').Value, false) +
-      ', :FK_FILTER_GROUP) returning PK into :PK;');
+      ', :FK_FILTER_GROUP, ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  pDYNAMIC_FORM_FIELD = pDYNAMIC_FORM_FIELD || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_FIELD'', :pDYNAMIC_FORM_FIELD) matching (VAR_NAME);');
     Script.Add('end^');
@@ -5332,7 +5309,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select PK, NAME, REF_PK, FILTER_VALUE from DYNAMIC_FORM_FILTER_CONFIG where PK = ' + IntToStr(Pk));
+    ds1 := OpenSQL('select PK, NAME, REF_PK, FILTER_VALUE, GUID from DYNAMIC_FORM_FILTER_CONFIG where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if IsMain then Script.Add('/* DYNAMIC_FORM_FILTER_CONFIG */');
@@ -5346,8 +5323,9 @@ begin
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM_REFERENCE'' into :PARAMS;');
     Script.Add('  execute procedure DICT_GET_INT (PARAMS, ' + VariantToDBStr(ds1.FieldByName('REF_PK').Value, false) +
       ', null) returning_values :FK;');
-    Script.Add('  insert into DYNAMIC_FORM_FILTER_CONFIG (NAME, REF_PK, FILTER_VALUE) values (''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) +
-      ''', :FK, ' + VariantToDBStr(ReplaceQuote(ds1.FieldByName('FILTER_VALUE').AsString), true) + ') returning PK into :PK;');
+    Script.Add('  insert into DYNAMIC_FORM_FILTER_CONFIG (NAME, REF_PK, FILTER_VALUE, GUID) values (''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) +
+      ''', :FK, ' + VariantToDBStr(ReplaceQuote(ds1.FieldByName('FILTER_VALUE').AsString), true) + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  PARAMS = '''';');
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM_FILTER_CONFIG'' into :PARAMS;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
@@ -5366,7 +5344,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select PK, FORM_PK, TITLE, ORDER_, COLLAPSED, OWNER_USER_PK, CREATE_ from DYNAMIC_FORM_FILTER_GROUP where PK = ' + IntToStr(Pk));
+    ds1 := OpenSQL('select PK, FORM_PK, TITLE, ORDER_, COLLAPSED, OWNER_USER_PK, CREATE_, GUID from DYNAMIC_FORM_FILTER_GROUP where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if IsMain then Script.Add('/* DYNAMIC_FORM_FILTER_GROUP */');
@@ -5381,10 +5359,11 @@ begin
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM'' into :pDYNAMIC_FORM;');
     Script.Add('  execute procedure DICT_GET_INT (pDYNAMIC_FORM, ' + VariantToDBStr(ds1.FieldByName('FORM_PK').Value, false) +
       ', null) returning_values :FK_FORM;');
-    Script.Add('  insert into DYNAMIC_FORM_FILTER_GROUP (FORM_PK, TITLE, ORDER_, COLLAPSED, OWNER_USER_PK, CREATE_, MODIFY) values (' +
+    Script.Add('  insert into DYNAMIC_FORM_FILTER_GROUP (FORM_PK, TITLE, ORDER_, COLLAPSED, OWNER_USER_PK, CREATE_, MODIFY, GUID) values (' +
       ':FK_FORM, ''' + ReplaceQuote(ds1.FieldByName('TITLE').AsString) + ''', ' + ds1.FieldByName('ORDER_').AsString + ', ''' +
       ds1.FieldByName('COLLAPSED').AsString + ''', ' + ds1.FieldByName('OWNER_USER_PK').AsString + ', ' +
-      VariantToDBStr(ds1.FieldByName('CREATE_').AsString, true) + ', current_timestamp) returning PK into :PK;');
+      VariantToDBStr(ds1.FieldByName('CREATE_').AsString, true) + ', current_timestamp, ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  PARAMS = '''';');
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM_FILTER_GROUP'' into :PARAMS;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
@@ -5404,7 +5383,7 @@ var
 begin
   // выгружаем саму папку
   try
-    ds1 := OpenSQL('select PK, NAME, PARENT_FOLDER_PK from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Pk));
+    ds1 := OpenSQL('select PK, NAME, PARENT_FOLDER_PK, GUID from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     // если первый раз и есть родительская папка - выгружаем сначала ее
@@ -5433,11 +5412,15 @@ begin
       ', null) returning_values :FK;');
     Script.Add('  if (exists(select PK from DYNAMIC_FORM_FOLDER where NAME = ''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) + ''' ' +
       'and PARENT_FOLDER_PK ' + iif(ds1.FieldByName('PARENT_FOLDER_PK').IsNull, 'is null', '= :FK') + ')) then');
+    Script.Add('  begin');
     Script.Add('    select first 1 PK from DYNAMIC_FORM_FOLDER where NAME = ''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) + ''' ' +
       'and PARENT_FOLDER_PK ' + iif(ds1.FieldByName('PARENT_FOLDER_PK').IsNull, 'is null', '= :FK') + ' into :PK;');
-    Script.Add('  else');
-    Script.Add('    insert into DYNAMIC_FORM_FOLDER (NAME, PARENT_FOLDER_PK) values (''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) +
-      ''', :FK) returning PK into :PK;');
+    Script.Add('    update DYNAMIC_FORM_FOLDER set GUID = ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) +
+      ''' where NAME = ''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) + ''' and PARENT_FOLDER_PK ' +
+      iif(ds1.FieldByName('PARENT_FOLDER_PK').IsNull, 'is null', '= :FK') + ';');
+    Script.Add('  end else');
+    Script.Add('    insert into DYNAMIC_FORM_FOLDER (NAME, PARENT_FOLDER_PK, GUID) values (''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) +
+      ''', :FK, ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_FOLDER'', :PARAMS) matching (VAR_NAME);');
     Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL) values (0, ''' +
@@ -5473,7 +5456,7 @@ var
 begin
   // выгружаем форму
   try
-    ds1 := OpenSQL('select PK, OWNER_USER_PK, CREATE_, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH from DYNAMIC_FORM where PK = ' +
+    ds1 := OpenSQL('select PK, OWNER_USER_PK, CREATE_, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH, GUID from DYNAMIC_FORM where PK = ' +
       IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -5493,12 +5476,12 @@ begin
     Script.Add('begin');
     Script.Add('  PARAMS = '''';');
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM'' into :PARAMS;');
-    Script.Add('  insert into DYNAMIC_FORM (OWNER_USER_PK, CREATE_, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH) values (' +
+    Script.Add('  insert into DYNAMIC_FORM (OWNER_USER_PK, CREATE_, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH, GUID) values (' +
       VariantToDBStr(ds1.FieldByName('OWNER_USER_PK').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('CREATE_').AsString, true) + ', ''' +
       ReplaceQuote(ds1.FieldByName('TITLE').AsString) + ''', ' + VariantToDBStr(ds1.FieldByName('WIDTH').Value, false) + ', ' +
       VariantToDBStr(ds1.FieldByName('HEIGHT').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('ALIAS_FORM').Value, true) + ', ' +
       VariantToDBStr(ds1.FieldByName('LEFT_ALIGN').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('LABEL_WIDTH').Value, false) +
-      ') returning PK into :PK;');
+      ', ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM'', :PARAMS) matching (VAR_NAME);');
 
@@ -5590,7 +5573,7 @@ var
 begin
   try
     ds1 := OpenSQL('select PK, OWNER_USER_PK, TITLE, CREATE_, NAME, OBJECT_TYPE, FORM_PK, JOIN_PARENT_PK, IS_MULTI_JOIN, JOIN_FIELDS, ' +
-      'PARAMETERS, DELETED, INNER_JOIN from DYNAMIC_FORM_OBJECT_TREE where PK = ' + IntToStr(Pk));
+      'PARAMETERS, DELETED, INNER_JOIN, GUID from DYNAMIC_FORM_OBJECT_TREE where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if IsMain then Script.Add('/* DYNAMIC_FORM_OBJECT_TREE */');
@@ -5611,12 +5594,13 @@ begin
     Script.Add('  execute procedure DICT_GET_INT (pDYNAMIC_FORM_OBJECT_TREE, ' + VariantToDBStr(ds1.FieldByName('JOIN_PARENT_PK').Value, false) +
       ', null) returning_values :FK_OBJECT;');
     Script.Add('  insert into DYNAMIC_FORM_OBJECT_TREE (OWNER_USER_PK, TITLE, CREATE_, NAME, OBJECT_TYPE, FORM_PK, JOIN_PARENT_PK, ' +
-      'IS_MULTI_JOIN, JOIN_FIELDS, PARAMETERS, DELETED, INNER_JOIN) values (' + ds1.FieldByName('OWNER_USER_PK').AsString + ', ' +
+      'IS_MULTI_JOIN, JOIN_FIELDS, PARAMETERS, DELETED, INNER_JOIN, GUID) values (' + ds1.FieldByName('OWNER_USER_PK').AsString + ', ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('TITLE').AsString), true) + ', ' + VariantToDBStr(ds1.FieldByName('CREATE_').AsString, true) +
       ', ''' + ds1.FieldByName('NAME').AsString + ''', ''' + ds1.FieldByName('OBJECT_TYPE').AsString + ''', :FK_FORM, :FK_OBJECT, ''' +
       ds1.FieldByName('IS_MULTI_JOIN').AsString + ''', ' + VariantToDBStr(ReplaceQuote(ds1.FieldByName('JOIN_FIELDS').AsString), true) + ', ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('PARAMETERS').AsString), true) + ', ''' + ds1.FieldByName('DELETED').AsString + ''', ' +
-      VariantToDBStr(ds1.FieldByName('INNER_JOIN').Value, false) + ') returning PK into :PK;');
+      VariantToDBStr(ds1.FieldByName('INNER_JOIN').Value, false) + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  pDYNAMIC_FORM_OBJECT_TREE = pDYNAMIC_FORM_OBJECT_TREE || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_OBJECT_TREE'', :pDYNAMIC_FORM_OBJECT_TREE) ' +
       'matching (VAR_NAME);');
@@ -5636,7 +5620,7 @@ var
 begin
   try
     ds1 := OpenSQL('select ID_EV, ID_DF_REFERENCE, TITLE_EV, EVENT_REFERENCE, POSITION_EV, IMAGE_NAME_EV, VIEW_TO_MENU, CLASS_NAME, IS_VIZARD, ' +
-      'ALIAS_DF, LINK_METHOD from DYNAMIC_FORM_OTHER_EVENT where ID_EV = ' + IntToStr(Pk));
+      'ALIAS_DF, LINK_METHOD, GUID from DYNAMIC_FORM_OTHER_EVENT where ID_EV = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     // получение refDescr
@@ -5669,10 +5653,11 @@ begin
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM_REFERENCE'' into :PARAMS;');
     Script.Add('  execute procedure DICT_GET_INT (PARAMS, ' + VariantToDBStr(ds1.FieldByName('ID_DF_REFERENCE').Value, false) + ', null) returning_values :FK_REF;');
     Script.Add('  insert into DYNAMIC_FORM_OTHER_EVENT (ID_DF_REFERENCE, TITLE_EV, EVENT_REFERENCE, POSITION_EV, IMAGE_NAME_EV, VIEW_TO_MENU, CLASS_NAME, IS_VIZARD, ' +
-      'ALIAS_DF, LINK_METHOD) values (:FK_REF, ' + VariantToDBStr(ReplaceQuote(ds1.FieldByName('TITLE_EV').AsString), true) + ', ' + refDescr + ', ' +
+      'ALIAS_DF, LINK_METHOD, GUID) values (:FK_REF, ' + VariantToDBStr(ReplaceQuote(ds1.FieldByName('TITLE_EV').AsString), true) + ', ' + refDescr + ', ' +
       VariantToDBStr(ds1.FieldByName('POSITION_EV').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('IMAGE_NAME_EV').AsString, true) + ', ' +
       VariantToDBStr(ds1.FieldByName('VIEW_TO_MENU').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('CLASS_NAME').AsString, true) + ', ' +
-      wizardDescr + ', ' + VariantToDBStr(ds1.FieldByName('ALIAS_DF').AsString, true) + ', ' + VariantToDBStr(ds1.FieldByName('LINK_METHOD').AsString, true) + ');');
+      wizardDescr + ', ' + VariantToDBStr(ds1.FieldByName('ALIAS_DF').AsString, true) + ', ' + VariantToDBStr(ds1.FieldByName('LINK_METHOD').AsString, true) +
+      ', ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''');');
     Script.Add('end^');
     Script.Add('');
   finally
@@ -5688,7 +5673,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select PK, REFERENCE_PK, ROLE_PK, ADD_, EDIT_, DEL_, VIEW_REF, CONFIG_, VIEW_, EXPORT, IMPORT, FILTRING, GRID_SAVE from ' +
+    ds1 := OpenSQL('select PK, REFERENCE_PK, ROLE_PK, ADD_, EDIT_, DEL_, VIEW_REF, CONFIG_, VIEW_, EXPORT, IMPORT, FILTRING, GRID_SAVE, GUID from ' +
       TableName + ' where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -5711,7 +5696,7 @@ begin
         Script.Add('  execute procedure DICT_GET_INT (PARAMS, ' + VariantToDBStr(ds1.Fields.Fields[i+3].Value, false) +
           ', null) returning_values :FK' + IntToStr(i) + ';');
 
-    Script.Add('  insert into ' + TableName + ' (REFERENCE_PK, ROLE_PK, ADD_, EDIT_, DEL_, VIEW_REF, CONFIG_, VIEW_, EXPORT, IMPORT, FILTRING, GRID_SAVE) ' +
+    Script.Add('  insert into ' + TableName + ' (REFERENCE_PK, ROLE_PK, ADD_, EDIT_, DEL_, VIEW_REF, CONFIG_, VIEW_, EXPORT, IMPORT, FILTRING, GRID_SAVE, GUID) ' +
       'values (:FK_REF, ' + VariantToDBStr(ds1.FieldByName('ROLE_PK').Value, false) + ', ' +
       iif((ds1.FieldByName('ADD_').AsInteger = 0) or (ds1.FieldByName('ADD_').AsInteger = 1), VariantToDBStr(ds1.FieldByName('ADD_').Value, false),
       ':FK0') + ', ' + iif((ds1.FieldByName('EDIT_').AsInteger = 0) or (ds1.FieldByName('EDIT_').AsInteger = 1),
@@ -5727,7 +5712,8 @@ begin
       VariantToDBStr(ds1.FieldByName('IMPORT').Value, false), ':FK7') + ', ' + iif((ds1.FieldByName('FILTRING').AsInteger = 0) or
       (ds1.FieldByName('FILTRING').AsInteger = 1), VariantToDBStr(ds1.FieldByName('FILTRING').Value, false), ':FK8') + ', ' +
       iif((ds1.FieldByName('GRID_SAVE').AsInteger = 0) or (ds1.FieldByName('GRID_SAVE').AsInteger = 1),
-      VariantToDBStr(ds1.FieldByName('GRID_SAVE').Value, false), ':FK9') + ');');
+      VariantToDBStr(ds1.FieldByName('GRID_SAVE').Value, false), ':FK9') + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''');');
     Script.Add('end^');
     Script.Add('');
   finally
@@ -5742,7 +5728,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select PK, TEXT_TEMPLATE from DYNAMIC_FORM_PERM_TMP where PK = ' + IntToStr(Pk));
+    ds1 := OpenSQL('select PK, TEXT_TEMPLATE, GUID from DYNAMIC_FORM_PERM_TMP where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if IsMain then Script.Add('/* DYNAMIC_FORM_PERM_TMP */');
@@ -5753,8 +5739,9 @@ begin
     Script.Add('begin');
     Script.Add('  PARAMS = '''';');
     Script.Add('  select VALUE_ from TMP_VAR where VAR_NAME = ''DYNAMIC_FORM_PERM_TMP'' into :PARAMS;');
-    Script.Add('  insert into DYNAMIC_FORM_PERM_TMP (TEXT_TEMPLATE) values (' +
-      VariantToDBStr(ReplaceQuote(ds1.FieldByName('TEXT_TEMPLATE').AsString), true) + ') returning PK into :PK;');
+    Script.Add('  insert into DYNAMIC_FORM_PERM_TMP (TEXT_TEMPLATE, GUID) values (' +
+      VariantToDBStr(ReplaceQuote(ds1.FieldByName('TEXT_TEMPLATE').AsString), true) + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_PERM_TMP'', :PARAMS) matching (VAR_NAME);');
     Script.Add('end^');
@@ -5878,7 +5865,7 @@ begin
   try
     if IsScen then
     begin
-      ds1 := OpenSQL('select ws.PK, ws.SATE_PK, ws.NAME, ws.SLOT_TYPE, ws.MAIN_SLOT, ws.SCEN_PK, wsc.DESCRIPTOR_ from WIZARD_SATES_SLOTS ws ' +
+      ds1 := OpenSQL('select ws.PK, ws.SATE_PK, ws.NAME, ws.SLOT_TYPE, ws.MAIN_SLOT, ws.SCEN_PK, wsc.DESCRIPTOR_, ws.GUID from WIZARD_SATES_SLOTS ws ' +
         'join WIZARD_SCENS wsc on ws.SCEN_PK = wsc.PK where ws.PK = ' + IntToStr(Pk));
       if ds1.IsEmpty then exit;
 
@@ -5889,7 +5876,7 @@ begin
     end else
     begin
       // слоты состояний
-      ds1 := OpenSQL('select PK, SATE_PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK from WIZARD_SATES_SLOTS where PK = ' + IntToStr(Pk));
+      ds1 := OpenSQL('select PK, SATE_PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK, GUID from WIZARD_SATES_SLOTS where PK = ' + IntToStr(Pk));
       if ds1.IsEmpty then exit;
 
       Script.Add('/* WIZARD_SATES_SLOTS, слоты состояний */');
@@ -5902,22 +5889,24 @@ begin
     Script.Add('as');
     Script.Add('declare variable PK integer;');
     Script.Add('begin');
-    Script.Add('  insert into WIZARD_SATES_SLOTS (SATE_PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK) values (' + state + ', ' +
+    Script.Add('  insert into WIZARD_SATES_SLOTS (SATE_PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK, GUID) values (' + state + ', ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('NAME').AsString), true) + ', ' + VariantToDBStr(ds1.FieldByName('SLOT_TYPE').Value, true) +
-      ', ' + VariantToDBStr(ds1.FieldByName('MAIN_SLOT').Value, false) + ', ' + scen + ') returning PK into :PK;');
+      ', ' + VariantToDBStr(ds1.FieldByName('MAIN_SLOT').Value, false) + ', ' + scen + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  update or insert into TMP_WIZARD_VAR (TABLE_NAME, OLD_PK, NEW_PK) values (''WIZARD_SATES_SLOTS'', ' +
       ds1.FieldByName('PK').AsString + ', :PK) matching (TABLE_NAME, OLD_PK);');
 
     // WIZARD_SC_SLOT_VAL
-    ds2 := OpenSQL('select PK, SLOT_PK, CROSS_PK, SLOT_VALUE from WIZARD_SC_SLOT_VAL where SLOT_PK = ' + IntToStr(Pk));
+    ds2 := OpenSQL('select PK, SLOT_PK, CROSS_PK, SLOT_VALUE, GUID from WIZARD_SC_SLOT_VAL where SLOT_PK = ' + IntToStr(Pk));
     ds2.First;
     while not ds2.Eof do
     begin
       Script.Add('');
       Script.Add('  /* WIZARD_SC_SLOT_VAL */');
-      Script.Add('  insert into WIZARD_SC_SLOT_VAL (SLOT_PK, CROSS_PK, SLOT_VALUE) values (:PK, ' +
+      Script.Add('  insert into WIZARD_SC_SLOT_VAL (SLOT_PK, CROSS_PK, SLOT_VALUE, GUID) values (:PK, ' +
         iif(ds2.FieldByName('CROSS_PK').IsNull, 'null', '(select NEW_PK from TMP_WIZARD_VAR where TABLE_NAME = ''WIZARD_SATES_CROSS'' and OLD_PK = ' +
-        ds2.FieldByName('CROSS_PK').AsString + ')') + ', ' + VariantToDBStr(ReplaceQuote(ds2.FieldByName('SLOT_VALUE').AsString), true) + ');');
+        ds2.FieldByName('CROSS_PK').AsString + ')') + ', ' + VariantToDBStr(ReplaceQuote(ds2.FieldByName('SLOT_VALUE').AsString), true) + ', ''' +
+        iif(ds2.FieldByName('GUID').IsNull, CreateGuid, ds2.FieldByName('GUID').AsString) + ''');');
 
       ds2.Next;
     end;
@@ -5938,7 +5927,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select s.PK, s.NAME, s.SCEN_TYPE, s.REF_PK, s.DESCRIPTOR_, s.NO_MES, r.DESCRIPTOR_ REF_DESCR from WIZARD_SCENS s ' +
+    ds1 := OpenSQL('select s.PK, s.NAME, s.SCEN_TYPE, s.REF_PK, s.DESCRIPTOR_, s.NO_MES, r.DESCRIPTOR_ REF_DESCR, s.GUID from WIZARD_SCENS s ' +
       'join DYNAMIC_FORM_REFERENCE r on r.PK = s.REF_PK where s.PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -5958,10 +5947,11 @@ begin
     Script.Add('/* WIZARD_SCENS */');
 
     // WIZARD_SCENS
-    Script.Add('insert into WIZARD_SCENS (NAME, SCEN_TYPE, REF_PK, DESCRIPTOR_, NO_MES) values (' +
+    Script.Add('insert into WIZARD_SCENS (NAME, SCEN_TYPE, REF_PK, DESCRIPTOR_, NO_MES, GUID) values (' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('NAME').AsString), true) + ', ' + VariantToDBStr(ds1.FieldByName('SCEN_TYPE').Value, true) +
       ', (select PK from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds1.FieldByName('REF_DESCR').AsString + '''), ' +
-      VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', ' + VariantToDBStr(ds1.FieldByName('NO_MES').Value, true) + ')^');
+      VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', ' + VariantToDBStr(ds1.FieldByName('NO_MES').Value, true) + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''')^');
       Script.Add('insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK) values (3, ' +
         VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', 2, ' + dsPortalUserPK.AsString + ')^');
     Script.Add('');
@@ -6036,7 +6026,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select PK, PK_PREW, PK_NEXT, NAME, ADD_BUTTON, BUTTON_ORDER, NEED_CLOSE, SHOW_IN_VIEW, HOT_KEY ' +
+    ds1 := OpenSQL('select PK, PK_PREW, PK_NEXT, NAME, ADD_BUTTON, BUTTON_ORDER, NEED_CLOSE, SHOW_IN_VIEW, HOT_KEY, GUID ' +
       'from WIZARD_SATES_CROSS where PK_PREW = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -6053,12 +6043,13 @@ begin
       Script.Add('as');
       Script.Add('declare variable PK integer;');
       Script.Add('begin');
-      Script.Add('  insert into WIZARD_SATES_CROSS (PK_PREW, PK_NEXT, NAME, ADD_BUTTON, BUTTON_ORDER, NEED_CLOSE, SHOW_IN_VIEW, HOT_KEY) ' +
+      Script.Add('  insert into WIZARD_SATES_CROSS (PK_PREW, PK_NEXT, NAME, ADD_BUTTON, BUTTON_ORDER, NEED_CLOSE, SHOW_IN_VIEW, HOT_KEY, GUID) ' +
         'values ((select NEW_PK from TMP_WIZARD_VAR where TABLE_NAME = ''WIZARD_SATES'' and OLD_PK = ' + ds1.FieldByName('PK_PREW').AsString +
         '), ' + s + ', ' + VariantToDBStr(ReplaceQuote(ds1.FieldByName('NAME').AsString), true) + ', ' +
         VariantToDBStr(ds1.FieldByName('ADD_BUTTON').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('BUTTON_ORDER').Value, false) + ', ' +
         VariantToDBStr(ds1.FieldByName('NEED_CLOSE').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('SHOW_IN_VIEW').Value, false) + ', ' +
-        VariantToDBStr(ReplaceQuote(ds1.FieldByName('HOT_KEY').AsString), true) + ') returning PK into :PK;');
+        VariantToDBStr(ReplaceQuote(ds1.FieldByName('HOT_KEY').AsString), true) + ', ''' +
+        iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
       Script.Add('  update or insert into TMP_WIZARD_VAR (TABLE_NAME, OLD_PK, NEW_PK) values (''WIZARD_SATES_CROSS'', ' +
         ds1.FieldByName('PK').AsString + ', :PK) matching (TABLE_NAME, OLD_PK);');
       Script.Add('end^');
@@ -6080,7 +6071,7 @@ var
 begin
   try
     ds1 := OpenSQL('select st.PK, st.SCEN_PK, st.FORM_PK, f.ALIAS_FORM, f.TITLE, st.FIELD_JSON, st.ACTION_, st.DESCRIPTOR_, ' +
-      'st.FULL_SCREEN, st.MAY_DOUBLE, s.DESCRIPTOR_ SCEN_DESCR, r.DESCRIPTOR_ REF_DESCR from WIZARD_SATES st ' +
+      'st.FULL_SCREEN, st.MAY_DOUBLE, s.DESCRIPTOR_ SCEN_DESCR, r.DESCRIPTOR_ REF_DESCR, st.GUID from WIZARD_SATES st ' +
       'join WIZARD_SCENS s on s.PK = st.SCEN_PK ' +
       'left join DYNAMIC_FORM_REFERENCE r on r.MAIN_FORM_PK = st.FORM_PK ' +
       'left join DYNAMIC_FORM f on f.PK = st.FORM_PK where st.PK = ' + IntToStr(Pk));
@@ -6105,11 +6096,12 @@ begin
     Script.Add('as');
     Script.Add('declare variable PK integer;');
     Script.Add('begin');
-    Script.Add('  insert into WIZARD_SATES (SCEN_PK, FORM_PK, FIELD_JSON, ACTION_, DESCRIPTOR_, FULL_SCREEN, MAY_DOUBLE) values (' +
+    Script.Add('  insert into WIZARD_SATES (SCEN_PK, FORM_PK, FIELD_JSON, ACTION_, DESCRIPTOR_, FULL_SCREEN, MAY_DOUBLE, GUID) values (' +
       '(select PK from WIZARD_SCENS where DESCRIPTOR_ = ''' + ds1.FieldByName('SCEN_DESCR').AsString + '''), ' + formSql + ', ' +
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('FIELD_JSON').AsString), true) + ', ' + VariantToDBStr(ds1.FieldByName('ACTION_').Value, true) +
       ', ' + VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', ' + VariantToDBStr(ds1.FieldByName('FULL_SCREEN').Value, false) +
-      ', ' + VariantToDBStr(ds1.FieldByName('MAY_DOUBLE').Value, false) + ') returning PK into :PK;');
+      ', ' + VariantToDBStr(ds1.FieldByName('MAY_DOUBLE').Value, false) + ', ''' +
+      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
     Script.Add('  update or insert into TMP_WIZARD_VAR (TABLE_NAME, OLD_PK, NEW_PK) values (''WIZARD_SATES'', ' + ds1.FieldByName('PK').AsString +
       ', :PK) matching (TABLE_NAME, OLD_PK);');
     Script.Add('end^');
@@ -7556,7 +7548,7 @@ begin
     exit;
   end;
 
-  SaveToSQL(TNodeDictInfo(Node.Data), FileName, Target);
+  SaveToSQL(TNodeDictInfo(Node.Data), FileName, Target, true);
 end;
 
 procedure TFMain.SaveBranchToSQL(Node: TTreeNode; FileName: string);
@@ -8365,7 +8357,7 @@ begin
   Script.Add('  Автор:       ' + FSettings.PortalUser);
   Script.Add('');
   Script.Add('  Объект:      ' + descr);
-  Script.Add('  Правило:     ' + r);
+  Script.Add('  Действие:    ' + r);
   Script.Add('*/');
   Script.Add('');
   Script.Add('set term ^ ;');
