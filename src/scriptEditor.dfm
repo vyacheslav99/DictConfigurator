@@ -1,7 +1,6 @@
 object FScriptEditor: TFScriptEditor
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu]
   Caption = #1055#1088#1086#1089#1084#1086#1090#1088' '#1089#1082#1088#1080#1087#1090#1072' '#1080#1079#1084#1077#1085#1077#1085#1080#1081
   ClientHeight = 681
   ClientWidth = 1084
@@ -51,6 +50,7 @@ object FScriptEditor: TFScriptEditor
   OldCreateOrder = False
   Position = poMainFormCenter
   OnActivate = FormActivate
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
   DesignSize = (
@@ -106,8 +106,6 @@ object FScriptEditor: TFScriptEditor
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000}
-    ExplicitLeft = 900
-    ExplicitTop = 658
   end
   object btnClose: TBitBtn
     Left = 986
@@ -118,6 +116,7 @@ object FScriptEditor: TFScriptEditor
     Caption = #1047#1072#1082#1088#1099#1090#1100
     ModalResult = 2
     TabOrder = 1
+    OnClick = btnCloseClick
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000FF00FF00FF00
@@ -153,8 +152,6 @@ object FScriptEditor: TFScriptEditor
       FF002139FF00314AFF001831FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
-    ExplicitLeft = 996
-    ExplicitTop = 658
   end
   object btnSaveToFile: TBitBtn
     Left = 8
@@ -203,7 +200,6 @@ object FScriptEditor: TFScriptEditor
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFEA8B8AFFFFA7A3FFA85151FFFF55FF00AD56
       56FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFAD56
       56FFAD5656FFAD5656FFAD5656FFAD5656FFAD5656FFFF55FF00}
-    ExplicitTop = 658
   end
   object btnCopyToClipboard: TBitBtn
     Left = 144
@@ -252,7 +248,6 @@ object FScriptEditor: TFScriptEditor
       C4FFB6B6B69FFF55FF00FF55FF00FF55FF00FF55FF00FF55FF00FF55FF00B6B6
       B6FFC8C8C8FFC8C8C8FFC8C8C8FFC8C8C8FFC8C8C8FFB6B6B6FFBFBFBFFFB6B6
       B69FFF55FF00FF55FF00FF55FF00FF55FF00FF55FF00FF55FF00}
-    ExplicitTop = 658
   end
   object smScript: TSynMemo
     Left = 0
@@ -280,8 +275,6 @@ object FScriptEditor: TFScriptEditor
     ReadOnly = True
     RightEdge = 120
     TabWidth = 2
-    ExplicitWidth = 1094
-    ExplicitHeight = 620
   end
   object Panel1: TPanel
     Left = 0
@@ -292,7 +285,6 @@ object FScriptEditor: TFScriptEditor
     BevelInner = bvLowered
     BevelOuter = bvNone
     TabOrder = 5
-    ExplicitWidth = 1094
     DesignSize = (
       1084
       29)
