@@ -1907,8 +1907,9 @@ object FEditWizard: TFEditWizard
   object dsWizardScen: TpFIBDataSet
     SelectSQL.Strings = (
       
-        'select PK, NAME, SCEN_TYPE, REF_PK, DESCRIPTOR_, NO_MES from WIZ' +
-        'ARD_SCENS'
+        'select PK, NAME, SCEN_TYPE, REF_PK, DESCRIPTOR_, NO_MES, coalesc' +
+        'e(GUID, uuid_to_char(gen_uuid())) GUID'
+      'from WIZARD_SCENS'
       'where PK = :PK')
     Transaction = FMain.Transact
     Database = FMain.Database
@@ -1940,6 +1941,11 @@ object FEditWizard: TFEditWizard
       Size = 500
       EmptyStrToNull = True
     end
+    object dsWizardScenGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsWizardStates: TpFIBDataSet
     SelectSQL.Strings = (
@@ -1951,7 +1957,8 @@ object FEditWizard: TFEditWizard
         'ESCRIPTOR, r.TITLE REF_TITLE, r.PARENT_REFERENCE_PK,'
       
         '  r.FOLDER_PK, ru.LOGIN REF_LOGIN, fu.LOGIN FORM_LOGIN, f.WIDTH ' +
-        'FORM_WIDTH, f.HEIGHT FORM_HEIGHT'
+        'FORM_WIDTH, f.HEIGHT FORM_HEIGHT,'
+      '  coalesce(st.GUID, uuid_to_char(gen_uuid())) GUID'
       'from WIZARD_SATES st'
       
         '  left join DYNAMIC_FORM_REFERENCE r on r.MAIN_FORM_PK = st.FORM' +
@@ -2030,6 +2037,11 @@ object FEditWizard: TFEditWizard
     end
     object dsWizardStatesFORM_HEIGHT: TFIBIntegerField
       FieldName = 'FORM_HEIGHT'
+    end
+    object dsWizardStatesGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object dsoWizardStates: TDataSource
@@ -2116,6 +2128,10 @@ object FEditWizard: TFEditWizard
     object mtWizardStatesCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtWizardStatesGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object qEditState: TpFIBQuery
     Transaction = FMain.Transact
@@ -2124,11 +2140,11 @@ object FEditWizard: TFEditWizard
       
         'update or insert into WIZARD_SATES (PK, SCEN_PK, FORM_PK, FIELD_' +
         'JSON, ACTION_,'
-      '  DESCRIPTOR_, FULL_SCREEN, SAFE_CLOSE, MAY_DOUBLE)'
+      '  DESCRIPTOR_, FULL_SCREEN, SAFE_CLOSE, MAY_DOUBLE, GUID)'
       
         'values (:PK, :SCEN_PK, :FORM_PK, :FIELD_JSON, :ACTION_, :DESCRIP' +
         'TOR_, :FULL_SCREEN,'
-      ' :SAFE_CLOSE, :MAY_DOUBLE)'
+      ' :SAFE_CLOSE, :MAY_DOUBLE, :GUID)'
       'matching (PK)')
     Left = 56
     Top = 208
@@ -2138,7 +2154,9 @@ object FEditWizard: TFEditWizard
       
         'select c.PK, c.PK_PREW, c.PK_NEXT, c.NAME, c.ADD_BUTTON, c.BUTTO' +
         'N_ORDER, c.NEED_CLOSE,'
-      '  c.SHOW_IN_VIEW, c.HOT_KEY'
+      
+        '  c.SHOW_IN_VIEW, c.HOT_KEY, coalesce(c.GUID, uuid_to_char(gen_u' +
+        'uid())) GUID'
       'from WIZARD_SATES_CROSS c'
       
         'where c.PK_PREW in (select PK from WIZARD_SATES where SCEN_PK = ' +
@@ -2180,6 +2198,11 @@ object FEditWizard: TFEditWizard
       Size = 255
       EmptyStrToNull = True
     end
+    object dsStatesCrossGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object mtStatesCross: TMemTableEh
     Params = <>
@@ -2219,6 +2242,10 @@ object FEditWizard: TFEditWizard
     end
     object mtStatesCrossCHANGED: TBooleanField
       FieldName = 'CHANGED'
+    end
+    object mtStatesCrossGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
     end
   end
   object dsoStatesCross: TDataSource
@@ -2262,11 +2289,11 @@ object FEditWizard: TFEditWizard
       
         'update or insert into WIZARD_SATES_CROSS (PK, PK_PREW, PK_NEXT, ' +
         'NAME, ADD_BUTTON,'
-      '  BUTTON_ORDER, NEED_CLOSE, SHOW_IN_VIEW, HOT_KEY)'
+      '  BUTTON_ORDER, NEED_CLOSE, SHOW_IN_VIEW, HOT_KEY, GUID)'
       
         'values (:PK, :PK_PREW, :PK_NEXT, :NAME, :ADD_BUTTON, :BUTTON_ORD' +
         'ER, :NEED_CLOSE,'
-      '  :SHOW_IN_VIEW, :HOT_KEY)'
+      '  :SHOW_IN_VIEW, :HOT_KEY, :GUID)'
       'matching (PK)')
     Left = 88
     Top = 208
@@ -2338,8 +2365,9 @@ object FEditWizard: TFEditWizard
   object dsScenSlots: TpFIBDataSet
     SelectSQL.Strings = (
       
-        'select PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK from WIZARD_SATES' +
-        '_SLOTS'
+        'select PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK, coalesce(GUID, u' +
+        'uid_to_char(gen_uuid())) GUID '
+      'from WIZARD_SATES_SLOTS'
       'where SCEN_PK = :PK'
       'order by PK')
     Transaction = FMain.Transact
@@ -2364,6 +2392,11 @@ object FEditWizard: TFEditWizard
     end
     object dsScenSlotsSCEN_PK: TFIBIntegerField
       FieldName = 'SCEN_PK'
+    end
+    object dsScenSlotsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtScenSlots: TMemTableEh
@@ -2392,6 +2425,10 @@ object FEditWizard: TFEditWizard
     end
     object mtScenSlotsCHANGED: TBooleanField
       FieldName = 'CHANGED'
+    end
+    object mtScenSlotsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
     end
   end
   object dsoScenSlots: TDataSource
@@ -2422,6 +2459,10 @@ object FEditWizard: TFEditWizard
     object mtScenSlotValCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtScenSlotValGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoScenSlotVal: TDataSource
     DataSet = mtScenSlotVal
@@ -2430,7 +2471,10 @@ object FEditWizard: TFEditWizard
   end
   object dsScenSlotVal: TpFIBDataSet
     SelectSQL.Strings = (
-      'select PK, SLOT_PK, CROSS_PK, SLOT_VALUE from WIZARD_SC_SLOT_VAL'
+      
+        'select PK, SLOT_PK, CROSS_PK, SLOT_VALUE, coalesce(GUID, uuid_to' +
+        '_char(gen_uuid())) GUID'
+      'from WIZARD_SC_SLOT_VAL'
       
         'where SLOT_PK in (select PK from WIZARD_SATES_SLOTS where SCEN_P' +
         'K = :PK)'
@@ -2454,12 +2498,18 @@ object FEditWizard: TFEditWizard
       Size = 500
       EmptyStrToNull = True
     end
+    object dsScenSlotValGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsStateSlots: TpFIBDataSet
     SelectSQL.Strings = (
       
-        'select PK, NAME, SLOT_TYPE, MAIN_SLOT, SATE_PK from WIZARD_SATES' +
-        '_SLOTS'
+        'select PK, NAME, SLOT_TYPE, MAIN_SLOT, SATE_PK, coalesce(GUID, u' +
+        'uid_to_char(gen_uuid())) GUID'
+      'from WIZARD_SATES_SLOTS'
       
         'where SATE_PK in (select PK from WIZARD_SATES where SCEN_PK = :P' +
         'K)'
@@ -2486,6 +2536,11 @@ object FEditWizard: TFEditWizard
     end
     object dsStateSlotsSATE_PK: TFIBIntegerField
       FieldName = 'SATE_PK'
+    end
+    object dsStateSlotsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtStateSlots: TMemTableEh
@@ -2515,6 +2570,10 @@ object FEditWizard: TFEditWizard
     object mtStateSlotsCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtStateSlotsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoStateSlots: TDataSource
     DataSet = mtStateSlots
@@ -2523,7 +2582,10 @@ object FEditWizard: TFEditWizard
   end
   object dsStateSlotVal: TpFIBDataSet
     SelectSQL.Strings = (
-      'select PK, SLOT_PK, CROSS_PK, SLOT_VALUE from WIZARD_SC_SLOT_VAL'
+      
+        'select PK, SLOT_PK, CROSS_PK, SLOT_VALUE, coalesce(GUID, uuid_to' +
+        '_char(gen_uuid())) GUID'
+      'from WIZARD_SC_SLOT_VAL'
       'where SLOT_PK in (select PK from WIZARD_SATES_SLOTS'
       
         '  where SATE_PK in (select PK from WIZARD_SATES where SCEN_PK = ' +
@@ -2546,6 +2608,11 @@ object FEditWizard: TFEditWizard
     object FIBStringField3: TFIBStringField
       FieldName = 'SLOT_VALUE'
       Size = 500
+      EmptyStrToNull = True
+    end
+    object dsStateSlotValGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
@@ -2572,6 +2639,10 @@ object FEditWizard: TFEditWizard
     object mtStateSlotValCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtStateSlotValGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoStateSlotVal: TDataSource
     DataSet = mtStateSlotVal
@@ -2584,8 +2655,10 @@ object FEditWizard: TFEditWizard
     SQL.Strings = (
       
         'update or insert into WIZARD_SATES_SLOTS (PK, SATE_PK, NAME, SLO' +
-        'T_TYPE, MAIN_SLOT, SCEN_PK)'
-      'values (:PK, :SATE_PK, :NAME, :SLOT_TYPE, :MAIN_SLOT, :SCEN_PK)'
+        'T_TYPE, MAIN_SLOT, SCEN_PK, GUID)'
+      
+        'values (:PK, :SATE_PK, :NAME, :SLOT_TYPE, :MAIN_SLOT, :SCEN_PK, ' +
+        ':GUID)'
       'matching (PK)')
     Left = 128
     Top = 208
@@ -2596,8 +2669,8 @@ object FEditWizard: TFEditWizard
     SQL.Strings = (
       
         'update or insert into WIZARD_SC_SLOT_VAL (PK, SLOT_PK, CROSS_PK,' +
-        ' SLOT_VALUE)'
-      'values (:PK, :SLOT_PK, :CROSS_PK, :SLOT_VALUE)'
+        ' SLOT_VALUE, GUID)'
+      'values (:PK, :SLOT_PK, :CROSS_PK, :SLOT_VALUE, :GUID)'
       'matching (PK)')
     Left = 160
     Top = 208
