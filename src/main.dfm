@@ -838,7 +838,7 @@ object FMain: TFMain
     Left = 144
     Top = 64
     Bitmap = {
-      494C010136009000CC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010136009000D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000E0000000010020000000000000E0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2697,7 +2697,7 @@ object FMain: TFMain
     Left = 176
     Top = 64
     Bitmap = {
-      494C01010A001400DC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400E80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3102,7 +3102,7 @@ object FMain: TFMain
   end
   object dsTreeFolder: TpFIBDataSet
     SelectSQL.Strings = (
-      'select f.PK, f.NAME, f.NAME TITLE, f.PARENT_FOLDER_PK'
+      'select f.PK, f.NAME, f.NAME TITLE, f.PARENT_FOLDER_PK, f.GUID'
       'from DYNAMIC_FORM_FOLDER f'
       'where f.PARENT_FOLDER_PK = :PARENT_FOLDER_PK'
       'order by f.NAME')
@@ -3126,6 +3126,11 @@ object FMain: TFMain
     end
     object dsTreeFolderPARENT_FOLDER_PK: TFIBIntegerField
       FieldName = 'PARENT_FOLDER_PK'
+    end
+    object dsTreeFolderGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object MainMenu: TMainMenu
@@ -3429,7 +3434,7 @@ object FMain: TFMain
       
         'select distinct r.PK, r.DESCRIPTOR_, r.TITLE, r.TITLE ||  '#39' ['#39' |' +
         '| r.DESCRIPTOR_ || '#39']'#39' NAME,'
-      '  r.PARENT_REFERENCE_PK, r.FOLDER_PK, u.LOGIN'
+      '  r.PARENT_REFERENCE_PK, r.FOLDER_PK, u.LOGIN, r.GUID'
       'from DYNAMIC_FORM_REFERENCE r'
       '  left join USERS u on u.PK = r.OWNER_USER_PK'
       '  left join DYNAMIC_FORM_REF_USER ru on ru.REF_PK = r.PK'
@@ -3481,13 +3486,18 @@ object FMain: TFMain
       Size = 25
       EmptyStrToNull = True
     end
+    object dsTreeDictGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsTreeDict2: TpFIBDataSet
     SelectSQL.Strings = (
       
         'select distinct r.PK, r.DESCRIPTOR_, r.TITLE, r.TITLE ||  '#39' ['#39' |' +
         '| r.DESCRIPTOR_ || '#39']'#39' NAME,'
-      '  r.PARENT_REFERENCE_PK, r.FOLDER_PK, u.LOGIN'
+      '  r.PARENT_REFERENCE_PK, r.FOLDER_PK, u.LOGIN, r.GUID'
       'from DYNAMIC_FORM_REFERENCE r'
       '  left join USERS u on u.PK = r.OWNER_USER_PK'
       '  left join DYNAMIC_FORM_REF_USER ru on ru.REF_PK = r.PK'
@@ -3531,10 +3541,15 @@ object FMain: TFMain
       Size = 25
       EmptyStrToNull = True
     end
+    object dsTreeDict2GUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsTreeForm: TpFIBDataSet
     SelectSQL.Strings = (
-      'select f.PK, f.TITLE, f.ALIAS_FORM, u.LOGIN,'
+      'select f.PK, f.TITLE, f.ALIAS_FORM, u.LOGIN, f.GUID,'
       
         '  (case when f.ALIAS_FORM is null then f.TITLE else f.TITLE ||  ' +
         #39' ['#39' || f.ALIAS_FORM || '#39']'#39' end) NAME'
@@ -3575,6 +3590,11 @@ object FMain: TFMain
     object dsTreeFormNAME: TFIBStringField
       FieldName = 'NAME'
       Size = 386
+      EmptyStrToNull = True
+    end
+    object dsTreeFormGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
@@ -4029,7 +4049,7 @@ object FMain: TFMain
     Left = 207
     Top = 64
     Bitmap = {
-      494C01011A003C00CC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01011A003C00D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000007000000001002000000000000070
       000000000000000000000000000000000000FAFAFAFFE1E1E1FFCDCDCDFFADAD
       ADFF878787FF7E7E7EFF868686FFBDBDBDFFF6F6F6FF00000000000000000000
@@ -4964,7 +4984,7 @@ object FMain: TFMain
     SelectSQL.Strings = (
       
         'select w.PK, w.NAME, w.SCEN_TYPE, w.DESCRIPTOR_, w.REF_PK, u.LOG' +
-        'IN,'
+        'IN, w.GUID,'
       
         '  (case when w.DESCRIPTOR_ is null then w.NAME else w.NAME ||  '#39 +
         ' ['#39' || w.DESCRIPTOR_ || '#39']'#39' end) TITLE'
@@ -5006,6 +5026,11 @@ object FMain: TFMain
     object dsTreeWizardTITLE: TFIBStringField
       FieldName = 'TITLE'
       Size = 513
+      EmptyStrToNull = True
+    end
+    object dsTreeWizardGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
       EmptyStrToNull = True
     end
   end
