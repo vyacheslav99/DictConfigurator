@@ -182,6 +182,11 @@ type
     AExportToCsv: TAction;
     Excel1: TMenuItem;
     csv1: TMenuItem;
+    dsFormGUID: TFIBStringField;
+    dsFormFieldsGUID: TFIBStringField;
+    dsGroupsGUID: TFIBStringField;
+    mtFormFieldsGUID: TStringField;
+    mtGroupsGUID: TStringField;
     procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure sbAddClick(Sender: TObject);
@@ -242,6 +247,11 @@ type
     procedure GroupEdit(Grid: TDBGridEh);
     function OpenJsonEditor(Field: TField; StatusText: string): TFJsonReader;
     procedure _Reload;
+    function gcsForm(Script, Vars: TStringList): boolean;
+    function gcsGroups(Script, Vars, Cache: TStringList): boolean;
+    function gcsFields(Script, Vars, GrCache, TmplCache, FGrCache: TStringList): boolean;
+    function gcsTemplates(Script, Vars, Cache, PkList: TStringList): boolean;
+    function GenChangesSQL(Script, Vars: TStringList): boolean; override;
   public
     procedure OnGroupEditorClose(Sender: TObject; var Action: TCloseAction);
     procedure OnFieldEditorClose(Sender: TObject; var Action: TCloseAction);
@@ -252,6 +262,8 @@ type
 implementation
 
 {$R *.dfm}
+
+uses scriptEditor;
 
 procedure TFEditForm.AExportToCsvExecute(Sender: TObject);
 begin
@@ -439,11 +451,16 @@ begin
 end;
 
 procedure TFEditForm.btnSaveClick(Sender: TObject);
+var
+  FScript: TFScriptEditor;
+
 begin
   if Mode = omView then exit;
 
   if FSettings.ConfirmSave and
     (Application.MessageBox('Сохранить изменения формы в базу данных?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+
+  if Mode = omEdit then FScript := PrepareScriptForm;
 
   Success := SaveData;
   if Success then
@@ -451,6 +468,7 @@ begin
     Mode := omEdit;
     Properties := Properties;
     if CanRefresh then FMain.ChangeFormButtonCaption(Tag, GetShortCaption, Caption);
+    if Assigned(FScript) and FSettings.ShowScriptForm then FScript.Show;
   end;
 end;
 
@@ -567,6 +585,386 @@ procedure TFEditForm.FormDestroy(Sender: TObject);
 begin
   DeletedFields.Free;
   DeletedGroups.Free;
+end;
+
+function TFEditForm.gcsFields(Script, Vars, GrCache, TmplCache, FGrCache: TStringList): boolean;
+var
+  bm: TBookmark;
+  sl: TStringList;
+
+begin
+  result := false;
+  sl := TStringList.Create;
+
+  try
+    bm := mtFormFields.GetBookmark;
+    mtFormFields.DisableControls;
+
+    // сначала надо все темплаты всех изменившихся полей выгрузить
+    mtFormFields.First;
+    while not mtFormFields.Eof do
+    begin
+      if mtFormFieldsCHANGED.AsBoolean then
+      begin
+        if (mtFormFieldsGRID_VISIBLE.AsInteger > 1) and (sl.IndexOf(mtFormFieldsGRID_VISIBLE.AsString) = -1) then
+          sl.Add(mtFormFieldsGRID_VISIBLE.AsString);
+        if (mtFormFieldsEDITABLE.AsInteger > 1) and (sl.IndexOf(mtFormFieldsEDITABLE.AsString) = -1) then
+          sl.Add(mtFormFieldsEDITABLE.AsString);
+        if (mtFormFieldsADD_EDITABLE.AsInteger > 1) and (sl.IndexOf(mtFormFieldsADD_EDITABLE.AsString) = -1) then
+          sl.Add(mtFormFieldsADD_EDITABLE.AsString);
+        if (mtFormFieldsIS_VISIBLE_ADD.AsInteger > 1) and (sl.IndexOf(mtFormFieldsIS_VISIBLE_ADD.AsString) = -1) then
+          sl.Add(mtFormFieldsIS_VISIBLE_ADD.AsString);
+        if (mtFormFieldsEDIT_IN_TABLE.AsInteger > 1) and (sl.IndexOf(mtFormFieldsEDIT_IN_TABLE.AsString) = -1) then
+          sl.Add(mtFormFieldsEDIT_IN_TABLE.AsString);
+        if (mtFormFieldsIS_VISIBLE.AsInteger > 1) and (sl.IndexOf(mtFormFieldsIS_VISIBLE.AsString) = -1) then
+          sl.Add(mtFormFieldsIS_VISIBLE.AsString);
+      end;
+      mtFormFields.Next;
+    end;
+
+    gcsTemplates(Script, Vars, TmplCache, sl);
+
+    // удаление
+    result := gcsGenDeleteSQL(Script, DeletedFields, 'DYNAMIC_FORM_FIELD', 'PK');
+
+    // добавление
+    mtFormFields.First;
+    while not mtFormFields.Eof do
+    begin
+      if mtFormFieldsCHANGED.AsBoolean and mtFormFieldsPK.IsNull then
+      begin
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* DYNAMIC_FORM_FIELD */');
+        end;
+
+        sl.Add(VariantToDBStr(FMain.dsPortalUserPK.Value, false));
+        sl.Add(gcsGenParentParam(Script, Vars, GrCache, mtFormFieldsGROUP_PK.AsVariant, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP'));
+        sl.Add(VariantToDBStr(mtFormFieldsGROUP_COLUMN.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsORDER_.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsTITLE.AsVariant, true));
+        sl.Add(VariantToDBStr(mtFormFieldsDESCRIPTION.AsVariant, true));
+        sl.Add(VariantToDBStr(mtFormFieldsTYPE_NAME.AsVariant, true));
+        sl.Add(VariantToDBStr(mtFormFieldsFIELD_NAME.AsVariant, true));
+        sl.Add(VariantToDBStr(mtFormFieldsSTYLE_EXTERNAL.AsVariant, true));
+        sl.Add(VariantToDBStr(mtFormFieldsSTYLE.AsVariant, true));
+        sl.Add(VariantToDBStr(mtFormFieldsPARAMETERS.AsVariant, true));
+        sl.Add(':FORM_PK');
+        if mtFormFieldsGRID_VISIBLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsGRID_VISIBLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+        else
+          sl.Add(VariantToDBStr(mtFormFieldsGRID_VISIBLE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsGRID_ORDER.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsGRID_WIDTH.AsVariant, false));
+        if mtFormFieldsEDITABLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsEDITABLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+        else
+          sl.Add(VariantToDBStr(mtFormFieldsEDITABLE.AsVariant, false));
+        if mtFormFieldsADD_EDITABLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsADD_EDITABLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+        else
+          sl.Add(VariantToDBStr(mtFormFieldsADD_EDITABLE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsEXCEL_EXPORT.AsVariant, false));
+        if mtFormFieldsIS_VISIBLE_ADD.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsIS_VISIBLE_ADD.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+        else
+          sl.Add(VariantToDBStr(mtFormFieldsIS_VISIBLE_ADD.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsFILTER_ORDER.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsIS_FILTER.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsSHOW_IN_START_FORM.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsSTYLE_COLUMN.AsVariant, true));
+        if mtFormFieldsEDIT_IN_TABLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsEDIT_IN_TABLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+        else
+          sl.Add(VariantToDBStr(mtFormFieldsEDIT_IN_TABLE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsSHOW_IN_GROUP_EDIT.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsEXCEL_IMPORT.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsMATCH.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsLOCKED.AsVariant, false));
+        sl.Add(gcsGenParentParam(Script, Vars, FGrCache, mtFormFieldsFILTER_GROUP.AsVariant, 'FILTER_GROUP_PK', 'PK', 'DYNAMIC_FORM_FILTER_GROUP'));
+        if mtFormFieldsIS_VISIBLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsIS_VISIBLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+        else
+          sl.Add(VariantToDBStr(mtFormFieldsIS_VISIBLE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtFormFieldsGUID.AsVariant, true));
+
+        gcsGenInsertSQL(Script, sl, 'DYNAMIC_FORM_FIELD', 'OWNER_USER_PK, GROUP_PK, GROUP_COLUMN, ORDER_, TITLE, DESCRIPTION, TYPE_NAME, ' +
+          'FIELD_NAME, STYLE_EXTERNAL, STYLE, PARAMETERS, FORM_PK, GRID_VISIBLE, GRID_ORDER, GRID_WIDTH, EDITABLE, ADD_EDITABLE, EXCEL_EXPORT, ' +
+          'IS_VISIBLE_ADD, FILTER_ORDER, IS_FILTER, SHOW_IN_START_FORM, STYLE_COLUMN, EDIT_IN_TABLE, SHOW_IN_GROUP_EDIT, EXCEL_IMPORT, MATCH, ' +
+          'LOCKED, FILTER_GROUP, IS_VISIBLE, GUID', [], []);
+
+        result := true;
+      end;
+      mtFormFields.Next;
+    end;
+
+    // обновление
+    mtFormFields.First;
+    while not mtFormFields.Eof do
+    begin
+      if mtFormFieldsCHANGED.AsBoolean and (not mtFormFieldsPK.IsNull) then
+      begin
+        if mtFormFieldsGUID.IsNull then raise Exception.Create(GUID_WARNING);
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* DYNAMIC_FORM_FIELD */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, GrCache, mtFormFieldsGROUP_PK.AsVariant, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP', 'GROUP_PK = '));
+        sl.Add('GROUP_COLUMN = ' + VariantToDBStr(mtFormFieldsGROUP_COLUMN.AsVariant, false));
+        sl.Add('ORDER_ = ' + VariantToDBStr(mtFormFieldsORDER_.AsVariant, false));
+        sl.Add('TITLE = ' + VariantToDBStr(mtFormFieldsTITLE.AsVariant, true));
+        sl.Add('DESCRIPTION = ' + VariantToDBStr(mtFormFieldsDESCRIPTION.AsVariant, true));
+        sl.Add('TYPE_NAME = ' + VariantToDBStr(mtFormFieldsTYPE_NAME.AsVariant, true));
+        sl.Add('FIELD_NAME = ' + VariantToDBStr(mtFormFieldsFIELD_NAME.AsVariant, true));
+        sl.Add('STYLE_EXTERNAL = ' + VariantToDBStr(mtFormFieldsSTYLE_EXTERNAL.AsVariant, true));
+        sl.Add('STYLE = ' + VariantToDBStr(mtFormFieldsSTYLE.AsVariant, true));
+        sl.Add('PARAMETERS = ' + VariantToDBStr(mtFormFieldsPARAMETERS.AsVariant, true));
+        if mtFormFieldsGRID_VISIBLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsGRID_VISIBLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'GRID_VISIBLE = '))
+        else
+          sl.Add('GRID_VISIBLE = ' + VariantToDBStr(mtFormFieldsGRID_VISIBLE.AsVariant, false));
+        sl.Add('GRID_ORDER = ' + VariantToDBStr(mtFormFieldsGRID_ORDER.AsVariant, false));
+        sl.Add('GRID_WIDTH = ' + VariantToDBStr(mtFormFieldsGRID_WIDTH.AsVariant, false));
+        if mtFormFieldsEDITABLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsEDITABLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDITABLE = '))
+        else
+          sl.Add('EDITABLE = ' + VariantToDBStr(mtFormFieldsEDITABLE.AsVariant, false));
+        if mtFormFieldsADD_EDITABLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsADD_EDITABLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'ADD_EDITABLE = '))
+        else
+          sl.Add('ADD_EDITABLE = ' + VariantToDBStr(mtFormFieldsADD_EDITABLE.AsVariant, false));
+        sl.Add('EXCEL_EXPORT = ' + VariantToDBStr(mtFormFieldsEXCEL_EXPORT.AsVariant, false));
+        if mtFormFieldsIS_VISIBLE_ADD.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsIS_VISIBLE_ADD.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IS_VISIBLE_ADD = '))
+        else
+          sl.Add('IS_VISIBLE_ADD = ' + VariantToDBStr(mtFormFieldsIS_VISIBLE_ADD.AsVariant, false));
+        sl.Add('FILTER_ORDER = ' + VariantToDBStr(mtFormFieldsFILTER_ORDER.AsVariant, false));
+        sl.Add('IS_FILTER = ' + VariantToDBStr(mtFormFieldsIS_FILTER.AsVariant, false));
+        sl.Add('SHOW_IN_START_FORM = ' + VariantToDBStr(mtFormFieldsSHOW_IN_START_FORM.AsVariant, false));
+        sl.Add('STYLE_COLUMN = ' + VariantToDBStr(mtFormFieldsSTYLE_COLUMN.AsVariant, true));
+        if mtFormFieldsEDIT_IN_TABLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsEDIT_IN_TABLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDIT_IN_TABLE = '))
+        else
+          sl.Add('EDIT_IN_TABLE = ' + VariantToDBStr(mtFormFieldsEDIT_IN_TABLE.AsVariant, false));
+        sl.Add('SHOW_IN_GROUP_EDIT = ' + VariantToDBStr(mtFormFieldsSHOW_IN_GROUP_EDIT.AsVariant, false));
+        sl.Add('EXCEL_IMPORT = ' + VariantToDBStr(mtFormFieldsEXCEL_IMPORT.AsVariant, false));
+        sl.Add('MATCH = ' + VariantToDBStr(mtFormFieldsMATCH.AsVariant, false));
+        sl.Add('LOCKED = ' + VariantToDBStr(mtFormFieldsLOCKED.AsVariant, false));
+        if mtFormFieldsIS_VISIBLE.AsInteger > 1 then
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, mtFormFieldsIS_VISIBLE.AsVariant, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IS_VISIBLE = '))
+        else
+          sl.Add('IS_VISIBLE = ' + VariantToDBStr(mtFormFieldsIS_VISIBLE.AsVariant, false));
+        sl.Add(gcsGenParentParam(Script, Vars, FGrCache, mtFormFieldsFILTER_GROUP.AsVariant, 'FILTER_GROUP_PK', 'PK', 'DYNAMIC_FORM_FILTER_GROUP', 'FILTER_GROUP = '));
+
+        result := gcsGenUpdateSQL(Script, sl, 'DYNAMIC_FORM_FIELD', 'GUID', VariantToDBStr(mtFormFieldsGUID.AsVariant, true), []);
+      end;
+      mtFormFields.Next;
+    end;
+  finally
+    sl.Free;
+    if mtFormFields.BookmarkValid(bm) then
+    begin
+      mtFormFields.GotoBookmark(bm);
+      mtFormFields.FreeBookmark(bm);
+    end;
+    mtFormFields.EnableControls;
+  end;
+end;
+
+function TFEditForm.gcsForm(Script, Vars: TStringList): boolean;
+var
+  sl: TStringList;
+
+begin
+  sl := TStringList.Create;
+  result := false;
+
+  try
+    gcsCheckOption(sl, dsFormALIAS_FORM, Trim(edFormAlias.Text), true);
+    gcsCheckOption(sl, dsFormTITLE, Trim(edFormTitle.Text), true);
+    gcsCheckOption(sl, dsFormWIDTH, edFormWidth.Value, false, true, true);
+    gcsCheckOption(sl, dsFormHEIGHT, edFormHeight.Value, false, true, true);
+    gcsCheckOption(sl, dsFormLEFT_ALIGN, iif(chbLeftAlign.Checked, 1, 0), false);
+    gcsCheckOption(sl, dsFormLABEL_WIDTH, edLabelWidth.Value, false, true, true);
+
+    result := gcsGenUpdateSQL(Script, sl, 'DYNAMIC_FORM', 'PK', ':FORM_PK', ['MODIFY = current_timestamp'], '/* DYNAMIC_FORM */');
+  finally
+    sl.Free;
+  end;
+end;
+
+function TFEditForm.gcsGroups(Script, Vars, Cache: TStringList): boolean;
+var
+  bm: TBookmark;
+  sl: TStringList;
+  n: integer;
+
+begin
+  result := false;
+  sl := TStringList.Create;
+
+  try
+    // удаление
+    result := gcsGenDeleteSQL(Script, DeletedGroups, 'DYNAMIC_FORM_FIELD_GROUP', 'PK');
+
+    bm := mtGroups.GetBookmark;
+    mtGroups.DisableControls;
+
+    // добавление
+    mtGroups.First;
+    while not mtGroups.Eof do
+    begin
+      if mtGroupsCHANGED.AsBoolean and mtGroupsPK.IsNull then
+      begin
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* DYNAMIC_FORM_FIELD_GROUP */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, Cache, mtGroupsPARENT_PK.AsVariant, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP'));
+        sl.Add(VariantToDBStr(FMain.dsPortalUserPK.Value, false));
+        sl.Add(':FORM_PK');
+        sl.Add(VariantToDBStr(mtGroupsORDER_.AsVariant, false));
+        sl.Add(VariantToDBStr(mtGroupsTITLE.AsVariant, true));
+        sl.Add(VariantToDBStr(mtGroupsDESCRIPTION.AsVariant, true));
+        sl.Add(VariantToDBStr(mtGroupsCOUNT_COLUMN.AsVariant, false));
+        sl.Add(VariantToDBStr(mtGroupsSTYLE_EXTERNAL.AsVariant, true));
+        sl.Add(VariantToDBStr(mtGroupsSTYLE_INTERNAL.AsVariant, true));
+        sl.Add(VariantToDBStr(mtGroupsIS_VISIBLE.AsVariant, true));
+        sl.Add(VariantToDBStr(mtGroupsCOLUMN_.AsVariant, false));
+        sl.Add(VariantToDBStr(mtGroupsSTYLE_COLUMNS.AsVariant, true));
+        sl.Add(VariantToDBStr(mtGroupsADD_VISIBLE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtGroupsCOLLAPSED.AsVariant, false));
+        sl.Add(VariantToDBStr(mtGroupsLEFT_ALIGN.AsVariant, false));
+        sl.Add(VariantToDBStr(mtGroupsLABEL_WIDTH.AsVariant, false));
+        sl.Add(VariantToDBStr(mtGroupsGUID.AsVariant, true));
+
+        n := Cache.Add(mtGroupsGUID.AsString);
+        Vars.Add('declare variable GROUP_PK' + IntToStr(n) + ' integer;');
+
+        gcsGenInsertSQL(Script, sl, 'DYNAMIC_FORM_FIELD_GROUP', 'PARENT_PK, OWNER_USER_PK, FORM_PK, ORDER_, TITLE, DESCRIPTION, COUNT_COLUMN, STYLE_EXTERNAL, ' +
+          'STYLE_INTERNAL, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBLE, COLLAPSED, LEFT_ALIGN, LABEL_WIDTH, GUID', ['PK'], [':GROUP_PK' + IntToStr(n)]);
+
+        result := true;
+      end;
+      mtGroups.Next;
+    end;
+
+    // обновление
+    mtGroups.First;
+    while not mtGroups.Eof do
+    begin
+      if mtGroupsCHANGED.AsBoolean and (not mtGroupsPK.IsNull) then
+      begin
+        if mtGroupsGUID.IsNull then raise Exception.Create(GUID_WARNING);
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* DYNAMIC_FORM_FIELD_GROUP */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, Cache, mtGroupsPARENT_PK.AsVariant, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP', 'PARENT_PK = '));
+        sl.Add('ORDER_ = ' + VariantToDBStr(mtGroupsORDER_.AsVariant, false));
+        sl.Add('TITLE = ' + VariantToDBStr(mtGroupsTITLE.AsVariant, true));
+        sl.Add('DESCRIPTION = ' + VariantToDBStr(mtGroupsDESCRIPTION.AsVariant, true));
+        sl.Add('COUNT_COLUMN = ' + VariantToDBStr(mtGroupsCOUNT_COLUMN.AsVariant, false));
+        sl.Add('STYLE_EXTERNAL = ' + VariantToDBStr(mtGroupsSTYLE_EXTERNAL.AsVariant, true));
+        sl.Add('STYLE_INTERNAL = ' + VariantToDBStr(mtGroupsSTYLE_INTERNAL.AsVariant, true));
+        sl.Add('IS_VISIBLE = ' + VariantToDBStr(mtGroupsIS_VISIBLE.AsVariant, true));
+        sl.Add('COLUMN_ = ' + VariantToDBStr(mtGroupsCOLUMN_.AsVariant, false));
+        sl.Add('STYLE_COLUMNS = ' + VariantToDBStr(mtGroupsSTYLE_COLUMNS.AsVariant, true));
+        sl.Add('ADD_VISIBLE = ' + VariantToDBStr(mtGroupsADD_VISIBLE.AsVariant, false));
+        sl.Add('COLLAPSED = ' + VariantToDBStr(mtGroupsCOLLAPSED.AsVariant, false));
+        sl.Add('LEFT_ALIGN = ' + VariantToDBStr(mtGroupsLEFT_ALIGN.AsVariant, false));
+        sl.Add('LABEL_WIDTH = ' + VariantToDBStr(mtGroupsLABEL_WIDTH.AsVariant, false));
+
+        result := gcsGenUpdateSQL(Script, sl, 'DYNAMIC_FORM_FIELD_GROUP', 'GUID', VariantToDBStr(mtGroupsGUID.AsVariant, true), []);
+      end;
+      mtGroups.Next;
+    end;
+  finally
+    sl.Free;
+    if mtGroups.BookmarkValid(bm) then
+    begin
+      mtGroups.GotoBookmark(bm);
+      mtGroups.FreeBookmark(bm);
+    end;
+    mtGroups.EnableControls;
+  end;
+end;
+
+function TFEditForm.gcsTemplates(Script, Vars, Cache, PkList: TStringList): boolean;
+var
+  ds: TpFIBDataSet;
+  n: integer;
+
+begin
+  result := false;
+  if PkList.Count = 0 then exit;
+
+  try
+    ds := FMain.OpenSQL('select GUID, TEXT_TEMPLATE from DYNAMIC_FORM_PERM_TMP where PK in (' + TextToString(PkList.Text) + ')');
+
+    while not ds.Eof do
+    begin
+      if ds.FieldByName('GUID').IsNull then raise Exception.Create(GUID_WARNING);
+
+      if not result then
+      begin
+        Script.Add('');
+        Script.Add('  /* DYNAMIC_FORM_PERM_TMP */');
+      end;
+
+      if Cache.IndexOf(ds.FieldByName('GUID').AsString) = -1 then
+      begin
+        n := Cache.Add(ds.FieldByName('GUID').AsString);
+        Vars.Add('declare variable TMPL_PK' + IntToStr(n) + ' integer;');
+        Script.Add('');
+        Script.Add('  select PK from DYNAMIC_FORM_PERM_TMP where GUID = ' + VariantToDBStr(ds.FieldByName('GUID').AsString, true) + ' into :TMPL_PK' + IntToStr(n) + ';');
+        result := true;
+      end;
+      ds.Next;
+    end;
+  finally
+    ds.Close;
+    ds.Free;
+  end;
+end;
+
+function TFEditForm.GenChangesSQL(Script, Vars: TStringList): boolean;
+var
+  grCache, tmplCache, filterGrCache: TStringList;
+
+begin
+  result := false;
+  filterGrCache := TStringList.Create;
+  grCache := TStringList.Create;
+  tmplCache := TStringList.Create;
+
+  try
+    Vars.Add('declare variable FORM_PK integer;');
+    Script.Add('  select PK from DYNAMIC_FORM where GUID = ''' + dsFormGUID.AsString + ''' into :FORM_PK;');
+
+    result := gcsForm(Script, Vars);
+    if gcsGroups(Script, Vars, grCache) then result := true;
+    if gcsFields(Script, Vars, grCache, tmplCache, filterGrCache) then result := true;
+  finally
+    filterGrCache.Free;
+    grCache.Free;
+    tmplCache.Free;
+  end;
 end;
 
 function TFEditForm.GetColumnStyles(dsSrc: TMemTableEh): string;
@@ -874,8 +1272,9 @@ begin
   begin
     if mtFormFieldsTITLE.IsNull or mtFormFieldsFIELD_NAME.IsNull or mtFormFieldsPARAMETERS.IsNull then
       raise Exception.Create('Не все обязательные поля заполнены!');
-       
+
     mtFormFieldsCHANGED.AsBoolean := true;
+    if mtFormFieldsGUID.IsNull then mtFormFieldsGUID.AsString := CreateGuid;
   end;
 end;
 
@@ -907,6 +1306,7 @@ begin
   begin
     if mtGroupsTITLE.IsNull then raise Exception.Create('Не все обязательные поля заполнены!');
     mtGroupsCHANGED.AsBoolean := true;
+    if mtGroupsGUID.IsNull then mtGroupsGUID.AsString := CreateGuid;
   end;
 end;
 
@@ -1004,12 +1404,12 @@ begin
   case Mode of
     omAdd:
     begin
-      result := FMain.ExecSQL('insert into DYNAMIC_FORM (OWNER_USER_PK, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH) values (' +
+      result := FMain.ExecSQL('insert into DYNAMIC_FORM (OWNER_USER_PK, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH, GUID) values (' +
         VariantToDBStr(FMain.dsPortalUserPK.Value, false) + ', ' + VariantToDBStr(Trim(edFormTitle.Text), true) + ', ' +
         VariantToDBStr(edFormWidth.Value, false, true, true) + ', ' + VariantToDBStr(edFormHeight.Value, false, true, true) + ', ' +
         VariantToDBStr(Trim(edFormAlias.Text), true) + ', ' + iif(chbLeftAlign.Checked, '1', '0') + ', ' +
-        VariantToDBStr(edLabelWidth.Value, false, true, true) + ') returning (PK)', 'PK', Properties.PK, err);
-      FMain.AddToRefLog(cotForm, iif(Trim(edFormAlias.Text) = '', edFormTitle.Text, edFormAlias.Text), rltCreate);
+        VariantToDBStr(edLabelWidth.Value, false, true, true) + ', ' + VariantToDBStr(Properties.Guid, true) + ') returning (PK)', 'PK', Properties.PK, err);
+      FMain.AddToRefLog(cotForm, iif(Trim(edFormAlias.Text) = '', edFormTitle.Text, edFormAlias.Text), Properties.Guid, rltCreate);
     end;
     omEdit:
     begin
@@ -1017,8 +1417,9 @@ begin
         VariantToDBStr(Trim(edFormTitle.Text), true) + ', WIDTH = ' + VariantToDBStr(edFormWidth.Value, false, true, true) +
         ', HEIGHT = ' + VariantToDBStr(edFormHeight.Value, false, true, true) + ', ALIAS_FORM = ' +
         VariantToDBStr(Trim(edFormAlias.Text), true) + ', LEFT_ALIGN = ' + iif(chbLeftAlign.Checked, '1', '0') +
-        ', LABEL_WIDTH = ' + VariantToDBStr(edLabelWidth.Value, false, true, true) + ' where PK = ' + VarToStr(Properties.PK), err);
-      FMain.AddToRefLog(cotForm, iif(Trim(edFormAlias.Text) = '', edFormTitle.Text, edFormAlias.Text), rltUpdate,
+        ', LABEL_WIDTH = ' + VariantToDBStr(edLabelWidth.Value, false, true, true) + ', GUID = ' + VariantToDBStr(Properties.Guid, true) +
+        ' where PK = ' + VarToStr(Properties.PK), err);
+      FMain.AddToRefLog(cotForm, iif(Trim(edFormAlias.Text) = '', edFormTitle.Text, edFormAlias.Text), Properties.Guid, rltUpdate,
         iif(Trim(edFormAlias.Text) = '', 'PK ' + VarToStr(Properties.PK), ''));
     end
     else result := false;
@@ -1030,7 +1431,7 @@ begin
   begin
     SetPropValues(Properties.PK, iif(Trim(edFormAlias.Text) = '', Null, Trim(edFormAlias.Text)),
       iif(Trim(edFormTitle.Text) = '', Null, Trim(edFormTitle.Text)), Properties.ParentDictPK, Properties.FolderPK,
-      Properties.Login, Properties.ObjType);
+      Properties.Login, Properties.ObjType, Properties.Guid);
     SaveGridData;
   end;
 end;
@@ -1095,6 +1496,7 @@ begin
         qEditField.ParamByName('EXCEL_IMPORT').Value := mtFormFields.FieldByName('EXCEL_IMPORT').Value;
         qEditField.ParamByName('MATCH').Value := mtFormFields.FieldByName('MATCH').Value;
         qEditField.ParamByName('LOCKED').Value := mtFormFields.FieldByName('LOCKED').Value;
+        qEditField.ParamByName('GUID').Value := mtFormFields.FieldByName('GUID').Value;
         qEditField.ExecQuery;
         FMain.Transact.CommitRetaining;
       end;
@@ -1142,6 +1544,7 @@ begin
         qEditGroup.ParamByName('COLLAPSED').Value := mtGroups.FieldByName('COLLAPSED').Value;
         qEditGroup.ParamByName('LEFT_ALIGN').Value := mtGroups.FieldByName('LEFT_ALIGN').Value;
         qEditGroup.ParamByName('LABEL_WIDTH').Value := mtGroups.FieldByName('LABEL_WIDTH').Value;
+        qEditGroup.ParamByName('GUID').Value := mtGroups.FieldByName('GUID').Value;
         qEditGroup.ExecQuery;
         FMain.Transact.CommitRetaining;
       end;
@@ -1384,6 +1787,7 @@ begin
     dsForm.Open;
     if dsForm.IsEmpty then
       raise Exception.Create('Не найдена форма с PK ' + VarToStr(Properties.PK) + '! Возможно она была пересоздана и ее PK поменялся.');
+    Properties.Guid := dsFormGUID.AsVariant;
     edFormPk.Text := VarToStr(Properties.PK);
     edFormAlias.Text := VarToStr(Properties.Descriptor);
     edFormTitle.Text := VarToStr(Properties.Title);
