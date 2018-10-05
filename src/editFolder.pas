@@ -47,6 +47,7 @@ type
     procedure SetMode(Value: TOpenMode); override;
     procedure SetProperties(Value: TNodeDictInfo); override;
     procedure _Reload;
+    function GenChangesSQL(Script, Vars: TStringList): boolean; override;
   public
     function GetShortCaption: string; override;
   end;
@@ -54,6 +55,8 @@ type
 implementation
 
 {$R *.dfm}
+
+uses scriptEditor;
 
 procedure TFEditFolder.ASaveExecute(Sender: TObject);
 begin
@@ -66,13 +69,18 @@ begin
 end;
 
 procedure TFEditFolder.btnSaveClick(Sender: TObject);
+var
+  FScript: TFScriptEditor;
+
 begin
   if Mode = omView then exit;
 
   if FSettings.ConfirmSave and
     (Application.MessageBox('Сохранить изменения папки в базу данных?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
 
+  if Mode = omEdit then FScript := PrepareScriptForm;
   Success := SaveData;
+  if Success and Assigned(FScript) and FSettings.ShowScriptForm then FScript.Show;
   Close;
 end;
 
@@ -99,6 +107,30 @@ begin
   FMain.ActivateActions(ActionList, false);
 end;
 
+function TFEditFolder.GenChangesSQL(Script, Vars: TStringList): boolean;
+var
+  sl: TStringList;
+  i: integer;
+
+begin
+  result := false;
+  sl := TStringList.Create;
+
+  try
+    gcsCheckOption(sl, 'NAME', Properties.Title, Trim(edFolderName.Text), true);
+    gcsCheckOption(sl, 'PARENT_FOLDER_PK', Properties.FolderPK, lcbFolders.KeyValue, false);
+
+    i := FindInStrings(sl, 'PARENT_FOLDER_PK', [foToExistence]);
+    if i > -1 then
+      sl.Strings[i] := gcsGenParentParam(Script, Vars, TStringList.Create, lcbFolders.KeyValue, 'PARENT_FOLDER_PK', 'PK', 'DYNAMIC_FORM_FOLDER',
+        'PARENT_FOLDER_PK = ');
+
+    result := gcsGenUpdateSQL(Script, sl, 'DYNAMIC_FORM_FOLDER', 'GUID', VariantToDBStr(Properties.Guid, true), [], '/* DYNAMIC_FORM_FOLDER */');
+  finally
+    sl.Free;
+  end;
+end;
+
 function TFEditFolder.GetShortCaption: string;
 begin
   if Mode = omAdd then
@@ -115,22 +147,23 @@ begin
   case Mode of
     omAdd:
     begin
-      result := FMain.ExecSQL('insert into DYNAMIC_FORM_FOLDER (NAME, PARENT_FOLDER_PK) values (' +
-        VariantToDBStr(Trim(edFolderName.Text), true) + ', ' + VariantToDBStr(lcbFolders.KeyValue, false) + ')', err);
-      FMain.AddToRefLog(cotFolder, edFolderName.Text, rltCreate);
+      result := FMain.ExecSQL('insert into DYNAMIC_FORM_FOLDER (NAME, PARENT_FOLDER_PK, GUID) values (' +
+        VariantToDBStr(Trim(edFolderName.Text), true) + ', ' + VariantToDBStr(lcbFolders.KeyValue, false) + ', ' + VariantToDBStr(Properties.Guid, true) + ')', err);
+      FMain.AddToRefLog(cotFolder, edFolderName.Text, VarToStr(Properties.Guid), rltCreate);
     end;
     omEdit:
     begin
       result := FMain.ExecSQL('update DYNAMIC_FORM_FOLDER set NAME = ' + VariantToDBStr(Trim(edFolderName.Text), true) +
-        ', PARENT_FOLDER_PK = ' + VariantToDBStr(lcbFolders.KeyValue, false) + ' where PK = ' + VarToStr(Properties.PK), err);
-      FMain.AddToRefLog(cotFolder, edFolderName.Text, rltUpdate, 'PK ' + VarToStr(Properties.PK));
+        ', PARENT_FOLDER_PK = ' + VariantToDBStr(lcbFolders.KeyValue, false) + ', GUID = ' + VariantToDBStr(Properties.Guid, true) +
+        ' where PK = ' + VarToStr(Properties.PK), err);
+      FMain.AddToRefLog(cotFolder, edFolderName.Text, VarToStr(Properties.Guid), rltUpdate, 'PK ' + VarToStr(Properties.PK));
     end
     else result := false;
   end;
 
   if result then
     SetPropValues(Properties.PK, Properties.Descriptor, Trim(edFolderName.Text), Properties.ParentDictPK, lcbFolders.KeyValue,
-      Properties.Login, Properties.ObjType);
+      Properties.Login, Properties.ObjType, Properties.Guid);
 
   if (err <> '') then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
@@ -142,11 +175,8 @@ begin
   lcbFolders.KeyValue := Properties.FolderPK;
   edFolderPk.Text := VarToStr(Properties.PK);
   edFolderName.Text := VarToStr(Properties.Title);
-  
-  if Mode <> omAdd then
-  begin
-    Caption := GenCaption('Папка', iif(Mode = omEdit, 'редактирование', 'просмотр'), edFolderPk.Text, '', edFolderName.Text, false);
-  end;
+
+  if Mode <> omAdd then Caption := GenCaption('Папка', iif(Mode = omEdit, 'редактирование', 'просмотр'), edFolderPk.Text, '', edFolderName.Text, false);
 end;
 
 procedure TFEditFolder.tbGenSQLClick(Sender: TObject);
