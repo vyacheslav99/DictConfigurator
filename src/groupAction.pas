@@ -236,6 +236,7 @@ type
     dsPermRolesGRID_SAVE: TFIBIntegerField;
     mtPermRolesGRID_SAVE: TIntegerField;
     dsDictRolesGRID_SAVE: TFIBIntegerField;
+    mtObjectListGUID: TStringField;
     procedure cbActionChange(Sender: TObject);
     procedure AGridOptionsExecute(Sender: TObject);
     procedure ACloseExecute(Sender: TObject);
@@ -602,7 +603,8 @@ begin
     if r then
     begin
       AddToLog(0, 'Смена владельца', mtObjectListFULLNAME.AsString, '');
-      FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate, 'Смена владельца. Старый владелец ' + mtObjectListLOGIN.AsString);
+      FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, mtObjectListGUID.AsString, rltUpdate,
+        'Смена владельца. Старый владелец ' + mtObjectListLOGIN.AsString);
     end else
       AddToLog(2, 'Смена владельца', mtObjectListFULLNAME.AsString, err);
 
@@ -686,7 +688,7 @@ begin
           if FMain.ExecSQL(sql, err) then
           begin
             AddToLog(0, 'Копирование прав должности', mtObjectListFULLNAME.AsString, '');
-            FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate);
+            FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, mtObjectListGUID.AsString, rltUpdate);
           end else
             AddToLog(2, 'Копирование прав должности', mtObjectListFULLNAME.AsString, err);
         end else
@@ -706,7 +708,7 @@ end;
 
 procedure TFGroupAction.ExecMoveToFolder;
 var
-  err: string;
+  err, g: string;
   r: boolean;
   fpk: Variant;
   l: integer;
@@ -728,7 +730,8 @@ begin
   begin
     if Trim(lcbFolder.Text) <> '' then
     begin
-      r := FMain.ExecSQL('insert into DYNAMIC_FORM_FOLDER (NAME) values (''' + Trim(lcbFolder.Text) + ''') returning (PK)',
+      g := CreateGuid;
+      r := FMain.ExecSQL('insert into DYNAMIC_FORM_FOLDER (NAME, GUID) values (''' + Trim(lcbFolder.Text) + ''', ''' + g + ''') returning (PK)',
         'PK', fpk, err);
 
       if (not r) then
@@ -736,7 +739,7 @@ begin
         AddToLog(2, 'Перемещение в папку', Trim(lcbFolder.Text), 'Не удалось создать новую папку! ' + err);
         exit;
       end else
-        FMain.AddToRefLog(cotFolder, lcbFolder.Text, rltCreate);
+        FMain.AddToRefLog(cotFolder, lcbFolder.Text, g, rltCreate);
     end;
   end;
 
@@ -766,8 +769,8 @@ begin
     if r then
     begin
       AddToLog(0, 'Перемещение в папку', mtObjectListFULLNAME.AsString, '');
-      if mtObjectListTYPE.AsInteger = 0 then FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate)
-      else FMain.AddToRefLog(cotFolder, mtObjectListNAME.AsString, rltUpdate, 'PK ' + mtObjectListPK.AsString);
+      if mtObjectListTYPE.AsInteger = 0 then FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, mtObjectListGUID.AsString, rltUpdate)
+      else FMain.AddToRefLog(cotFolder, mtObjectListNAME.AsString, mtObjectListGUID.AsString, rltUpdate, 'PK ' + mtObjectListPK.AsString);
     end else
       AddToLog(2, 'Перемещение в папку', mtObjectListFULLNAME.AsString, err);
 
@@ -801,7 +804,7 @@ begin
       mtObjectListNAME.AsVariant, err) then
     begin
       SavePermissions(mtObjectListPK.AsVariant, mtObjectListFULLNAME.AsString);
-      FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate);
+      FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, mtObjectListGUID.AsString, rltUpdate);
     end else
       AddToLog(2, 'Привязка/удаление прав', mtObjectListFULLNAME.AsString, 'Недостаточно прав! ' + err);
       
@@ -864,7 +867,7 @@ begin
       if FMain.ExecSQL(sql, err) then
       begin
         AddToLog(0, s, mtObjectListFULLNAME.AsString, '');
-        FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, rltUpdate, s + '. Пользователь ' + mtRefUsersLOGIN.AsString);
+        FMain.AddToRefLog(cotDict, mtObjectListDESCRIPTOR.AsString, mtObjectListGUID.AsString, rltUpdate, s + '. Пользователь ' + mtRefUsersLOGIN.AsString);
       end else
         AddToLog(2, s, mtObjectListFULLNAME.AsString, err);
 
@@ -1040,7 +1043,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
     try
       try
         // справочники справочника
-        ds := FMain.OpenSQL('select r.PK, r.DESCRIPTOR_, r.TITLE, u.LOGIN from DYNAMIC_FORM_REFERENCE r ' +
+        ds := FMain.OpenSQL('select r.PK, r.DESCRIPTOR_, r.TITLE, u.LOGIN, r.GUID from DYNAMIC_FORM_REFERENCE r ' +
           'left join USERS u on u.PK = r.OWNER_USER_PK ' +
           'where r.PARENT_REFERENCE_PK = :REF_PK',
           'REF_PK=' + IntToStr(RefPk));
@@ -1050,13 +1053,14 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
         while not ds.Eof do
         begin
           if CanStop then exit;
-          
+
           if mtObjectList.Locate('PK', ds.FieldByName('PK').Value, []) then
             mtObjectList.Edit
           else
             mtObjectList.Append;
 
           mtObjectListPK.AsVariant := ds.FieldByName('PK').Value;
+          mtObjectListGUID.AsVariant := ds.FieldByName('GUID').Value;
           mtObjectListLOGIN.AsVariant := ds.FieldByName('LOGIN').Value;
           mtObjectListTYPE.AsVariant := 0;
           mtObjectListDESCRIPTOR.AsVariant := ds.FieldByName('DESCRIPTOR_').Value;
@@ -1096,7 +1100,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
     try
       try
         // справочники папки
-        ds := FMain.OpenSQL('select r.PK, r.DESCRIPTOR_, r.TITLE, u.LOGIN from DYNAMIC_FORM_REFERENCE r ' +
+        ds := FMain.OpenSQL('select r.PK, r.DESCRIPTOR_, r.TITLE, u.LOGIN, r.GUID from DYNAMIC_FORM_REFERENCE r ' +
           'left join USERS u on u.PK = r.OWNER_USER_PK ' +
           'where r.FOLDER_PK = :FOLDER_PK',
           'FOLDER_PK=' + IntToStr(FldrPk));
@@ -1106,13 +1110,14 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
         while not ds.Eof do
         begin
           if CanStop then exit;
-          
+
           if mtObjectList.Locate('PK', ds.FieldByName('PK').Value, []) then
             mtObjectList.Edit
           else
             mtObjectList.Append;
 
           mtObjectListPK.AsVariant := ds.FieldByName('PK').Value;
+          mtObjectListGUID.AsVariant := ds.FieldByName('GUID').Value;
           mtObjectListLOGIN.AsVariant := ds.FieldByName('LOGIN').Value;
           mtObjectListTYPE.AsVariant := 0;
           mtObjectListDESCRIPTOR.AsVariant := ds.FieldByName('DESCRIPTOR_').Value;
@@ -1174,7 +1179,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
     try
       try
         // папки папки
-        ds := FMain.OpenSQL('select PK, NAME from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = :FOLDER_PK',
+        ds := FMain.OpenSQL('select PK, NAME, GUID from DYNAMIC_FORM_FOLDER where PARENT_FOLDER_PK = :FOLDER_PK',
           'FOLDER_PK=' + IntToStr(FldrPk));
 
         ds.First;
@@ -1182,13 +1187,14 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
         while not ds.Eof do
         begin
           if CanStop then exit;
-          
+
           if mtObjectList.Locate('PK;TYPE', VarArrayOf([ds.FieldByName('PK').Value, 1]), []) then
             mtObjectList.Edit
           else
             mtObjectList.Append;
 
           mtObjectListPK.AsVariant := ds.FieldByName('PK').Value;
+          mtObjectListGUID.AsVariant := ds.FieldByName('GUID').Value;
           mtObjectListTYPE.AsVariant := 1;
           mtObjectListNAME.AsVariant := ds.FieldByName('NAME').Value;
           mtObjectListFULLNAME.AsString := mtObjectListPK.AsString + ' : ' + mtObjectListNAME.AsString;
@@ -1243,7 +1249,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
     try
       try
         // папка
-        ds := FMain.OpenSQL('select PK, NAME from DYNAMIC_FORM_FOLDER where PK = :FOLDER_PK', 'FOLDER_PK=' + IntToStr(FldrPk));
+        ds := FMain.OpenSQL('select PK, NAME, GUID from DYNAMIC_FORM_FOLDER where PK = :FOLDER_PK', 'FOLDER_PK=' + IntToStr(FldrPk));
         ds.First;
 
         while not ds.Eof do
@@ -1251,6 +1257,7 @@ function TFGroupAction.LoadObjectList(type_: integer; var Err: string): boolean;
           if CanStop then exit;
           mtObjectList.Append;
           mtObjectListPK.AsVariant := ds.FieldByName('PK').Value;
+          mtObjectListGUID.AsVariant := ds.FieldByName('GUID').Value;
           mtObjectListTYPE.AsVariant := 1;
           mtObjectListNAME.AsVariant := ds.FieldByName('NAME').Value;
           mtObjectListFULLNAME.AsString := mtObjectListPK.AsString + ' : ' + mtObjectListNAME.AsString;
