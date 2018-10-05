@@ -241,7 +241,9 @@ object FHistory: TFHistory
       
         '  left join DYNAMIC_FORM_REFERENCE r on r.DESCRIPTOR_ = l.REF_DE' +
         'SCRIPTOR'
-      'where l.OBJ_TYPE = :OBJ_TYPE and l.REF_DESCRIPTOR = :DESCRIPTOR'
+      
+        'where l.OBJ_TYPE = :OBJ_TYPE and (l.REF_DESCRIPTOR = :DESCRIPTOR' +
+        ' or l.GUID = :GUID)'
       'order by l.DATE_ADD desc')
     Transaction = FMain.Transact
     Database = FMain.Database
