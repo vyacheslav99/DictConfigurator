@@ -92,13 +92,14 @@ type
   TConfObjectType = (cotFolder, cotDict, cotForm, cotWizard, cotNone, cotLikedFolder);
 
   TNodeDictInfo = class
-    PK: variant;
-    Descriptor: variant;
-    Title: variant;
-    ParentDictPK: variant;
-    FolderPK: variant;
-    Login: variant;
+    PK: Variant;
+    Descriptor: Variant;
+    Title: Variant;
+    ParentDictPK: Variant;
+    FolderPK: Variant;
+    Login: Variant;
     ObjType: TConfObjectType;
+    Guid: Variant;
     procedure Assign(Source: TObject);
     function IsEqual(Source: TObject): boolean;
   end;
@@ -139,7 +140,7 @@ type
     MD5: string;
     SourceFile: string; 
   end;
-  
+
 function AssignNodeData(ObjType: TConfObjectType): TNodeDictInfo;
 function iif(Switch: boolean; iftrue: variant; iffalse: variant): variant;
 function GetVersion(FileName: string): string;
@@ -251,6 +252,7 @@ begin
   result.FolderPK := Null;
   result.Login := Null;
   result.ObjType := ObjType;
+  result.Guid := CreateGuid;
 end;
 
 function iif(Switch: boolean; iftrue: variant; iffalse: variant): variant;
@@ -1815,6 +1817,7 @@ begin
   FolderPK := TNodeDictInfo(Source).FolderPK;
   Login := TNodeDictInfo(Source).Login;
   ObjType := TNodeDictInfo(Source).ObjType;
+  Guid := TNodeDictInfo(Source).Guid;
 end;
 
 function TNodeDictInfo.IsEqual(Source: TObject): boolean;
@@ -1826,7 +1829,7 @@ begin
   result := (TNodeDictInfo(Source).ObjType = ObjType) and (TNodeDictInfo(Source).PK = PK) and
     (TNodeDictInfo(Source).Descriptor = Descriptor) and (TNodeDictInfo(Source).Title = Title) and
     (TNodeDictInfo(Source).ParentDictPK = ParentDictPK) and (TNodeDictInfo(Source).FolderPK = FolderPK) and
-    (TNodeDictInfo(Source).Login = Login);
+    (TNodeDictInfo(Source).Login = Login) and (TNodeDictInfo(Source).Guid = Guid);
 end;
 
 function BytesToStr(b: int64): string;
