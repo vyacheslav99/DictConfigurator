@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Buttons, StdCtrls,
-  SynEditHighlighter, SynHighlighterSQL, SynCompletionProposal, SynEdit, SynMemo, main, ActnList, ExtCtrls;
+  SynEditHighlighter, SynHighlighterSQL, SynCompletionProposal, SynEdit, SynMemo, ActnList, ExtCtrls;
 
 type
   TFScriptEditor = class(TForm)
@@ -39,6 +39,8 @@ type
 implementation
 
 {$R *.dfm}
+
+uses main;
 
 procedure TFScriptEditor.ACopyExecute(Sender: TObject);
 begin
