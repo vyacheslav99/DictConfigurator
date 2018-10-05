@@ -214,6 +214,19 @@ type
     csv1: TMenuItem;
     dsWizardStatesFORM_WIDTH: TFIBIntegerField;
     dsWizardStatesFORM_HEIGHT: TFIBIntegerField;
+    dsWizardScenGUID: TFIBStringField;
+    dsWizardStatesGUID: TFIBStringField;
+    mtWizardStatesGUID: TStringField;
+    dsScenSlotsGUID: TFIBStringField;
+    mtScenSlotsGUID: TStringField;
+    dsStateSlotsGUID: TFIBStringField;
+    mtStateSlotsGUID: TStringField;
+    dsScenSlotValGUID: TFIBStringField;
+    mtScenSlotValGUID: TStringField;
+    dsStateSlotValGUID: TFIBStringField;
+    mtStateSlotValGUID: TStringField;
+    dsStatesCrossGUID: TFIBStringField;
+    mtStatesCrossGUID: TStringField;
     procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure sbAddStateClick(Sender: TObject);
@@ -305,6 +318,12 @@ type
     procedure GroupEdit(Grid: TDBGridEh);
     function OpenJsonEditor(Field: TField; StatusText: string): TFJsonReader;
     procedure _Reload;
+    function gcsScen(Script, Vars: TStringList): boolean;
+    function gcsStates(Script, Vars, Cache: TStringList): boolean;
+    function gcsStateCross(Script, Vars, Cache, StateCache: TStringList): boolean;
+    function gcsSlots(Script, Vars, Deleted, Cache, StateCache: TStringList; Data: TMemTableEh): boolean;
+    function gcsSlotVals(Script, Vars, Deleted, SlotCache, CrossCache: TStringList; Data: TMemTableEh): boolean;
+    function GenChangesSQL(Script, Vars: TStringList): boolean; override;
   public
     procedure OnCrossEditorClose(Sender: TObject; var Action: TCloseAction);
     procedure OnStateEditorClose(Sender: TObject; var Action: TCloseAction);
@@ -317,6 +336,8 @@ type
 implementation
 
 {$R *.dfm}
+
+uses scriptEditor;
 
 procedure TFEditWizard.ApplySlotEditorData(FSlotEditor: TFSlotEditor);
 var
@@ -563,11 +584,16 @@ begin
 end;
 
 procedure TFEditWizard.btnSaveClick(Sender: TObject);
+var
+  FScript: TFScriptEditor;
+
 begin
   if Mode = omView then exit;
 
   if FSettings.ConfirmSave and
     (Application.MessageBox('Сохранить изменения Сценария в базу данных?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+
+  if Mode = omEdit then FScript := PrepareScriptForm;
 
   Success := SaveData;
   if Success then
@@ -575,6 +601,7 @@ begin
     Mode := omEdit;
     Properties := Properties;
     if CanRefresh then FMain.ChangeFormButtonCaption(Tag, GetShortCaption, Caption);
+    if Assigned(FScript) and FSettings.ShowScriptForm then FScript.Show;
   end;
 end;
 
@@ -725,6 +752,409 @@ begin
   DeletedCross.Free;
   DeletedSlots.Free;
   DeletedSlotVals.Free;
+end;
+
+function TFEditWizard.gcsScen(Script, Vars: TStringList): boolean;
+var
+  sl: TStringList;
+
+begin
+  sl := TStringList.Create;
+  result := false;
+
+  try
+    gcsCheckOption(sl, dsWizardScenNAME, Trim(edName.Text), true);
+    gcsCheckOption(sl, dsWizardScenSCEN_TYPE, cbScenType.Text, true);
+    gcsCheckOption(sl, dsWizardScenREF_PK, lcbDict.KeyValue, false, true, true);
+    gcsCheckOption(sl, dsWizardScenDESCRIPTOR_, Trim(edDescriptor.Text), true);
+    gcsCheckOption(sl, dsWizardScenNO_MES, Trim(edNoMes.Text), true);
+
+    result := gcsGenUpdateSQL(Script, sl, 'WIZARD_SCENS', 'PK', ':SCEN_PK', [], '/* WIZARD_SCENS */');
+  finally
+    sl.Free;
+  end;
+end;
+
+function TFEditWizard.gcsSlots(Script, Vars, Deleted, Cache, StateCache: TStringList; Data: TMemTableEh): boolean;
+var
+  bm: TBookmark;
+  sl: TStringList;
+  n: integer;
+
+begin
+  result := false;
+  sl := TStringList.Create;
+
+  try
+    // удаление
+    result := gcsGenDeleteSQL(Script, Deleted, 'WIZARD_SATES_SLOTS', 'PK');
+
+    bm := Data.GetBookmark;
+    Data.DisableControls;
+
+    // добавление
+    Data.First;
+    while not Data.Eof do
+    begin
+      if Data.FieldByName('CHANGED').AsBoolean and Data.FieldByName('PK').IsNull then
+      begin
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SATES_SLOTS */');
+        end;
+
+        if Data.Fields.FindField('SATE_PK') <> nil then
+          sl.Add(gcsGenParentParam(Script, Vars, StateCache, Data.FieldByName('SATE_PK').Value, 'STATE_PK', 'PK', 'WIZARD_SATES'))
+        else
+          sl.Add('null');
+        sl.Add(VariantToDBStr(Data.FieldByName('NAME').Value, true));
+        sl.Add(VariantToDBStr(Data.FieldByName('SLOT_TYPE').Value, true));
+        sl.Add(VariantToDBStr(Data.FieldByName('MAIN_SLOT').Value, false));
+        if Data.Fields.FindField('SCEN_PK') <> nil then
+          sl.Add(':SCEN_PK')
+        else
+          sl.Add('null');
+        sl.Add(VariantToDBStr(Data.FieldByName('ORDER_BY').Value, false));
+        sl.Add(VariantToDBStr(Data.FieldByName('GUID').Value, true));
+
+        n := Cache.Add(Data.FieldByName('GUID').AsString);
+        Vars.Add('declare variable SLOT_PK' + IntToStr(n) + ' integer;');
+
+        gcsGenInsertSQL(Script, sl, 'WIZARD_SATES_SLOTS', 'SATE_PK, NAME, SLOT_TYPE, MAIN_SLOT, SCEN_PK, ORDER_BY, GUID', ['PK'], [':SLOT_PK' + IntToStr(n)]);
+
+        result := true;
+      end;
+      Data.Next;
+    end;
+
+    // обновление
+    Data.First;
+    while not Data.Eof do
+    begin
+      if Data.FieldByName('CHANGED').AsBoolean and (not Data.FieldByName('PK').IsNull) then
+      begin
+        if Data.FieldByName('GUID').IsNull then raise Exception.Create(GUID_WARNING);
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SATES_SLOTS */');
+        end;
+
+        if Data.Fields.FindField('SATE_PK') <> nil then
+          sl.Add(gcsGenParentParam(Script, Vars, StateCache, Data.FieldByName('SATE_PK').Value, 'STATE_PK', 'PK', 'WIZARD_SATES', 'SATE_PK = '))
+        else
+          sl.Add('SATE_PK = null');
+        sl.Add('NAME = ' + VariantToDBStr(Data.FieldByName('NAME').Value, true));
+        sl.Add('SLOT_TYPE = ' + VariantToDBStr(Data.FieldByName('SLOT_TYPE').Value, true));
+        sl.Add('MAIN_SLOT = ' + VariantToDBStr(Data.FieldByName('MAIN_SLOT').Value, false));
+        if Data.Fields.FindField('SCEN_PK') <> nil then
+          sl.Add('SCEN_PK = :SCEN_PK')
+        else
+          sl.Add('SCEN_PK = null');
+        sl.Add('ORDER_BY = ' + VariantToDBStr(Data.FieldByName('ORDER_BY').Value, false));
+
+        result := gcsGenUpdateSQL(Script, sl, 'WIZARD_SATES_SLOTS', 'GUID', VariantToDBStr(Data.FieldByName('GUID').Value, true), []);
+      end;
+      Data.Next;
+    end;
+  finally
+    sl.Free;
+    if Data.BookmarkValid(bm) then
+    begin
+      Data.GotoBookmark(bm);
+      Data.FreeBookmark(bm);
+    end;
+    Data.EnableControls;
+  end;
+end;
+
+function TFEditWizard.gcsSlotVals(Script, Vars, Deleted, SlotCache, CrossCache: TStringList; Data: TMemTableEh): boolean;
+var
+  bm: TBookmark;
+  sl: TStringList;
+
+begin
+  result := false;
+  sl := TStringList.Create;
+
+  try
+    // удаление
+    result := gcsGenDeleteSQL(Script, Deleted, 'WIZARD_SC_SLOT_VAL', 'PK');
+
+    bm := Data.GetBookmark;
+    Data.DisableControls;
+
+    // добавление
+    Data.First;
+    while not Data.Eof do
+    begin
+      if Data.FieldByName('CHANGED').AsBoolean and Data.FieldByName('PK').IsNull then
+      begin
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SC_SLOT_VAL */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, SlotCache, Data.FieldByName('SLOT_PK').Value, 'SLOT_PK', 'PK', 'WIZARD_SATES_SLOTS'));
+        sl.Add(gcsGenParentParam(Script, Vars, CrossCache, Data.FieldByName('CROSS_PK').Value, 'CROSS_PK', 'PK', 'WIZARD_SATES_CROSS'));
+        sl.Add(VariantToDBStr(Data.FieldByName('SLOT_VALUE').Value, true));
+        sl.Add(VariantToDBStr(Data.FieldByName('GUID').Value, true));
+
+        gcsGenInsertSQL(Script, sl, 'WIZARD_SC_SLOT_VAL', 'SLOT_PK, CROSS_PK, SLOT_VALUE, GUID', [], []);
+        result := true;
+      end;
+      Data.Next;
+    end;
+
+    // обновление
+    Data.First;
+    while not Data.Eof do
+    begin
+      if Data.FieldByName('CHANGED').AsBoolean and (not Data.FieldByName('PK').IsNull) then
+      begin
+        if Data.FieldByName('GUID').IsNull then raise Exception.Create(GUID_WARNING);
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SC_SLOT_VAL */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, SlotCache, Data.FieldByName('SLOT_PK').Value, 'SLOT_PK', 'PK', 'WIZARD_SATES_SLOTS', 'SLOT_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, CrossCache, Data.FieldByName('CROSS_PK').Value, 'CROSS_PK', 'PK', 'WIZARD_SATES_CROSS', 'CROSS_PK = '));
+        sl.Add('SLOT_VALUE = ' + VariantToDBStr(Data.FieldByName('SLOT_VALUE').Value, true));
+
+        result := gcsGenUpdateSQL(Script, sl, 'WIZARD_SC_SLOT_VAL', 'GUID', VariantToDBStr(Data.FieldByName('GUID').Value, true), []);
+      end;
+      Data.Next;
+    end;
+  finally
+    sl.Free;
+    if Data.BookmarkValid(bm) then
+    begin
+      Data.GotoBookmark(bm);
+      Data.FreeBookmark(bm);
+    end;
+    Data.EnableControls;
+  end;
+end;
+
+function TFEditWizard.gcsStateCross(Script, Vars, Cache, StateCache: TStringList): boolean;
+var
+  bm: TBookmark;
+  sl: TStringList;
+  n: integer;
+
+begin
+  result := false;
+  sl := TStringList.Create;
+
+  try
+    // удаление
+    result := gcsGenDeleteSQL(Script, DeletedCross, 'WIZARD_SATES_CROSS', 'PK');
+
+    bm := mtStatesCross.GetBookmark;
+    mtStatesCross.DisableControls;
+
+    // добавление
+    mtStatesCross.First;
+    while not mtStatesCross.Eof do
+    begin
+      if mtStatesCrossCHANGED.AsBoolean and mtStatesCrossPK.IsNull then
+      begin
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SATES_CROSS */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, StateCache, mtStatesCrossPK_PREW.AsVariant, 'STATE_PK', 'PK', 'WIZARD_SATES'));
+        sl.Add(gcsGenParentParam(Script, Vars, StateCache, mtStatesCrossPK_NEXT.AsVariant, 'STATE_PK', 'PK', 'WIZARD_SATES'));
+        sl.Add(VariantToDBStr(mtStatesCrossNAME.AsVariant, true));
+        sl.Add(VariantToDBStr(mtStatesCrossADD_BUTTON.AsVariant, false));
+        sl.Add(VariantToDBStr(mtStatesCrossBUTTON_ORDER.AsVariant, false));
+        sl.Add(VariantToDBStr(mtStatesCrossNEED_CLOSE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtStatesCrossSHOW_IN_VIEW.AsVariant, false));
+        sl.Add(VariantToDBStr(mtStatesCrossHOT_KEY.AsVariant, true));
+        sl.Add(VariantToDBStr(mtStatesCrossGUID.AsVariant, true));
+
+        n := Cache.Add(mtStatesCrossGUID.AsString);
+        Vars.Add('declare variable CROSS_PK' + IntToStr(n) + ' integer;');
+
+        gcsGenInsertSQL(Script, sl, 'WIZARD_SATES_CROSS', 'PK_PREW, PK_NEXT, NAME, ADD_BUTTON, BUTTON_ORDER, NEED_CLOSE, SHOW_IN_VIEW, HOT_KEY, GUID',
+          ['PK'], [':CROSS_PK' + IntToStr(n)]);
+
+        result := true;
+      end;
+      mtStatesCross.Next;
+    end;
+
+    // обновление
+    mtStatesCross.First;
+    while not mtStatesCross.Eof do
+    begin
+      if mtStatesCrossCHANGED.AsBoolean and (not mtStatesCrossPK.IsNull) then
+      begin
+        if mtStatesCrossGUID.IsNull then raise Exception.Create(GUID_WARNING);
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SATES_CROSS */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, StateCache, mtStatesCrossPK_PREW.AsVariant, 'STATE_PK', 'PK', 'WIZARD_SATES', 'PK_PREW = '));
+        sl.Add(gcsGenParentParam(Script, Vars, StateCache, mtStatesCrossPK_NEXT.AsVariant, 'STATE_PK', 'PK', 'WIZARD_SATES', 'PK_NEXT = '));
+        sl.Add('NAME = ' + VariantToDBStr(mtStatesCrossNAME.AsVariant, true));
+        sl.Add('ADD_BUTTON = ' + VariantToDBStr(mtStatesCrossADD_BUTTON.AsVariant, false));
+        sl.Add('BUTTON_ORDER = ' + VariantToDBStr(mtStatesCrossBUTTON_ORDER.AsVariant, false));
+        sl.Add('NEED_CLOSE = ' + VariantToDBStr(mtStatesCrossNEED_CLOSE.AsVariant, false));
+        sl.Add('SHOW_IN_VIEW = ' + VariantToDBStr(mtStatesCrossSHOW_IN_VIEW.AsVariant, false));
+        sl.Add('HOT_KEY = ' + VariantToDBStr(mtStatesCrossHOT_KEY.AsVariant, true));
+
+        result := gcsGenUpdateSQL(Script, sl, 'WIZARD_SATES_CROSS', 'GUID', VariantToDBStr(mtStatesCrossGUID.AsVariant, true), []);
+      end;
+      mtStatesCross.Next;
+    end;
+  finally
+    sl.Free;
+    if mtStatesCross.BookmarkValid(bm) then
+    begin
+      mtStatesCross.GotoBookmark(bm);
+      mtStatesCross.FreeBookmark(bm);
+    end;
+    mtStatesCross.EnableControls;
+  end;
+end;
+
+function TFEditWizard.gcsStates(Script, Vars, Cache: TStringList): boolean;
+var
+  bm: TBookmark;
+  sl: TStringList;
+  n: integer;
+
+begin
+  result := false;
+  sl := TStringList.Create;
+
+  try
+    // удаление
+    result := gcsGenDeleteSQL(Script, DeletedStates, 'WIZARD_SATES', 'PK');
+
+    bm := mtWizardStates.GetBookmark;
+    mtWizardStates.DisableControls;
+
+    // добавление
+    mtWizardStates.First;
+    while not mtWizardStates.Eof do
+    begin
+      if mtWizardStatesCHANGED.AsBoolean and mtWizardStatesPK.IsNull then
+      begin
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SATES */');
+        end;
+
+        sl.Add(':SCEN_PK');
+        sl.Add(gcsGenParentParam(Script, Vars, TStringList.Create, mtWizardStatesFORM_PK.AsVariant, 'FORM_PK', 'PK', 'DYNAMIC_FORM'));
+        sl.Add(VariantToDBStr(mtWizardStatesFIELD_JSON.AsVariant, true));
+        sl.Add(VariantToDBStr(mtWizardStatesACTION_.AsVariant, true));
+        sl.Add(VariantToDBStr(mtWizardStatesDESCRIPTOR_.AsVariant, true));
+        sl.Add(VariantToDBStr(mtWizardStatesFULL_SCREEN.AsVariant, false));
+        sl.Add(VariantToDBStr(mtWizardStatesSAFE_CLOSE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtWizardStatesMAY_DOUBLE.AsVariant, false));
+        sl.Add(VariantToDBStr(mtWizardStatesGUID.AsVariant, true));
+
+        n := Cache.Add(mtWizardStatesGUID.AsString);
+        Vars.Add('declare variable STATE_PK' + IntToStr(n) + ' integer;');
+
+        gcsGenInsertSQL(Script, sl, 'WIZARD_SATES', 'SCEN_PK, FORM_PK, FIELD_JSON, ACTION_, DESCRIPTOR_, FULL_SCREEN, SAFE_CLOSE, MAY_DOUBLE, GUID',
+          ['PK'], [':STATE_PK' + IntToStr(n)]);
+
+        result := true;
+      end;
+      mtWizardStates.Next;
+    end;
+
+    // обновление
+    mtWizardStates.First;
+    while not mtWizardStates.Eof do
+    begin
+      if mtWizardStatesCHANGED.AsBoolean and (not mtWizardStatesPK.IsNull) then
+      begin
+        if mtWizardStatesGUID.IsNull then raise Exception.Create(GUID_WARNING);
+        sl.Clear;
+
+        if not result then
+        begin
+          Script.Add('');
+          Script.Add('  /* WIZARD_SATES */');
+        end;
+
+        sl.Add(gcsGenParentParam(Script, Vars, TStringList.Create, mtWizardStatesFORM_PK.AsVariant, 'FORM_PK', 'PK', 'DYNAMIC_FORM', 'FORM_PK = '));
+        sl.Add('FIELD_JSON = ' + VariantToDBStr(mtWizardStatesFIELD_JSON.AsVariant, true));
+        sl.Add('ACTION_ = ' + VariantToDBStr(mtWizardStatesACTION_.AsVariant, true));
+        sl.Add('DESCRIPTOR_ = ' + VariantToDBStr(mtWizardStatesDESCRIPTOR_.AsVariant, true));
+        sl.Add('FULL_SCREEN = ' + VariantToDBStr(mtWizardStatesFULL_SCREEN.AsVariant, false));
+        sl.Add('SAFE_CLOSE = ' + VariantToDBStr(mtWizardStatesSAFE_CLOSE.AsVariant, false));
+        sl.Add('MAY_DOUBLE = ' + VariantToDBStr(mtWizardStatesMAY_DOUBLE.AsVariant, false));
+
+        result := gcsGenUpdateSQL(Script, sl, 'WIZARD_SATES', 'GUID', VariantToDBStr(mtWizardStatesGUID.AsVariant, true), []);
+      end;
+      mtWizardStates.Next;
+    end;
+  finally
+    sl.Free;
+    if mtWizardStates.BookmarkValid(bm) then
+    begin
+      mtWizardStates.GotoBookmark(bm);
+      mtWizardStates.FreeBookmark(bm);
+    end;
+    mtWizardStates.EnableControls;
+  end;
+end;
+
+function TFEditWizard.GenChangesSQL(Script, Vars: TStringList): boolean;
+var
+  stateCache, crossCache, slotCache: TStringList;
+
+begin
+  result := false;
+  stateCache := TStringList.Create;
+  crossCache := TStringList.Create;
+  slotCache := TStringList.Create;
+
+  try
+    Vars.Add('declare variable SCEN_PK integer;');
+    Script.Add('  select PK from WIZARD_SCENS where GUID = ''' + dsWizardScenGUID.AsString + ''' into :SCEN_PK;');
+
+    result := gcsScen(Script, Vars);
+    if gcsStates(Script, Vars, stateCache) then result := true;
+    if gcsStateCross(Script, Vars, crossCache, stateCache) then result := true;
+    if gcsSlots(Script, Vars, DeletedSlots, slotCache, stateCache, mtScenSlots) then result := true;
+    if gcsSlots(Script, Vars, DeletedSlots, slotCache, stateCache, mtStateSlots) then result := true;
+    if gcsSlotVals(Script, Vars, DeletedSlotVals, slotCache, crossCache, mtScenSlotVal) then result := true;
+    if gcsSlotVals(Script, Vars, DeletedSlotVals, slotCache, crossCache, mtStateSlotVal) then result := true;
+  finally
+    stateCache.Free;
+    crossCache.Free;
+    slotCache.Free;
+  end;
 end;
 
 function TFEditWizard.GetShortCaption: string;
@@ -1032,6 +1462,7 @@ begin
   begin
     //if mtWizardStatesFORM_PK.IsNull then raise Exception.Create('Не все обязательные поля заполнены!');
     mtWizardStatesCHANGED.AsBoolean := true;
+    if mtWizardStatesGUID.IsNull then mtWizardStatesGUID.AsString := CreateGuid;
   end;
 end;
 
@@ -1075,6 +1506,7 @@ begin
   if not IsLoadingGrid then
   begin
     DataSet.FieldByName('CHANGED').AsBoolean := true;
+    if DataSet.FieldByName('GUID').IsNull then DataSet.FieldByName('GUID').AsString := CreateGuid;
   end;
 end;
 
@@ -1117,6 +1549,7 @@ begin
   begin
     if mtStatesCrossPK_PREW.IsNull then raise Exception.Create('Не все обязательные поля заполнены!');
     mtStatesCrossCHANGED.AsBoolean := true;
+    if mtStatesCrossGUID.IsNull then mtStatesCrossGUID.AsString := CreateGuid;
   end;
 end;
 
@@ -1299,19 +1732,19 @@ begin
   case Mode of
     omAdd:
     begin
-      result := FMain.ExecSQL('insert into WIZARD_SCENS (NAME, SCEN_TYPE, REF_PK, DESCRIPTOR_, NO_MES) values (' +
+      result := FMain.ExecSQL('insert into WIZARD_SCENS (NAME, SCEN_TYPE, REF_PK, DESCRIPTOR_, NO_MES, GUID) values (' +
         VariantToDBStr(Trim(edName.Text), true) + ', ' + VariantToDBStr(cbScenType.Text, true) + ', ' +
         VariantToDBStr(lcbDict.KeyValue, false, true, true) + ', ' + VariantToDBStr(Trim(edDescriptor.Text), true) + ', ' +
-        VariantToDBStr(Trim(edNoMes.Text), true) + ') returning (PK)', 'PK', Properties.PK, err);
-      FMain.AddToRefLog(Properties.ObjType, iif(Trim(edDescriptor.Text) = '', edName.Text, edDescriptor.Text), rltCreate);
+        VariantToDBStr(Trim(edNoMes.Text), true) + ', ' + VariantToDBStr(Properties.Guid, true) + ') returning (PK)', 'PK', Properties.PK, err);
+      FMain.AddToRefLog(Properties.ObjType, iif(Trim(edDescriptor.Text) = '', edName.Text, edDescriptor.Text), VarToStr(Properties.Guid), rltCreate);
     end;
     omEdit:
     begin
       result := FMain.ExecSQL('update WIZARD_SCENS set NAME = ' + VariantToDBStr(Trim(edName.Text), true) +
         ', SCEN_TYPE = ' + VariantToDBStr(cbScenType.Text, true) + ', REF_PK = ' + VariantToDBStr(lcbDict.KeyValue, false, true, true) +
         ', DESCRIPTOR_ = ' + VariantToDBStr(Trim(edDescriptor.Text), true) + ', NO_MES = ' + VariantToDBStr(Trim(edNoMes.Text), true) +
-        ' where PK = ' + VarToStr(Properties.PK), err);
-      FMain.AddToRefLog(Properties.ObjType, iif(Trim(edDescriptor.Text) = '', edName.Text, edDescriptor.Text), rltUpdate,
+        ', GUID = ' + VariantToDBStr(Properties.Guid, true) + ' where PK = ' + VarToStr(Properties.PK), err);
+      FMain.AddToRefLog(Properties.ObjType, iif(Trim(edDescriptor.Text) = '', edName.Text, edDescriptor.Text), VarToStr(Properties.Guid), rltUpdate,
         iif(Trim(edDescriptor.Text) = '', 'PK ' + VarToStr(Properties.PK), ''));
     end
     else result := false;
@@ -1323,7 +1756,7 @@ begin
   begin
     SetPropValues(Properties.PK, iif(Trim(edDescriptor.Text) = '', Null, Trim(edDescriptor.Text)),
       iif(Trim(edName.Text) = '', Null, Trim(edName.Text)), lcbDict.KeyValue, Properties.FolderPK, Properties.Login,
-      Properties.ObjType);
+      Properties.ObjType, Properties.Guid);
     SaveGridData;
   end;
 end;
@@ -1366,6 +1799,7 @@ begin
         qEditState.ParamByName('FULL_SCREEN').Value := mtWizardStates.FieldByName('FULL_SCREEN').Value;
         qEditState.ParamByName('SAFE_CLOSE').Value := mtWizardStates.FieldByName('SAFE_CLOSE').Value;
         qEditState.ParamByName('MAY_DOUBLE').Value := mtWizardStates.FieldByName('MAY_DOUBLE').Value;
+        qEditState.ParamByName('GUID').Value := mtWizardStates.FieldByName('GUID').Value;
         qEditState.ExecQuery;
         FMain.Transact.CommitRetaining;
 
@@ -1411,6 +1845,7 @@ begin
         qEditStateCross.ParamByName('NEED_CLOSE').Value := mtStatesCross.FieldByName('NEED_CLOSE').Value;
         qEditStateCross.ParamByName('SHOW_IN_VIEW').Value := mtStatesCross.FieldByName('SHOW_IN_VIEW').Value;
         qEditStateCross.ParamByName('HOT_KEY').Value := mtStatesCross.FieldByName('HOT_KEY').Value;
+        qEditStateCross.ParamByName('GUID').Value := mtStatesCross.FieldByName('GUID').Value;
         qEditStateCross.ExecQuery;
         FMain.Transact.CommitRetaining;
       end;
@@ -1463,6 +1898,7 @@ begin
       begin
         qEditSlot.Close;
         qEditSlot.ParamByName('PK').Value := MemTable.FieldByName('PK').Value;
+        qEditSlot.ParamByName('GUID').Value := MemTable.FieldByName('GUID').Value;
         if MemTable.Fields.FindField('SATE_PK') <> nil then
           qEditSlot.ParamByName('SATE_PK').Value := MemTable.FieldByName('SATE_PK').Value
         else
@@ -1521,6 +1957,7 @@ begin
         qEditSlotVal.ParamByName('SLOT_PK').Value := MemTable.FieldByName('SLOT_PK').Value;
         qEditSlotVal.ParamByName('CROSS_PK').Value := MemTable.FieldByName('CROSS_PK').Value;
         qEditSlotVal.ParamByName('SLOT_VALUE').Value := MemTable.FieldByName('SLOT_VALUE').Value;
+        qEditSlotVal.ParamByName('GUID').Value := MemTable.FieldByName('GUID').Value;
         qEditSlotVal.ExecQuery;
         FMain.Transact.CommitRetaining;
       end;
@@ -2045,6 +2482,8 @@ begin
     if dsWizardScen.IsEmpty then
       raise Exception.Create('Не найден сценарий с PK ' + VarToStr(Properties.PK) + ' (дескриптор ' + VarToStr(Properties.Descriptor) +
         ')! Возможно он был пересоздан и его PK поменялся.');
+    Properties.Guid := dsWizardScenGUID.AsVariant;
+    edPk.Text := VarToStr(Properties.PK);
     edPk.Text := VarToStr(Properties.PK);
     edDescriptor.Text := VarToStr(Properties.Descriptor);
     edName.Text := VarToStr(Properties.Title);
