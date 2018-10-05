@@ -398,6 +398,11 @@ type
     dsObjectsList: TpFIBDataSet;
     tmrLoadDbObjects: TTimer;
     dsObjectsListNAME: TFIBStringField;
+    dsTreeFolderGUID: TFIBStringField;
+    dsTreeDictGUID: TFIBStringField;
+    dsTreeDict2GUID: TFIBStringField;
+    dsTreeFormGUID: TFIBStringField;
+    dsTreeWizardGUID: TFIBStringField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -663,7 +668,7 @@ type
     procedure OpenDictInBrowser(DictInfo: TNodeDictInfo);
     procedure CopyRefLinkToClip(DictInfo: TNodeDictInfo);
     procedure ActivateActions(ActList: TActionList; Value: boolean);
-    function AddToRefLog(ObjType: TConfObjectType; Descriptor: string; Action: TRefLogType; Text: string = ''): boolean;
+    function AddToRefLog(ObjType: TConfObjectType; Descriptor, FGuid: string; Action: TRefLogType; Text: string = ''): boolean;
     procedure JumpToNode(ObjType: TConfObjectType; ObjKey: Variant);
     procedure ShowObjectHistory(Data: TNodeDictInfo);
     // работа с немодальными дочерними формами
@@ -847,7 +852,7 @@ begin
     begin
       res := ExecSQL('update or insert into DYNAMIC_FORM_REF_USER (REF_PK, USER_PK) values (' + VarToStr(TNodeDictInfo(Data).PK) + ', ' +
         VarToStr(pk) + ') matching (REF_PK, USER_PK)', err);
-      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'Добавление прав на конфигурацию. Полюзователь ' + VarToStr(pk));
+      if res then AddToRefLog(Data.ObjType, Data.Descriptor, Data.Guid, rltUpdate, 'Добавление прав на конфигурацию. Полюзователь ' + VarToStr(pk));
     end;
   end;
 
@@ -880,6 +885,7 @@ begin
     n1.SelectedIndex := -1;
     obj := AssignNodeData(cotNone);
     obj.PK := ds.FieldByName('PK').Value;
+    obj.Guid := ds.FieldByName('GUID').Value;
     if IsFolder then
     begin
       obj.ObjType := cotFolder;
@@ -934,6 +940,7 @@ begin
     n.SelectedIndex := 6;
     obj := AssignNodeData(cotForm);
     obj.PK := ds.FieldByName('PK').Value;
+    obj.Guid := ds.FieldByName('GUID').Value;
     obj.Descriptor := ds.FieldByName('ALIAS_FORM').Value;
     obj.Title := ds.FieldByName('TITLE').Value;
     obj.ParentDictPK := Null;
@@ -993,6 +1000,8 @@ begin
 
     obj := AssignNodeData(ObjType);
     obj.PK := ds.FieldByName('PK').Value;
+    if ds.FieldExist('GUID', idx) then obj.Guid := ds.FieldByName('GUID').Value;
+
     if ds.FieldExist('DESCRIPTOR_', idx) then obj.Descriptor := ds.FieldByName('DESCRIPTOR_').Value
     else if ds.FieldExist('ALIAS_FORM', idx) then obj.Descriptor := ds.FieldByName('ALIAS_FORM').Value;
 
@@ -1047,6 +1056,7 @@ begin
     n.SelectedIndex := 7;
     obj := AssignNodeData(cotWizard);
     obj.PK := ds.FieldByName('PK').Value;
+    obj.Guid := ds.FieldByName('GUID').Value;
     obj.Descriptor := ds.FieldByName('DESCRIPTOR_').Value;
     obj.Title := ds.FieldByName('NAME').Value;
     obj.ParentDictPK := ds.FieldByName('REF_PK').Value;
@@ -1130,14 +1140,15 @@ begin
   end;
 end;
 
-function TFMain.AddToRefLog(ObjType: TConfObjectType; Descriptor: string; Action: TRefLogType; Text: string): boolean;
+function TFMain.AddToRefLog(ObjType: TConfObjectType; Descriptor, FGuid: string; Action: TRefLogType; Text: string): boolean;
 var
   err: string;
-  
+
 begin
-  result := ExecSQL('insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL) values (' +
+  result := ExecSQL('insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL, GUID) values (' +
     IntToStr(Ord(ObjType)) + ', ' + iif(Trim(Descriptor) = '', 'null', '''' + Trim(Descriptor) + '''') + ', ' +
-    IntToStr(Ord(Action)) + ', ' + dsPortalUserPK.AsString + ', ' + iif(Trim(Text) = '', 'null', '''' + Trim(Text) + '''') + ')', err);
+    IntToStr(Ord(Action)) + ', ' + dsPortalUserPK.AsString + ', ' + iif(Trim(Text) = '', 'null', '''' + Trim(Text) + '''') + ', ' +
+    iif(FGuid = '', 'null', '''' + FGuid + '''') + ')', err);
 end;
 
 procedure TFMain.AddTreeNode(TreeView: TJvTreeView; ParentNode: TTreeNode);
@@ -1880,7 +1891,7 @@ begin
         ' where PK = (select GROUP_EDIT_FORM_PK from DYNAMIC_FORM_REFERENCE where PK = ' + VarToStr(TNodeDictInfo(Data).PK) +
         ' and GROUP_EDIT_FORM_PK <> -1)', err);
       // владельца объектови полей менять не будем - пусть будет видно, кто их создавал
-      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'Смена владельца. Старый владелец ' + Data.Login);
+      if res then AddToRefLog(Data.ObjType, Data.Descriptor, Data.Guid, rltUpdate, 'Смена владельца. Старый владелец ' + Data.Login);
     end;
   end;
 
@@ -1940,7 +1951,7 @@ begin
       res := ExecSQL('update DYNAMIC_FORM set OWNER_USER_PK = ' + VarToStr(pk) + ' where PK = ' +
         VarToStr(TNodeDictInfo(Data).PK), err);
       // владельца объектов и полей менять не будем - пусть будет видно, кто их создавал
-      if res then AddToRefLog(Data.ObjType, iif(not VarIsNull(Data.Descriptor), Data.Descriptor, Data.Title), rltUpdate,
+      if res then AddToRefLog(Data.ObjType, iif(not VarIsNull(Data.Descriptor), Data.Descriptor, Data.Title), Data.Guid, rltUpdate,
         'PK ' + IntToStr(Data.PK) + '. Смена владельца. Старый владелец ' + Data.Login);
     end;
   end;
@@ -3360,7 +3371,7 @@ begin
   if res then res := ExecSQL('delete from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(Data.PK), err);
   if res then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' +
     IntToStr(Ord(Data.ObjType)), err);
-  if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltDelete);
+  if res then AddToRefLog(Data.ObjType, Data.Descriptor, Data.Guid, rltDelete);
   if res then ReopenTree
   else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
@@ -3389,7 +3400,7 @@ begin
   if res then res := ExecSQL('delete from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Data.PK), err);
   if res then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' +
     IntToStr(Ord(Data.ObjType)), err);
-  if res then AddToRefLog(Data.ObjType, Data.Title, rltDelete, 'PK ' + IntToStr(Data.PK));
+  if res then AddToRefLog(Data.ObjType, Data.Title, Data.Guid, rltDelete, 'PK ' + IntToStr(Data.PK));
   if res then ReopenTree
   else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
@@ -3480,7 +3491,7 @@ begin
         exit;
       end;
       ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(d.PK) + ' and OBJ_TYPE = ' + IntToStr(Ord(d.ObjType)), err);
-      AddToRefLog(d.ObjType, d.Descriptor, rltDelete);
+      AddToRefLog(d.ObjType, d.Descriptor, d.Guid, rltDelete);
     end;
 
     // удаление - теперь вложенные папки
@@ -3499,7 +3510,7 @@ begin
     ExecSQL('update DYNAMIC_FORM_FOLDER set PARENT_FOLDER_PK = null where PARENT_FOLDER_PK = ' + IntToStr(Data.PK), err);
     result := ExecSQL('delete from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Data.PK), err);
     if result then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' + IntToStr(Ord(Data.ObjType)), err);
-    if result then AddToRefLog(Data.ObjType, Data.Title, rltDelete, 'PK ' + IntToStr(Data.PK));
+    if result then AddToRefLog(Data.ObjType, Data.Title, Data.Guid, rltDelete, 'PK ' + IntToStr(Data.PK));
     if not result then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
   finally
     d.Free;
@@ -3535,7 +3546,7 @@ begin
   if res then res := ExecSQL('delete from DYNAMIC_FORM where PK = ' + IntToStr(Data.PK), err);
   if res then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' +
     IntToStr(Ord(Data.ObjType)), err);
-  if res then AddToRefLog(Data.ObjType, iif(not VarIsNull(Data.Descriptor), data.Descriptor, Data.Title), rltDelete, 'PK ' + IntToStr(Data.PK));
+  if res then AddToRefLog(Data.ObjType, iif(not VarIsNull(Data.Descriptor), data.Descriptor, Data.Title), Data.Guid, rltDelete, 'PK ' + IntToStr(Data.PK));
   if res then ReopenTree
   else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
@@ -3590,7 +3601,7 @@ begin
     begin
       res := ExecSQL('delete from DYNAMIC_FORM_REF_USER where REF_PK = ' + VarToStr(TNodeDictInfo(Data).PK) +
         ' and USER_PK = ' + VarToStr(pk), err);
-      if res then AddToRefLog(Data.ObjType, Data.Descriptor, rltUpdate, 'Удаление прав на конфигурацию. Полюзователь ' + VarToStr(pk));
+      if res then AddToRefLog(Data.ObjType, Data.Descriptor, Data.Guid, rltUpdate, 'Удаление прав на конфигурацию. Полюзователь ' + VarToStr(pk));
     end;
   end;
 
@@ -3702,7 +3713,7 @@ begin
   if result then result := ExecSQL('delete from WIZARD_SCENS where PK = ' + IntToStr(Data.PK), err);
   if result then ExecSQL('delete from DCFG_HISTORY where OBJ_PK = ' + IntToStr(Data.PK) + ' and OBJ_TYPE = ' +
     IntToStr(Ord(Data.ObjType)), err);
-  if result then AddToRefLog(cotWizard, iif(not VarIsNull(Data.Descriptor), Data.Descriptor, Data.Title), rltDelete, 'PK ' + VarToStr(Data.PK));
+  if result then AddToRefLog(cotWizard, iif(not VarIsNull(Data.Descriptor), Data.Descriptor, Data.Title), Data.Guid, rltDelete, 'PK ' + VarToStr(Data.PK));
   if result then ReopenTree
   else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
@@ -4741,7 +4752,7 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select PK, DESCRIPTOR_ from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(Pk));
+    ds1 := OpenSQL('select PK, DESCRIPTOR_, GUID from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     // справочник
@@ -4755,8 +4766,9 @@ begin
     Script.Add('  select PK from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds1.FieldByName('DESCRIPTOR_').AsString + ''' into :PK;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_REFERENCE'', :PARAMS) matching (VAR_NAME);');
-    Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL) values (1, ''' + ds1.FieldByName('DESCRIPTOR_').AsString +
-      ''', 1, ' + dsPortalUserPK.AsString + ', ''Перенакат всех прав справочника'');');
+    Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL, GUID) values (1, ''' +
+      ds1.FieldByName('DESCRIPTOR_').AsString + ''', 1, ' + dsPortalUserPK.AsString + ', ''Перенакат всех прав справочника'', ' +
+      VariantToDBStr(ds1.FieldByName('GUID').Value, true) + ');');
     Script.Add('  delete from DYNAMIC_FORM_PERMISSIONS where REFERENCE_PK = :PK;');
     Script.Add('  delete from DYNAMIC_FORM_PERM_RANKS where REFERENCE_PK = :PK;');
     Script.Add('end^');
@@ -4875,8 +4887,8 @@ begin
     ds1 := OpenSQL('select PK, OWNER_USER_PK, TITLE, CREATE_, ORDER_BY, DESCRIPTOR_, PARENT_REFERENCE_PK, MAIN_FORM_PK, START_FORM_PK, ' +
       'BASE_DESCRIPTOR, FOLDER_PK, PARENT_ID_FIELD, ID_FIELD, EXPAND_REF, COLLAPSE_FILTER, SHOW_CHILD_REF, GROUPING, CON_ORIENT, ' +
       'BRIEF_NOTE, EDITABLE, SET_DISTINCT, REF_SIZE, GROUP_EDIT_FORM_PK, SHOW_ONLY_ADMIN, INSERT_COUNT, EXPAND_TREE, USE_MEM, ' +
-      'COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT, GUID from DYNAMIC_FORM_REFERENCE where ' +
-      'PK = ' + IntToStr(Pk));
+      'COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT, coalesce(GUID, uuid_to_char(gen_uuid())) GUID ' +
+      'from DYNAMIC_FORM_REFERENCE where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if IsMain then
@@ -4965,12 +4977,11 @@ begin
       VariantToDBStr(ds1.FieldByName('COUNT_ON_PAGE').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('DEFERRED_IMPORTS').Value, false) +
       ', ' + VariantToDBStr(ds1.FieldByName('AUTOSAVEINTERVAL').Value, false) + ', ' +
       VariantToDBStr(ds1.FieldByName('SKIP_DUPLICATES').Value, true) + ', ' + VariantToDBStr(ds1.FieldByName('SHOW_FILTER_BOUND').Value, true) +
-      ', ' + VariantToDBStr(ds1.FieldByName('CHECK_SELECT').Value, false) + ', ''' +
-      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
+      ', ' + VariantToDBStr(ds1.FieldByName('CHECK_SELECT').Value, false) + ', ''' + ds1.FieldByName('GUID').AsString + ''') returning PK into :PK;');
     Script.Add('  pDYNAMIC_FORM_REFERENCE = pDYNAMIC_FORM_REFERENCE || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_REFERENCE'', :pDYNAMIC_FORM_REFERENCE) matching (VAR_NAME);');
-    Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK) values (1, ''' + ds1.FieldByName('DESCRIPTOR_').AsString +
-      ''', 2, ' + dsPortalUserPK.AsString + ');');
+    Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, GUID) values (1, ''' + ds1.FieldByName('DESCRIPTOR_').AsString +
+      ''', 2, ' + dsPortalUserPK.AsString + ', ' + VariantToDBStr(ds1.FieldByName('GUID').Value, true) + ');');
     Script.Add('end^');
     Script.Add('');
     ds1.Close;
@@ -5383,7 +5394,7 @@ var
 begin
   // выгружаем саму папку
   try
-    ds1 := OpenSQL('select PK, NAME, PARENT_FOLDER_PK, GUID from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Pk));
+    ds1 := OpenSQL('select PK, NAME, PARENT_FOLDER_PK, coalesce(GUID, uuid_to_char(gen_uuid())) GUID from DYNAMIC_FORM_FOLDER where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     // если первый раз и есть родительская папка - выгружаем сначала ее
@@ -5415,16 +5426,17 @@ begin
     Script.Add('  begin');
     Script.Add('    select first 1 PK from DYNAMIC_FORM_FOLDER where NAME = ''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) + ''' ' +
       'and PARENT_FOLDER_PK ' + iif(ds1.FieldByName('PARENT_FOLDER_PK').IsNull, 'is null', '= :FK') + ' into :PK;');
-    Script.Add('    update DYNAMIC_FORM_FOLDER set GUID = ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) +
+    Script.Add('    update DYNAMIC_FORM_FOLDER set GUID = ''' + ds1.FieldByName('GUID').AsString +
       ''' where NAME = ''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) + ''' and PARENT_FOLDER_PK ' +
       iif(ds1.FieldByName('PARENT_FOLDER_PK').IsNull, 'is null', '= :FK') + ';');
     Script.Add('  end else');
     Script.Add('    insert into DYNAMIC_FORM_FOLDER (NAME, PARENT_FOLDER_PK, GUID) values (''' + ReplaceQuote(ds1.FieldByName('NAME').AsString) +
-      ''', :FK, ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
+      ''', :FK, ''' + ds1.FieldByName('GUID').AsString + ''') returning PK into :PK;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM_FOLDER'', :PARAMS) matching (VAR_NAME);');
-    Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL) values (0, ''' +
-      ReplaceQuote(ds1.FieldByName('NAME').AsString) + ''', 2, ' + dsPortalUserPK.AsString + ', ''PK '' || :PK);');
+    Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL, GUID) values (0, ''' +
+      ReplaceQuote(ds1.FieldByName('NAME').AsString) + ''', 2, ' + dsPortalUserPK.AsString + ', ''PK '' || :PK, ' +
+      VariantToDBStr(ds1.FieldByName('GUID').AsString, true) + ');');
     Script.Add('end^');
     Script.Add('');
     ds1.Close;
@@ -5456,8 +5468,8 @@ var
 begin
   // выгружаем форму
   try
-    ds1 := OpenSQL('select PK, OWNER_USER_PK, CREATE_, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH, GUID from DYNAMIC_FORM where PK = ' +
-      IntToStr(Pk));
+    ds1 := OpenSQL('select PK, OWNER_USER_PK, CREATE_, TITLE, WIDTH, HEIGHT, ALIAS_FORM, LEFT_ALIGN, LABEL_WIDTH, coalesce(GUID, uuid_to_char(gen_uuid())) GUID' +
+      'from DYNAMIC_FORM where PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
     if SimpleMode and (not ds1.FieldByName('ALIAS_FORM').IsNull) then
@@ -5481,7 +5493,7 @@ begin
       ReplaceQuote(ds1.FieldByName('TITLE').AsString) + ''', ' + VariantToDBStr(ds1.FieldByName('WIDTH').Value, false) + ', ' +
       VariantToDBStr(ds1.FieldByName('HEIGHT').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('ALIAS_FORM').Value, true) + ', ' +
       VariantToDBStr(ds1.FieldByName('LEFT_ALIGN').Value, false) + ', ' + VariantToDBStr(ds1.FieldByName('LABEL_WIDTH').Value, false) +
-      ', ''' + iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''') returning PK into :PK;');
+      ', ''' + ds1.FieldByName('GUID').AsString + ''') returning PK into :PK;');
     Script.Add('  PARAMS = PARAMS || ''' + ds1.FieldByName('PK').AsString + ''' || '':'' || :PK || '','';');
     Script.Add('  update or insert into TMP_VAR (VAR_NAME, VALUE_) values (''DYNAMIC_FORM'', :PARAMS) matching (VAR_NAME);');
 
@@ -5490,9 +5502,9 @@ begin
       Script.Add('  delete from DYNAMIC_FORM_FIELD where FORM_PK = :PK;');
       Script.Add('  delete from DYNAMIC_FORM_FIELD_GROUP where FORM_PK = :PK;');
       Script.Add('  delete from DYNAMIC_FORM_OBJECT_TREE where FORM_PK = :PK;');
-      Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL) values (2, ''' +
+      Script.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, ACTION_DETAIL, GUID) values (2, ''' +
         iif(ds1.FieldByName('ALIAS_FORM').IsNull, ReplaceQuote(ds1.FieldByName('TITLE').AsString), ds1.FieldByName('ALIAS_FORM').AsString) +
-        ''', 2, ' + dsPortalUserPK.AsString + ', ''PK '' || :PK);');
+        ''', 2, ' + dsPortalUserPK.AsString + ', ''PK '' || :PK, ' + VariantToDBStr(ds1.FieldByName('GUID').Value, true) + ');');
     end;
 
     Script.Add('end^');
@@ -5927,7 +5939,8 @@ var
 
 begin
   try
-    ds1 := OpenSQL('select s.PK, s.NAME, s.SCEN_TYPE, s.REF_PK, s.DESCRIPTOR_, s.NO_MES, r.DESCRIPTOR_ REF_DESCR, s.GUID from WIZARD_SCENS s ' +
+    ds1 := OpenSQL('select s.PK, s.NAME, s.SCEN_TYPE, s.REF_PK, s.DESCRIPTOR_, s.NO_MES, r.DESCRIPTOR_ REF_DESCR, ' +
+      'coalesce(s.GUID, uuid_to_char(gen_uuid())) GUID from WIZARD_SCENS s ' +
       'join DYNAMIC_FORM_REFERENCE r on r.PK = s.REF_PK where s.PK = ' + IntToStr(Pk));
     if ds1.IsEmpty then exit;
 
@@ -5951,9 +5964,10 @@ begin
       VariantToDBStr(ReplaceQuote(ds1.FieldByName('NAME').AsString), true) + ', ' + VariantToDBStr(ds1.FieldByName('SCEN_TYPE').Value, true) +
       ', (select PK from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds1.FieldByName('REF_DESCR').AsString + '''), ' +
       VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', ' + VariantToDBStr(ds1.FieldByName('NO_MES').Value, true) + ', ''' +
-      iif(ds1.FieldByName('GUID').IsNull, CreateGuid, ds1.FieldByName('GUID').AsString) + ''')^');
-      Script.Add('insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK) values (3, ' +
-        VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', 2, ' + dsPortalUserPK.AsString + ')^');
+      ds1.FieldByName('GUID').AsString + ''')^');
+      Script.Add('insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, GUID) values (3, ' +
+        VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', 2, ' + dsPortalUserPK.AsString + ', ' +
+        VariantToDBStr(ds1.FieldByName('GUID').Value, true) + ')^');
     Script.Add('');
 
     // WIZARD_SATES
@@ -6122,9 +6136,9 @@ begin
   
   try
     // WIZARD_SATES
-    ds1 := OpenSQL('select st.PK, s.DESCRIPTOR_, s.NAME from WIZARD_SATES st join WIZARD_SCENS s on s.PK = st.SCEN_PK where st.SCEN_PK = ' +
-      IntToStr(Pk) + ' and st.PK in (' + StatesPk + ')');
-      
+    ds1 := OpenSQL('select st.PK, s.DESCRIPTOR_, s.NAME, s.GUID from WIZARD_SATES st ' +
+      'join WIZARD_SCENS s on s.PK = st.SCEN_PK where st.SCEN_PK = ' + IntToStr(Pk) + ' and st.PK in (' + StatesPk + ')');
+
     ds1.First;
     if ds1.FieldByName('DESCRIPTOR_').IsNull then
     begin
@@ -6133,8 +6147,9 @@ begin
       exit;
     end;
 
-    Script.Add('insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK) values (3, ' +
-        VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', 2, ' + dsPortalUserPK.AsString + ')^');
+    Script.Add('insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK, GUID) values (3, ' +
+      VariantToDBStr(ds1.FieldByName('DESCRIPTOR_').Value, true) + ', 2, ' + dsPortalUserPK.AsString + ', ' +
+      VariantToDBStr(ds1.FieldByName('GUID').Value, true) + ')^');
     Script.Add('');
     
     while not ds1.Eof do
@@ -6553,17 +6568,17 @@ begin
     begin
       try
         case TConfObjectType(dsTreeHistoryOBJ_TYPE.AsInteger) of
-          cotFolder: sql := 'select PK, NAME, NAME TITLE, PARENT_FOLDER_PK from DYNAMIC_FORM_FOLDER where PK = :PK';
+          cotFolder: sql := 'select PK, NAME, NAME TITLE, PARENT_FOLDER_PK, GUID from DYNAMIC_FORM_FOLDER where PK = :PK';
           cotDict: sql := 'select r.PK, r.DESCRIPTOR_, r.TITLE, r.TITLE ||  '' ['' || r.DESCRIPTOR_ || '']'' NAME, ' +
-            'r.PARENT_REFERENCE_PK, r.FOLDER_PK, u.LOGIN from DYNAMIC_FORM_REFERENCE r ' +
+            'r.PARENT_REFERENCE_PK, r.FOLDER_PK, u.LOGIN, r.GUID from DYNAMIC_FORM_REFERENCE r ' +
             'left join USERS u on u.PK = r.OWNER_USER_PK ' +
             'where r.PK = :PK';
-          cotForm: sql := 'select f.PK, f.TITLE, f.ALIAS_FORM, u.LOGIN, ' +
+          cotForm: sql := 'select f.PK, f.TITLE, f.ALIAS_FORM, u.LOGIN, f.GUID, ' +
             '(case when f.ALIAS_FORM is null then f.TITLE else f.TITLE ||  '' ['' || f.ALIAS_FORM || '']'' end) NAME ' +
             'from DYNAMIC_FORM f ' +
             'left join USERS u on u.PK = f.OWNER_USER_PK ' +
             'where f.PK = :PK';
-          cotWizard: sql := 'select w.PK, w.NAME, w.SCEN_TYPE, w.DESCRIPTOR_, w.REF_PK, u.LOGIN, ' +
+          cotWizard: sql := 'select w.PK, w.NAME, w.SCEN_TYPE, w.DESCRIPTOR_, w.REF_PK, u.LOGIN, w.GUID, ' +
             '(case when w.DESCRIPTOR_ is null then w.NAME else w.NAME ||  '' ['' || w.DESCRIPTOR_ || '']'' end) TITLE ' +
             'from WIZARD_SCENS w ' +
             'join DYNAMIC_FORM_REFERENCE r on r.PK = w.REF_PK ' +
@@ -6834,9 +6849,9 @@ begin
             // сначала грузим параметры окна
             d := AssignNodeData(cotNone);
             cls := ReadRegValueStr(reg, 'ClassName', '');
-            frmType := TChildFormType(ReadRegValueInt(reg, 'FormType', -1));
-            mode := TOpenMode(ReadRegValueInt(reg, 'Mode', 0));
-            d.ObjType := TConfObjectType(ReadRegValueInt(reg, 'ObjType', 4));
+            frmType := TChildFormType(ReadRegValueInt(reg, 'FormType', Ord(cftNone)));
+            mode := TOpenMode(ReadRegValueInt(reg, 'Mode', Ord(omAdd)));
+            d.ObjType := TConfObjectType(ReadRegValueInt(reg, 'ObjType', Ord(cotNone)));
             d.PK := ReadRegValueInt(reg, 'PK', -MAXSHORT);
             if d.PK = -MAXSHORT then d.PK := Null;
             d.Descriptor := ReadRegValueStr(reg, 'Descriptor', '');
@@ -6849,11 +6864,13 @@ begin
             if d.FolderPK = -MAXSHORT then d.FolderPK := Null;
             d.Login := ReadRegValueStr(reg, 'Login', '');
             if d.Login = '' then d.Login := Null;
+            d.Guid := ReadRegValueStr(reg, 'Guid', '');
+            if d.Guid = '' then d.Guid := Null;
 
             // параметры окна владельца
             od := AssignNodeData(cotNone);
-            ownFrmType := TChildFormType(ReadRegValueInt(reg, 'OwnerFormType', -1));
-            ownMode := TOpenMode(ReadRegValueInt(reg, 'OwnerMode', 0));
+            ownFrmType := TChildFormType(ReadRegValueInt(reg, 'OwnerFormType', Ord(cftNone)));
+            ownMode := TOpenMode(ReadRegValueInt(reg, 'OwnerMode', Ord(omAdd)));
             od.PK := ReadRegValueInt(reg, 'OwnerPK', -MAXSHORT);
             if od.PK = -MAXSHORT then od.PK := Null;
             od.Descriptor := ReadRegValueStr(reg, 'OwnerDescriptor', '');
@@ -7661,6 +7678,7 @@ begin
         if not VarIsNull(ChildForms[i].Properties.ParentDictPK) then reg.WriteInteger('ParentDictPK', ChildForms[i].Properties.ParentDictPK);
         if not VarIsNull(ChildForms[i].Properties.FolderPK) then reg.WriteInteger('FolderPK', ChildForms[i].Properties.FolderPK);
         if not VarIsNull(ChildForms[i].Properties.Login) then reg.WriteString('Login', ChildForms[i].Properties.Login);
+        if not VarIsNull(ChildForms[i].Properties.Guid) then reg.WriteString('Guid', ChildForms[i].Properties.Guid);
         if (ChildForms[i].FormType in [cftEditor, cftPreview]) and Assigned(ChildForms[i].Owner) and (not (ChildForms[i].Owner is TfrmEditForm)) then
         begin
           reg.WriteInteger('OwnerFormType', Ord(TChildForm(ChildForms[i].Owner).FormType));
