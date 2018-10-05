@@ -1,4 +1,4 @@
-﻿unit history;
+unit history;
 
 interface
 
@@ -46,7 +46,7 @@ type
     procedure SetMode(Value: TOpenMode); override;
     procedure SetProperties(Value: TNodeDictInfo); override;
     procedure Find(AContinue: boolean = false);
-    procedure LoadHistory(ObjType: integer; ObjID: string);
+    procedure LoadHistory(ObjType: integer; ObjID, FGuid: string);
   public
   end;
 
@@ -183,7 +183,7 @@ begin
   dsHistory.Close;
 end;
 
-procedure TFHistory.LoadHistory(ObjType: integer; ObjID: string);
+procedure TFHistory.LoadHistory(ObjType: integer; ObjID, FGuid: string);
 const
   sql_template = 'select distinct l.DATE_ADD, ' +
     'case l.ACTION_ when 0 then ''Создан'' when 1 then ''Изменен'' when 2 then ''Накат скрипта (пересоздан)'' when 3 then ''Удален'' end ACTION_, ' +
@@ -191,7 +191,7 @@ const
     'from DCFG_REF_LOG l ' +
     'left join USERS u on u.PK = l.USER_PK ' +
     'left join {object_join_const} ' +
-    'where l.OBJ_TYPE = :OBJ_TYPE and l.REF_DESCRIPTOR = :DESCRIPTOR ' +
+    'where l.OBJ_TYPE = :OBJ_TYPE and (l.REF_DESCRIPTOR = :DESCRIPTOR or l.GUID = :GUID) ' +
     'order by l.DATE_ADD desc';
 
   fldr_title_field = 'o.NAME TITLE';
@@ -241,6 +241,7 @@ begin
   dsHistory.SQLs.SelectSQL.Text := sql;
   dsHistory.ParamByName('OBJ_TYPE').Value := ObjType;
   dsHistory.ParamByName('DESCRIPTOR').Value := ObjID;
+  dsHistory.ParamByName('GUID').Value := FGuid;
 
   Screen.Cursor := crSQLWait;
   try
@@ -290,7 +291,7 @@ begin
   end;
 
   Caption := GenCaption('История ' + s, '', Properties.PK, VarToStr(Properties.Descriptor), VarToStr(Properties.Title), FSettings.TreeShowDescriptor);
-  LoadHistory(Ord(Properties.ObjType), id);
+  LoadHistory(Ord(Properties.ObjType), id, Properties.Guid);
 end;
 
 end.
