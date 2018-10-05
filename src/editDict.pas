@@ -9,7 +9,7 @@ uses
   ComCtrls, DBAccess, Uni, UniProvider, PostgreSQLUniProvider, OracleUniProvider, MySQLUniProvider, InterBaseUniProvider,
   MemDS, dbUtils, fmEditForm, groupedit, selectRank, StrUtils, ActnList, chartEditor, previewForm, chartGroupEditor, childForm,
   tmplConstructor, copyRanks, fixRef, ToolWin, json, jsonReader, filterConfigEditor, eventEditor, filterGroupEditor, EhLibMTE,
-  tmplEditor, scriptEditor;
+  tmplEditor;
 
 type
   TFEditDict = class(TChildForm)
@@ -927,15 +927,6 @@ type
     procedure LoadUserParams(UserID: integer; Strings: TStringList);
     procedure TemplateToUserParams(UserParams, Strings: TStringList);
     // генерация скрипта изменений
-    function gcsCheckOption(arr: TStringList; Field: TField; Value: Variant; QuotedString: boolean; EmptyStrToNull: boolean = true; ZeroToNull: boolean = false;
-      QuoteSymb: char = ''''): string;
-    function gcsGenParentParam(Script, Vars, Cache: TStringList; ChildField: TField; ParamPrefix, PkFieldName, TableName: string;
-      PreExpr: string = ''): string;
-    function gcsGenUpdateSQL(Script, Fields: TStringList; TableName, KeyField, KeyValue: string; AddFields: array of string;
-      Comment: string = ''; AddWhere: string = ''): boolean;
-    procedure gcsGenInsertSQL(Script, Values: TStringList; TableName, Fields: string; RetFields, RetParams: array of string;
-      Comment: string = ''; PassLine: boolean = true);
-    function gcsGenDeleteSQL(Script, Deleted: TStringList; TableName, PkFieldName: string; AddWhere: string = ''): boolean;
     function gcsMainForm(Script, Vars: TStringList): boolean;
     function gcsExtForm(Script, Vars: TStringList; ExtForm: TfrmEditForm; isStartForm: boolean): boolean;
     function gcsReference(Script, Vars: TStringList): boolean;
@@ -950,9 +941,7 @@ type
     function gcsChartGroups(Script, Vars, Cache: TStringList): boolean;
     function gcsCharts(Script, Vars, cgrCache, fldCache: TStringList): boolean;
     function gcsEvents(Script, Vars: TStringList): boolean;
-    function GenChangesSQL(Script, Vars: TStringList): boolean;
-    function ShowScriptForm: boolean;
-    function PrepareScriptForm: TFScriptEditor;
+    function GenChangesSQL(Script, Vars: TStringList): boolean; override;
   public
     procedure LoadTemplate(Memo: TMemo; TmplPk: integer); overload;
     function LoadTemplate(TmplPk: integer): string; overload;
@@ -981,10 +970,10 @@ implementation
 
 {$R *.dfm}
 
-uses field, editWizard;
+uses field, editWizard, scriptEditor;
 
 procedure TFEditDict.AExportToCsvExecute(Sender: TObject);
-begin
+begin                               
   if Assigned(ActiveControl) and (ActiveControl is TDBGridEh) then
     FMain.ExportToCsv(TDBGridEh(ActiveControl), edDictTitle.Text);
 end;
@@ -1561,11 +1550,6 @@ begin
   end;
 
   if Mode = omEdit then FScript := PrepareScriptForm;
-
-  // !!!!!!!!!! на время отладки !!!!!!!!!!!
-  if Assigned(FScript) then FScript.Show;
-  exit;
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   Success := SaveData;
   if Success then
@@ -2398,10 +2382,10 @@ begin
         end;
 
         sl.Add(':REF_PK');
-        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartX_FIELD_PK, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD'));
-        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartY_FIELD_PK, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD'));
+        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartX_FIELD_PK.AsVariant, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD'));
+        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartY_FIELD_PK.AsVariant, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD'));
         sl.Add(VariantToDBStr(mtChartGROUP_FUNCTION.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartSERIES_DIF, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD'));
+        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartSERIES_DIF.AsVariant, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD'));
         sl.Add(VariantToDBStr(mtChartTITLE.AsVariant, true));
         sl.Add(VariantToDBStr(mtChartCHART_TYPE.AsVariant, true));
         sl.Add(VariantToDBStr(mtChartORDER_.AsVariant, true));
@@ -2409,7 +2393,7 @@ begin
         sl.Add(VariantToDBStr(mtChartADDITIONAL_FIELD.AsVariant, true));
         sl.Add(VariantToDBStr(mtChartADDITIONAL_FIELD_ROTATE.AsVariant, false));
         sl.Add(VariantToDBStr(mtChartY_TITLE.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, cgrCache, mtChartGROUP_PK, 'CHART_GROUP_PK', 'PK', 'DYNAMIC_FORM_CHART_GROUPS'));
+        sl.Add(gcsGenParentParam(Script, Vars, cgrCache, mtChartGROUP_PK.AsVariant, 'CHART_GROUP_PK', 'PK', 'DYNAMIC_FORM_CHART_GROUPS'));
         sl.Add(VariantToDBStr(mtChartGROUP_ORDER.AsVariant, false));
         sl.Add(VariantToDBStr(mtChartGUID.AsVariant, true));
 
@@ -2436,10 +2420,10 @@ begin
           Script.Add('  /* DYNAMIC_FORM_CHARTS */');
         end;
 
-        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartX_FIELD_PK, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD', 'X_FIELD_PK = '));
-        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartY_FIELD_PK, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD', 'Y_FIELD_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartX_FIELD_PK.AsVariant, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD', 'X_FIELD_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartY_FIELD_PK.AsVariant, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD', 'Y_FIELD_PK = '));
         sl.Add('GROUP_FUNCTION = ' + VariantToDBStr(mtChartGROUP_FUNCTION.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartSERIES_DIF, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD', 'SERIES_DIF = '));
+        sl.Add(gcsGenParentParam(Script, Vars, fldCache, mtChartSERIES_DIF.AsVariant, 'FIELD_PK', 'PK', 'DYNAMIC_FORM_FIELD', 'SERIES_DIF = '));
         sl.Add('TITLE = ' + VariantToDBStr(mtChartTITLE.AsVariant, true));
         sl.Add('CHART_TYPE = ' + VariantToDBStr(mtChartCHART_TYPE.AsVariant, true));
         sl.Add('ORDER_ = ' + VariantToDBStr(mtChartORDER_.AsVariant, true));
@@ -2447,7 +2431,7 @@ begin
         sl.Add('ADDITIONAL_FIELD = ' + VariantToDBStr(mtChartADDITIONAL_FIELD.AsVariant, true));
         sl.Add('ADDITIONAL_FIELD_ROTATE = ' + VariantToDBStr(mtChartADDITIONAL_FIELD_ROTATE.AsVariant, false));
         sl.Add('Y_TITLE = ' + VariantToDBStr(mtChartY_TITLE.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, cgrCache, mtChartGROUP_PK, 'CHART_GROUP_PK', 'PK', 'DYNAMIC_FORM_CHART_GROUPS', 'GROUP_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, cgrCache, mtChartGROUP_PK.AsVariant, 'CHART_GROUP_PK', 'PK', 'DYNAMIC_FORM_CHART_GROUPS', 'GROUP_PK = '));
         sl.Add('GROUP_ORDER = ' + VariantToDBStr(mtChartGROUP_ORDER.AsVariant, false));
 
         result := gcsGenUpdateSQL(Script, sl, 'DYNAMIC_FORM_CHARTS', 'GUID', VariantToDBStr(mtChartGUID.AsVariant, true), []);
@@ -2463,18 +2447,6 @@ begin
     end;
     mtChart.EnableControls;
   end;
-end;
-
-function TFEditDict.gcsCheckOption(arr: TStringList; Field: TField; Value: Variant; QuotedString, EmptyStrToNull, ZeroToNull: boolean; QuoteSymb: char): string;
-var
-  fval, vval: Variant;
-
-begin
-  fval := VariantToDBStr(Field.Value, false, EmptyStrToNull, ZeroToNull);
-  vval := VariantToDBStr(Value, false, EmptyStrToNull, ZeroToNull);
-
-  if fval <> vval then
-    arr.Add(Field.FieldName + ' = ' + VariantToDBStr(Value, QuotedString, EmptyStrToNull, ZeroToNull, QuoteSymb));
 end;
 
 procedure TFEditDict.CopyPermissions(isRank: boolean);
@@ -3588,103 +3560,6 @@ begin
   lbRoleTmplName.Top := mRoleTemplate.Top - 19;
 end;
 
-function TFEditDict.gcsGenDeleteSQL(Script, Deleted: TStringList; TableName, PkFieldName, AddWhere: string): boolean;
-var
-  ds: TpFIBDataSet;
-
-begin
-  result := false;
-
-  if Deleted.Count > 0 then
-  try
-    ds := FMain.OpenSQL('select GUID from ' + TableName + ' where ' + PkFieldName + ' in (' + TextToString(Deleted.Text) + ')');
-    result := not ds.IsEmpty;
-
-    if result then
-    begin
-      Script.Add('');
-      Script.Add('  /* ' + TableName + ' */');
-      Script.Add('');
-    end;
-
-    while not ds.Eof do
-    begin
-      if ds.FieldByName('GUID').IsNull then raise Exception.Create(GUID_WARNING);
-      Script.Add('  delete from ' + TableName + ' where GUID = ''' + ds.FieldByName('GUID').AsString + ''';');
-      ds.Next;
-    end;
-  finally
-    ds.Close;
-    FreeAndNil(ds);
-  end;
-end;
-
-procedure TFEditDict.gcsGenInsertSQL(Script, Values: TStringList; TableName, Fields: string; RetFields, RetParams: array of string;
-  Comment: string = ''; PassLine: boolean = true);
-begin
-  if PassLine then Script.Add('');
-  if Comment <> '' then
-  begin
-    Script.Add('  ' + Comment);
-    Script.Add('');
-  end;
-
-  Script.Add('  insert into ' + TableName + ' (' + Fields + ')');
-
-  if Length(RetFields) = 0 then
-    Script.Add('  values (' + TextToString(Values.Text, '', ', ') + ');')
-  else begin
-    Script.Add('  values (' + TextToString(Values.Text, '', ', ') + ')');
-    Script.Add('  returning ' + ArrayToString(RetFields, '', ', ') + ' into ' + ArrayToString(RetParams, '', ', ') + ';');
-  end;
-end;
-
-function TFEditDict.gcsGenParentParam(Script, Vars, Cache: TStringList; ChildField: TField; ParamPrefix, PkFieldName, TableName: string;
-  PreExpr: string = ''): string;
-var
-  n: integer;
-  ds: TpFIBDataSet;
-
-begin
-  // поиск в кэше индекса переменной, возвращает имя этой переменной для связки
-  // если в кэше ее нет, добавляет в скрипт и объявление запрос на выборку этой переменной и в кэш ее имя.
-  // Возвращает имя переменной
-
-  // Входные параметры:
-  //  Script, Vars, Cache - понятно
-  //  ChildField - поле с parent PK
-  //  ParamPrefix - префикс для генерации названия переменной в скрипте - ее имя без индекса
-  //  PkFieldName - ключевое поле (обчно PK) из родительской таблицы, куда ссылается ChildField
-  //  TableName - таблица для генерации скрипта, откуда тянуть ключевое значение
-  //  PreExpr - выражение, которое надо добавить перед результатом (например "FEILD = ")
-
-  if ChildField.IsNull then
-    result := PreExpr + 'null'
-  else begin
-    ds := FMain.OpenSQL('select GUID from ' + TableName + ' where ' + PkFieldName + ' = ' + ChildField.AsString);
-    try
-      if ds.FieldByName('GUID').IsNull then raise Exception.Create(GUID_WARNING);
-
-      n := Cache.IndexOf(ds.FieldByName('GUID').AsString);
-
-      if n = -1 then
-      begin
-        n := Cache.Add(ds.FieldByName('GUID').AsString);
-        result := ParamPrefix + IntToStr(n);
-        Vars.Add('declare variable ' + result + ' integer;');
-        Script.Add('');
-        Script.Add('  select ' + PkFieldName + ' from ' + TableName + ' where GUID = ''' + ds.FieldByName('GUID').AsString + ''' into :' + result + ';');
-      end else
-        result := ParamPrefix + IntToStr(n);
-
-      result := PreExpr + ':' + result;
-    finally
-      ds.Close;
-      FreeAndNil(ds);
-    end;
-  end;
-end;
-
 function TFEditDict.gcsGroups(Script, Vars, Deleted, Cache: TStringList; FormKeyParam: string; Data: TMemTableEh): boolean;
 var
   bm: TBookmark;
@@ -3716,7 +3591,7 @@ begin
           Script.Add('  /* DYNAMIC_FORM_FIELD_GROUP */');
         end;
 
-        sl.Add(gcsGenParentParam(Script, Vars, Cache, Data.FieldByName('PARENT_PK'), 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP'));
+        sl.Add(gcsGenParentParam(Script, Vars, Cache, Data.FieldByName('PARENT_PK').Value, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP'));
         sl.Add(VariantToDBStr(FMain.dsPortalUserPK.Value, false));
         sl.Add(':' + FormKeyParam);
         sl.Add(VariantToDBStr(Data.FieldByName('ORDER_').AsVariant, false));
@@ -3760,7 +3635,7 @@ begin
           Script.Add('  /* DYNAMIC_FORM_FIELD_GROUP */');
         end;
 
-        sl.Add(gcsGenParentParam(Script, Vars, Cache, Data.FieldByName('PARENT_PK'), 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP', 'PARENT_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, Cache, Data.FieldByName('PARENT_PK').Value, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP', 'PARENT_PK = '));
         sl.Add('ORDER_ = ' + VariantToDBStr(Data.FieldByName('ORDER_').AsVariant, false));
         sl.Add('TITLE = ' + VariantToDBStr(Data.FieldByName('TITLE').AsVariant, true));
         sl.Add('DESCRIPTION = ' + VariantToDBStr(Data.FieldByName('DESCRIPTION').AsVariant, true));
@@ -3845,9 +3720,9 @@ begin
         end;
 
         sl.Add(VariantToDBStr(FMain.dsPortalUserPK.Value, false));
-        sl.Add(gcsGenParentParam(Script, Vars, GrCache, Data.FieldByName('GROUP_PK'), 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP'));
+        sl.Add(gcsGenParentParam(Script, Vars, GrCache, Data.FieldByName('GROUP_PK').Value, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP'));
         sl.Add(VariantToDBStr(Data.FieldByName('GROUP_COLUMN').AsVariant, false));
-        sl.Add(gcsGenParentParam(Script, Vars, ObjCache, Data.FieldByName('OBJECT_PK'), 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE'));
+        sl.Add(gcsGenParentParam(Script, Vars, ObjCache, Data.FieldByName('OBJECT_PK').Value, 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE'));
         sl.Add(VariantToDBStr(Data.FieldByName('ORDER_').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('TITLE').AsVariant, true));
         sl.Add(VariantToDBStr(Data.FieldByName('DESCRIPTION').AsVariant, true));
@@ -3858,22 +3733,22 @@ begin
         sl.Add(VariantToDBStr(Data.FieldByName('PARAMETERS').AsVariant, true));
         sl.Add(':' + FormKeyParam);
         if Data.FieldByName('GRID_VISIBLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_VISIBLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_VISIBLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('GRID_VISIBLE').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('GRID_ORDER').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('GRID_WIDTH').AsVariant, false));
         if Data.FieldByName('EDITABLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDITABLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDITABLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('EDITABLE').AsVariant, false));
         if Data.FieldByName('ADD_EDITABLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_EDITABLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_EDITABLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('ADD_EDITABLE').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('EXCEL_EXPORT').AsVariant, false));
         if Data.FieldByName('IS_VISIBLE_ADD').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE_ADD'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE_ADD').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('IS_VISIBLE_ADD').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('FILTER_ORDER').AsVariant, false));
@@ -3881,16 +3756,16 @@ begin
         sl.Add(VariantToDBStr(Data.FieldByName('SHOW_IN_START_FORM').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('STYLE_COLUMN').AsVariant, true));
         if Data.FieldByName('EDIT_IN_TABLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_IN_TABLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_IN_TABLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('EDIT_IN_TABLE').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('SHOW_IN_GROUP_EDIT').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('EXCEL_IMPORT').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('MATCH').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('LOCKED').AsVariant, false));
-        sl.Add(gcsGenParentParam(Script, Vars, FGrCache, Data.FieldByName('FILTER_GROUP'), 'FILTER_GROUP_PK', 'PK', 'DYNAMIC_FORM_FILTER_GROUP'));
+        sl.Add(gcsGenParentParam(Script, Vars, FGrCache, Data.FieldByName('FILTER_GROUP').Value, 'FILTER_GROUP_PK', 'PK', 'DYNAMIC_FORM_FILTER_GROUP'));
         if Data.FieldByName('IS_VISIBLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('IS_VISIBLE').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('GUID').AsVariant, true));
@@ -3920,8 +3795,8 @@ begin
           Script.Add('  /* DYNAMIC_FORM_FIELD */');
         end;
 
-        sl.Add(gcsGenParentParam(Script, Vars, ObjCache, Data.FieldByName('OBJECT_PK'), 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE', 'OBJECT_PK = '));
-        sl.Add(gcsGenParentParam(Script, Vars, GrCache, Data.FieldByName('GROUP_PK'), 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP', 'GROUP_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, ObjCache, Data.FieldByName('OBJECT_PK').Value, 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE', 'OBJECT_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, GrCache, Data.FieldByName('GROUP_PK').Value, 'GROUP_PK', 'PK', 'DYNAMIC_FORM_FIELD_GROUP', 'GROUP_PK = '));
         sl.Add('GROUP_COLUMN = ' + VariantToDBStr(Data.FieldByName('GROUP_COLUMN').AsVariant, false));
         sl.Add('ORDER_ = ' + VariantToDBStr(Data.FieldByName('ORDER_').AsVariant, false));
         sl.Add('TITLE = ' + VariantToDBStr(Data.FieldByName('TITLE').AsVariant, true));
@@ -3932,22 +3807,22 @@ begin
         sl.Add('STYLE = ' + VariantToDBStr(Data.FieldByName('STYLE').AsVariant, true));
         sl.Add('PARAMETERS = ' + VariantToDBStr(Data.FieldByName('PARAMETERS').AsVariant, true));
         if Data.FieldByName('GRID_VISIBLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_VISIBLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'GRID_VISIBLE = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_VISIBLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'GRID_VISIBLE = '))
         else
           sl.Add('GRID_VISIBLE = ' + VariantToDBStr(Data.FieldByName('GRID_VISIBLE').AsVariant, false));
         sl.Add('GRID_ORDER = ' + VariantToDBStr(Data.FieldByName('GRID_ORDER').AsVariant, false));
         sl.Add('GRID_WIDTH = ' + VariantToDBStr(Data.FieldByName('GRID_WIDTH').AsVariant, false));
         if Data.FieldByName('EDITABLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDITABLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDITABLE = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDITABLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDITABLE = '))
         else
           sl.Add('EDITABLE = ' + VariantToDBStr(Data.FieldByName('EDITABLE').AsVariant, false));
         if Data.FieldByName('ADD_EDITABLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_EDITABLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'ADD_EDITABLE = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_EDITABLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'ADD_EDITABLE = '))
         else
           sl.Add('ADD_EDITABLE = ' + VariantToDBStr(Data.FieldByName('ADD_EDITABLE').AsVariant, false));
         sl.Add('EXCEL_EXPORT = ' + VariantToDBStr(Data.FieldByName('EXCEL_EXPORT').AsVariant, false));
         if Data.FieldByName('IS_VISIBLE_ADD').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE_ADD'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IS_VISIBLE_ADD = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE_ADD').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IS_VISIBLE_ADD = '))
         else
           sl.Add('IS_VISIBLE_ADD = ' + VariantToDBStr(Data.FieldByName('IS_VISIBLE_ADD').AsVariant, false));
         sl.Add('FILTER_ORDER = ' + VariantToDBStr(Data.FieldByName('FILTER_ORDER').AsVariant, false));
@@ -3955,7 +3830,7 @@ begin
         sl.Add('SHOW_IN_START_FORM = ' + VariantToDBStr(Data.FieldByName('SHOW_IN_START_FORM').AsVariant, false));
         sl.Add('STYLE_COLUMN = ' + VariantToDBStr(Data.FieldByName('STYLE_COLUMN').AsVariant, true));
         if Data.FieldByName('EDIT_IN_TABLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_IN_TABLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDIT_IN_TABLE = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_IN_TABLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDIT_IN_TABLE = '))
         else
           sl.Add('EDIT_IN_TABLE = ' + VariantToDBStr(Data.FieldByName('EDIT_IN_TABLE').AsVariant, false));
         sl.Add('SHOW_IN_GROUP_EDIT = ' + VariantToDBStr(Data.FieldByName('SHOW_IN_GROUP_EDIT').AsVariant, false));
@@ -3963,10 +3838,10 @@ begin
         sl.Add('MATCH = ' + VariantToDBStr(Data.FieldByName('MATCH').AsVariant, false));
         sl.Add('LOCKED = ' + VariantToDBStr(Data.FieldByName('LOCKED').AsVariant, false));
         if Data.FieldByName('IS_VISIBLE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IS_VISIBLE = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IS_VISIBLE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IS_VISIBLE = '))
         else
           sl.Add('IS_VISIBLE = ' + VariantToDBStr(Data.FieldByName('IS_VISIBLE').AsVariant, false));
-        sl.Add(gcsGenParentParam(Script, Vars, FGrCache, Data.FieldByName('FILTER_GROUP'), 'FILTER_GROUP_PK', 'PK', 'DYNAMIC_FORM_FILTER_GROUP', 'FILTER_GROUP = '));
+        sl.Add(gcsGenParentParam(Script, Vars, FGrCache, Data.FieldByName('FILTER_GROUP').Value, 'FILTER_GROUP_PK', 'PK', 'DYNAMIC_FORM_FILTER_GROUP', 'FILTER_GROUP = '));
 
         result := gcsGenUpdateSQL(Script, sl, 'DYNAMIC_FORM_FIELD', 'GUID', VariantToDBStr(Data.FieldByName('GUID').AsVariant, true), []);
       end;
@@ -4144,30 +4019,6 @@ begin
   end;
 end;
 
-function TFEditDict.gcsGenUpdateSQL(Script, Fields: TStringList; TableName, KeyField, KeyValue: string;
-  AddFields: array of string; Comment: string = ''; AddWhere: string = ''): boolean;
-var
-  i: integer;
-
-begin
-  result := false;
-
-  if Fields.Count > 0 then
-  begin
-    result := true;
-    for i := 0 to Length(AddFields) - 1 do
-      Fields.Add(AddFields[i]);
-
-    Script.Add('');
-    if Comment <> '' then Script.Add('  ' + Comment);
-    Script.Add('  update ' + TableName + ' set');
-    for i := 0 to Fields.Count - 1 do
-      if i = Fields.Count - 1 then Script.Add('    ' + Fields.Strings[i])
-      else Script.Add('    ' + Fields.Strings[i] + ',');
-    Script.Add('  where ' + KeyField + ' = ' + KeyValue + AddWhere + ';');
-  end;
-end;
-
 function TFEditDict.gcsMainForm(Script, Vars: TStringList): boolean;
 var
   sl: TStringList;
@@ -4257,39 +4108,39 @@ begin
         sl.Add(':REF_PK');
         sl.Add(VariantToDBStr(Data.FieldByName('ROLE_PK').AsVariant, false));
         if Data.FieldByName('ADD_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('ADD_').AsVariant, false));
         if Data.FieldByName('EDIT_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('EDIT_').AsVariant, false));
         if Data.FieldByName('DEL_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('DEL_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('DEL_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('DEL_').AsVariant, false));
         if Data.FieldByName('VIEW_REF').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_REF'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_REF').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('VIEW_REF').AsVariant, false));
         if Data.FieldByName('CONFIG_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('CONFIG_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('CONFIG_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('CONFIG_').AsVariant, false));
         if Data.FieldByName('VIEW_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('VIEW_').AsVariant, false));
         if Data.FieldByName('EXPORT').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EXPORT'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EXPORT').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('EXPORT').AsVariant, false));
         if Data.FieldByName('IMPORT').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IMPORT'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IMPORT').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('IMPORT').AsVariant, false));
         if Data.FieldByName('GRID_SAVE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_SAVE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_SAVE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP'))
         else
           sl.Add(VariantToDBStr(Data.FieldByName('GRID_SAVE').AsVariant, false));
         sl.Add(VariantToDBStr(Data.FieldByName('GUID').AsVariant, true));
@@ -4319,39 +4170,39 @@ begin
 
         sl.Add('ROLE_PK = ' + VariantToDBStr(Data.FieldByName('ROLE_PK').AsVariant, false));
         if Data.FieldByName('ADD_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'ADD_ = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('ADD_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'ADD_ = '))
         else
           sl.Add('ADD_ = ' + VariantToDBStr(Data.FieldByName('ADD_').AsVariant, false));
         if Data.FieldByName('EDIT_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDIT_ = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EDIT_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EDIT_ = '))
         else
           sl.Add('EDIT_ = ' + VariantToDBStr(Data.FieldByName('EDIT_').AsVariant, false));
         if Data.FieldByName('DEL_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('DEL_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'DEL_ = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('DEL_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'DEL_ = '))
         else
           sl.Add('DEL_ = ' + VariantToDBStr(Data.FieldByName('DEL_').AsVariant, false));
         if Data.FieldByName('VIEW_REF').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_REF'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'VIEW_REF = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_REF').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'VIEW_REF = '))
         else
           sl.Add('VIEW_REF = ' + VariantToDBStr(Data.FieldByName('VIEW_REF').AsVariant, false));
         if Data.FieldByName('CONFIG_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('CONFIG_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'CONFIG_ = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('CONFIG_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'CONFIG_ = '))
         else
           sl.Add('CONFIG_ = ' + VariantToDBStr(Data.FieldByName('CONFIG_').AsVariant, false));
         if Data.FieldByName('VIEW_').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'VIEW_ = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('VIEW_').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'VIEW_ = '))
         else
           sl.Add('VIEW_ = ' + VariantToDBStr(Data.FieldByName('VIEW_').AsVariant, false));
         if Data.FieldByName('EXPORT').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EXPORT'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EXPORT = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('EXPORT').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'EXPORT = '))
         else
           sl.Add('EXPORT = ' + VariantToDBStr(Data.FieldByName('EXPORT').AsVariant, false));
         if Data.FieldByName('IMPORT').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IMPORT'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IMPORT = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('IMPORT').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'IMPORT = '))
         else
           sl.Add('IMPORT = ' + VariantToDBStr(Data.FieldByName('IMPORT').AsVariant, false));
         if Data.FieldByName('GRID_SAVE').AsInteger > 1 then
-          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_SAVE'), 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'GRID_SAVE = '))
+          sl.Add(gcsGenParentParam(Script, Vars, TmplCache, Data.FieldByName('GRID_SAVE').Value, 'TMPL_PK', 'PK', 'DYNAMIC_FORM_PERM_TMP', 'GRID_SAVE = '))
         else
           sl.Add('GRID_SAVE = ' + VariantToDBStr(Data.FieldByName('GRID_SAVE').AsVariant, false));
 
@@ -4401,7 +4252,7 @@ begin
         end;
 
         sl.Add(VariantToDBStr(mtPostFilterPOST_PK.AsVariant, false));
-        sl.Add(gcsGenParentParam(Script, Vars, FcfgCache, mtPostFilterFILTER_CONFIG_PK, 'FILTER_CONF_PK', 'PK', 'DYNAMIC_FORM_FILTER_CONFIG'));
+        sl.Add(gcsGenParentParam(Script, Vars, FcfgCache, mtPostFilterFILTER_CONFIG_PK.AsVariant, 'FILTER_CONF_PK', 'PK', 'DYNAMIC_FORM_FILTER_CONFIG'));
         sl.Add(VariantToDBStr(mtPostFilterGUID.AsVariant, true));
 
         gcsGenInsertSQL(Script, sl, 'DYNAMIC_FROM_POST_FILTER', 'POST_PK, FILTER_CONFIG_PK, GUID', [], []);
@@ -4423,7 +4274,6 @@ end;
 function TFEditDict.gcsReference(Script, Vars: TStringList): boolean;
 var
   sl: TStringList;
-  ds: TpFIBDataSet;
   i: integer;
 
 begin
@@ -4466,48 +4316,21 @@ begin
 
     if sl.Count > 0 then
     begin
-      //sl.Add('MAIN_FORM_PK = :MAIN_FORM_PK'); не вижу смысла - ее невозможно поменять в конфигураторе
-
       // если в sl есть PARENT_REFERENCE_PK, надо заменить его на вытягивание этого PK по дескрипору родителя
       i := FindInStrings(sl, 'PARENT_REFERENCE_PK', [foToExistence]);
       if i > -1 then
-      begin
-        ds := FMain.OpenSQL('select DESCRIPTOR_ from DYNAMIC_FORM_REFERENCE where PK = ' + VarToStr(lcbParentDict.KeyValue));
-        if (not ds.IsEmpty) and (not ds.FieldByName('DESCRIPTOR_').IsNull) then
-        begin
-          Vars.Add('declare variable PARENT_REFERENCE_PK integer;');
-          Script.Add('');
-          Script.Add('  select PK from DYNAMIC_FORM_REFERENCE where DESCRIPTOR_ = ''' + ds.FieldByName('DESCRIPTOR_').AsString + ''' into :PARENT_REFERENCE_PK;');
-          sl.Strings[i] := 'PARENT_REFERENCE_PK = :PARENT_REFERENCE_PK';
-          ds.Close;
-          FreeAndNil(ds);
-        end else
-          sl.Delete(i);
-      end;
+        sl.Strings[i] := gcsGenParentParam(Script, Vars, TStringList.Create, lcbParentDict.KeyValue, 'PARENT_REFERENCE_PK', 'PK', 'DYNAMIC_FORM_REFERENCE',
+          'PARENT_REFERENCE_PK = ');
 
       // если в sl есть FOLDER_PK, надо заменить его на вытягивание этого PK по имени папки
       i := FindInStrings(sl, 'FOLDER_PK', [foToExistence]);
       if i > -1 then
-      begin
-        ds := FMain.OpenSQL('select GUID from DYNAMIC_FORM_FOLDER where PK = ' + VarToStr(lcbFolder.KeyValue));
-        if not ds.IsEmpty then
-        begin
-          if ds.FieldByName('GUID').IsNull then raise Exception.Create(GUID_WARNING);
-          Vars.Add('declare variable FOLDER_PK integer;');
-          Script.Add('');
-          Script.Add('  select PK from DYNAMIC_FORM_FOLDER where GUID = ''' + ds.FieldByName('GUID').AsString + ''' into :FOLDER_PK;');
-          sl.Strings[i] := 'FOLDER_PK = :FOLDER_PK';
-          ds.Close;
-          FreeAndNil(ds);
-        end else
-          sl.Delete(i);
-      end;
+        sl.Strings[i] := gcsGenParentParam(Script, Vars, TStringList.Create, lcbFolder.KeyValue, 'FOLDER_PK', 'PK', 'DYNAMIC_FORM_FOLDER', 'FOLDER_PK = ');
 
       result := gcsGenUpdateSQL(Script, sl, 'DYNAMIC_FORM_REFERENCE', 'PK', ':REF_PK', ['MODIFY = current_timestamp'], '/* DYNAMIC_FORM_REFERENCE */');
     end;
   finally
     sl.Free;
-    if Assigned(ds) then ds.Free;
   end;
 end;
 
@@ -4594,7 +4417,7 @@ begin
         sl.Add(VariantToDBStr(mtObjectTreeNAME.AsVariant, true));
         sl.Add(VariantToDBStr(mtObjectTreeOBJECT_TYPE.AsVariant, true));
         sl.Add(':MAIN_FORM_PK');
-        sl.Add(gcsGenParentParam(Script, Vars, Cache, mtObjectTreeJOIN_PARENT_PK, 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE'));
+        sl.Add(gcsGenParentParam(Script, Vars, Cache, mtObjectTreeJOIN_PARENT_PK.AsVariant, 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE'));
         sl.Add(VariantToDBStr(mtObjectTreeIS_MULTI_JOIN.AsVariant, true));
         sl.Add(VariantToDBStr(mtObjectTreeJOIN_FIELDS.AsVariant, true));
         sl.Add(VariantToDBStr(mtObjectTreePARAMETERS.AsVariant, true));
@@ -4628,7 +4451,7 @@ begin
           Script.Add('  /* DYNAMIC_FORM_OBJECT_TREE */');
         end;
 
-        sl.Add(gcsGenParentParam(Script, Vars, Cache, mtObjectTreeJOIN_PARENT_PK, 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE', 'JOIN_PARENT_PK = '));
+        sl.Add(gcsGenParentParam(Script, Vars, Cache, mtObjectTreeJOIN_PARENT_PK.AsVariant, 'OBJECT_PK', 'PK', 'DYNAMIC_FORM_OBJECT_TREE', 'JOIN_PARENT_PK = '));
         sl.Add('TITLE = ' + VariantToDBStr(mtObjectTreeTITLE.AsVariant, true));
         sl.Add('NAME = ' + VariantToDBStr(mtObjectTreeNAME.AsVariant, true));
         sl.Add('OBJECT_TYPE = ' + VariantToDBStr(mtObjectTreeOBJECT_TYPE.AsVariant, true));
@@ -4686,12 +4509,12 @@ begin
 
         sl.Add(':REF_PK');
         sl.Add(VariantToDBStr(mtOtherEventsTITLE_EV.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsEVENT_REFERENCE, 'REF_PK', 'PK', 'DYNAMIC_FORM_REFERENCE'));
+        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsEVENT_REFERENCE.AsVariant, 'REF_PK', 'PK', 'DYNAMIC_FORM_REFERENCE'));
         sl.Add(VariantToDBStr(mtOtherEventsPOSITION_EV.AsVariant, false));
         sl.Add(VariantToDBStr(mtOtherEventsIMAGE_NAME_EV.AsVariant, true));
         sl.Add(VariantToDBStr(mtOtherEventsVIEW_TO_MENU.AsVariant, false));
         sl.Add(VariantToDBStr(mtOtherEventsCLASS_NAME.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsIS_VIZARD, 'SCEN_PK', 'PK', 'WIZARD_SCENS'));
+        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsIS_VIZARD.AsVariant, 'SCEN_PK', 'PK', 'WIZARD_SCENS'));
         sl.Add(VariantToDBStr(mtOtherEventsALIAS_DF.AsVariant, true));
         sl.Add(VariantToDBStr(mtOtherEventsLINK_METHOD.AsVariant, true));
         sl.Add(VariantToDBStr(mtOtherEventsGUID.AsVariant, true));
@@ -4720,12 +4543,12 @@ begin
         end;
 
         sl.Add('TITLE_EV = ' + VariantToDBStr(mtOtherEventsTITLE_EV.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsEVENT_REFERENCE, 'REF_PK', 'PK', 'DYNAMIC_FORM_REFERENCE', 'EVENT_REFERENCE = '));
+        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsEVENT_REFERENCE.AsVariant, 'REF_PK', 'PK', 'DYNAMIC_FORM_REFERENCE', 'EVENT_REFERENCE = '));
         sl.Add('POSITION_EV = ' + VariantToDBStr(mtOtherEventsPOSITION_EV.AsVariant, false));
         sl.Add('IMAGE_NAME_EV = ' + VariantToDBStr(mtOtherEventsIMAGE_NAME_EV.AsVariant, true));
         sl.Add('VIEW_TO_MENU = ' + VariantToDBStr(mtOtherEventsVIEW_TO_MENU.AsVariant, false));
         sl.Add('CLASS_NAME = ' + VariantToDBStr(mtOtherEventsCLASS_NAME.AsVariant, true));
-        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsIS_VIZARD, 'SCEN_PK', 'PK', 'WIZARD_SCENS', 'IS_VIZARD = '));
+        sl.Add(gcsGenParentParam(Script, Vars, cache, mtOtherEventsIS_VIZARD.AsVariant, 'SCEN_PK', 'PK', 'WIZARD_SCENS', 'IS_VIZARD = '));
         sl.Add('ALIAS_DF = ' + VariantToDBStr(mtOtherEventsALIAS_DF.AsVariant, true));
         sl.Add('LINK_METHOD = ' + VariantToDBStr(mtOtherEventsLINK_METHOD.AsVariant, true));
 
@@ -6989,54 +6812,6 @@ begin
   frm.ShowModal;
 end;
 
-function TFEditDict.PrepareScriptForm: TFScriptEditor;
-var
-  Script, Vars: TStringList;
-  i: integer;
-
-begin
-  Script := TStringList.Create;
-  Vars := TStringList.Create;
-  result := TFScriptEditor.Create(Self);
-
-  try
-    try
-      if GenChangesSQL(Script, Vars) then
-      begin
-        FMain.WriteSQLHeader(Properties, Ord(Mode), 0, TStringList(result.smScript.Lines));
-        result.smScript.Lines.AddStrings(Vars);
-        result.smScript.Lines.Add('begin');
-        result.smScript.Lines.AddStrings(Script);
-        result.smScript.Lines.Add('');
-        result.smScript.Lines.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK) values (1, ''' + edDictDescriptor.Text +
-          ''', 1, ' + FMain.dsPortalUserPK.AsString + ');');
-        FMain.WriteSQLFooter(Properties, Ord(Mode), 0, TStringList(result.smScript.Lines));
-      end else
-      begin
-        FreeAndNil(result);
-        { result.smScript.Lines.Add('/*');
-        result.smScript.Lines.Add('');
-        result.smScript.Lines.Add('  --== Не обнаружено изменений для генерации скрипта ==--');
-        result.smScript.Lines.Add('');
-        result.smScript.Lines.Add('*/'); }
-      end;
-    except
-      on e: Exception do
-      begin
-        Script.Text := e.Message;
-        result.smScript.Lines.Add('/*');
-        result.smScript.Lines.Add('');
-        for i := 0 to Script.Count - 1 do result.smScript.Lines.Add('  ' + Script.Strings[i]);
-        result.smScript.Lines.Add('');
-        result.smScript.Lines.Add('*/');
-      end;
-    end;
-  finally
-    Script.Free;
-    Vars.Free;
-  end;
-end;
-
 procedure TFEditDict.PrepareStartForm;
 begin
   InitStartForm;
@@ -7140,7 +6915,7 @@ begin
         result := FMain.ExecSQL('insert into DYNAMIC_FORM_REFERENCE (OWNER_USER_PK, TITLE, ORDER_BY, DESCRIPTOR_, PARENT_REFERENCE_PK, ' +
           'MAIN_FORM_PK, START_FORM_PK, BASE_DESCRIPTOR, FOLDER_PK, PARENT_ID_FIELD, ID_FIELD, EXPAND_REF, COLLAPSE_FILTER, ' +
           'GROUPING, CON_ORIENT, BRIEF_NOTE, EDITABLE, SET_DISTINCT, REF_SIZE, GROUP_EDIT_FORM_PK, SHOW_ONLY_ADMIN, EXPAND_TREE, ' +
-          'USE_MEM, COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT) values (' +
+          'USE_MEM, COUNT_ON_PAGE, DEFERRED_IMPORTS, AUTOSAVEINTERVAL, SKIP_DUPLICATES, SHOW_FILTER_BOUND, CHECK_SELECT, GUID) values (' +
           VariantToDBStr(FMain.dsPortalUserPK.Value, false) + ', ' + VariantToDBStr(Trim(edDictTitle.Text), true) + ', ' +
           VariantToDBStr(Trim(GetOrders), true) + ', ' + VariantToDBStr(Trim(edDictDescriptor.Text), true) + ', ' +
           VariantToDBStr(lcbParentDict.KeyValue, false, true, true) + ', ' + VariantToDBStr(mainFrmPk, false, true, true) + ', ' +
@@ -7155,10 +6930,11 @@ begin
           iif(chbDictUseMem.Checked, '1', '0') + ', ' + VariantToDBStr(edDictCountOnPage.Value, false, true, true) + ', ' +
           iif(chbDictDeferredImports.Checked, '1', '0') + ', ' + VariantToDBStr(edDictAutosaveInterval.Value, false, true, true) + ', ' +
           iif(chbDictSkipDuplicates.Checked, '''1''', '''0''') + ', ' + iif(cbDictShowFilterBound.ItemIndex = 0, 'null',
-          '''' + cbDictShowFilterBound.Text + '''') + ', ' + iif(chbCheckSelect.Checked, '1', '0') + ') returning (PK)', 'PK', Properties.PK, err);
+          '''' + cbDictShowFilterBound.Text + '''') + ', ' + iif(chbCheckSelect.Checked, '1', '0') + ', ' + VariantToDBStr(Properties.Guid, true) +
+          ') returning (PK)', 'PK', Properties.PK, err);
 
       // пишем в лог
-      FMain.AddToRefLog(cotDict, edDictDescriptor.Text, rltCreate);
+      FMain.AddToRefLog(cotDict, edDictDescriptor.Text, Properties.Guid, rltCreate);
     end;
     omEdit:
     begin
@@ -7197,7 +6973,8 @@ begin
               VariantToDBStr(StartForm.edFormHeight.Value, false, true, true) + ', ALIAS_FORM = ' +
               VariantToDBStr(Trim(StartForm.edFormAlias.Text), true) + ', LEFT_ALIGN = ' +
               iif(StartForm.chbLeftAlign.Checked, '1', '0') + ', LABEL_WIDTH = ' +
-              VariantToDBStr(StartForm.edLabelWidth.Value, false, true, true) + ' where PK = ' + dsDictSTART_FORM_PK.AsString, err);
+              VariantToDBStr(StartForm.edLabelWidth.Value, false, true, true) + ', GUID = ' +
+              VariantToDBStr(Trim(StartForm.FormGUID), true) + ' where PK = ' + dsDictSTART_FORM_PK.AsString, err);
           end;
         end else
         begin
@@ -7233,7 +7010,8 @@ begin
               VariantToDBStr(GrEditForm.edFormHeight.Value, false, true, true) + ', ALIAS_FORM = ' +
               VariantToDBStr(Trim(GrEditForm.edFormAlias.Text), true) + ', LEFT_ALIGN = ' +
               iif(GrEditForm.chbLeftAlign.Checked, '1', '0') + ', LABEL_WIDTH = ' +
-              VariantToDBStr(GrEditForm.edLabelWidth.Value, false, true, true) + ' where PK = ' + dsDictGROUP_EDIT_FORM_PK.AsString, err);
+              VariantToDBStr(GrEditForm.edLabelWidth.Value, false, true, true) + ', GUID = ' +
+              VariantToDBStr(GrEditForm.FormGUID, true) + ' where PK = ' + dsDictGROUP_EDIT_FORM_PK.AsString, err);
           end;
         end else
         begin
@@ -7265,10 +7043,10 @@ begin
           VariantToDBStr(edDictAutosaveInterval.Value, false, true, true) + ', SKIP_DUPLICATES = ' +
           iif(chbDictSkipDuplicates.Checked, '''1''', '''0''') + ', SHOW_FILTER_BOUND = ' +
           iif(cbDictShowFilterBound.ItemIndex = 0, 'null', '''' + cbDictShowFilterBound.Text + '''') + ', CHECK_SELECT = ' +
-          iif(chbCheckSelect.Checked, '1', '0') + ' where PK = ' + dsDictPK.AsString, err);
+          iif(chbCheckSelect.Checked, '1', '0') + ', GUID = ' + VariantToDBStr(dsDictGUID.AsVariant, true) + ' where PK = ' + dsDictPK.AsString, err);
 
       // пишем в лог
-      FMain.AddToRefLog(cotDict, edDictDescriptor.Text, rltUpdate);
+      FMain.AddToRefLog(cotDict, edDictDescriptor.Text, Properties.Guid, rltUpdate);
     end
     else result := false;
   end;
@@ -7280,7 +7058,7 @@ begin
     SetPropValues(Properties.PK, iif(Trim(edDictDescriptor.Text) = '', Null, Trim(edDictDescriptor.Text)),
       iif(Trim(edDictTitle.Text) = '', Null, Trim(edDictTitle.Text)),
       iif(lcbParentDict.KeyValue = 0, Null, lcbParentDict.KeyValue),
-      iif(lcbFolder.KeyValue = 0, Null, lcbFolder.KeyValue), Properties.Login, Properties.ObjType);
+      iif(lcbFolder.KeyValue = 0, Null, lcbFolder.KeyValue), Properties.Login, Properties.ObjType, Properties.Guid);
     SaveGridData(mainFrmPk, grFrmPk, startFrmPk);
   end;
 end;
@@ -7776,7 +7554,7 @@ begin
     FMain.ExecSQL('insert into DYNAMIC_FORM_PERM_TMP (TEXT_TEMPLATE) values (''' + TmplText + ''') returning (PK)', 'PK', result, err)
   else begin
     FMain.ExecSQL('update DYNAMIC_FORM_PERM_TMP set TEXT_TEMPLATE = ''' + TmplText + ''' where PK = ' + VarToStr(TmplPk), err);
-    FMain.AddToRefLog(cotDict, Properties.Descriptor, rltUpdate, 'Изменение текста шаблона прав ' + VarToStr(TmplPk));
+    FMain.AddToRefLog(cotDict, Properties.Descriptor, Properties.Guid, rltUpdate, 'Изменение текста шаблона прав ' + VarToStr(TmplPk));
   end;
 
   if err <> '' then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
@@ -8971,6 +8749,7 @@ begin
     if dsDict.IsEmpty then
       raise Exception.Create('Не найден справочник с PK ' + VarToStr(Properties.PK) + ' (дескриптор ' + VarToStr(Properties.Descriptor) +
         ')! Возможно он был пересоздан и его PK поменялся.');        
+    Properties.Guid := dsDictGUID.AsVariant;
     edDictPk.Text := VarToStr(Properties.PK);
     OldParentRefPk := dsDict.FieldByName('PARENT_REFERENCE_PK').Value;
     edDictDescriptor.Text := VarToStr(Properties.Descriptor);
@@ -9430,46 +9209,6 @@ begin
       DataSet.SQL.Text := Format(OraFieldsSQL, [UpperCase(s){, own}]);
     end;
     stPostgreSQL: DataSet.SQL.Text := Format(PgFieldsSQL, [LowerCase(s)]);
-  end;
-end;
-
-function TFEditDict.ShowScriptForm: boolean;
-var
-  FScript: TFScriptEditor;
-  Script, Vars: TStringList;
-
-begin
-  result := false;
-
-  Script := TStringList.Create;
-  Vars := TStringList.Create;
-  FScript := TFScriptEditor.Create(Self);
-  try
-    if GenChangesSQL(Script, Vars) then
-    begin
-      FMain.WriteSQLHeader(Properties, Ord(Mode), 0, TStringList(FScript.smScript.Lines));
-      FScript.smScript.Lines.AddStrings(Vars);
-      FScript.smScript.Lines.Add('begin');
-      FScript.smScript.Lines.AddStrings(Script);
-      FScript.smScript.Lines.Add('');
-      FScript.smScript.Lines.Add('  insert into DCFG_REF_LOG (OBJ_TYPE, REF_DESCRIPTOR, ACTION_, USER_PK) values (1, ''' + edDictDescriptor.Text +
-        ''', 1, ' + FMain.dsPortalUserPK.AsString + ');');
-      FMain.WriteSQLFooter(Properties, Ord(Mode), 0, TStringList(FScript.smScript.Lines));
-    end else
-    begin
-      FScript.smScript.Lines.Add('');
-      FScript.smScript.Lines.Add('/*');
-      FScript.smScript.Lines.Add('');
-      FScript.smScript.Lines.Add('  --== Не обнаружено изменений для генерации скрипта ==--');
-      FScript.smScript.Lines.Add('');
-      FScript.smScript.Lines.Add('*/');
-    end;
-
-    result := FScript.ShowModal = mrOk;
-  finally
-    Script.Free;
-    Vars.Free;
-    FScript.Free;
   end;
 end;
 
