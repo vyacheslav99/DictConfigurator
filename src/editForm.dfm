@@ -1224,7 +1224,8 @@ object FEditForm: TFEditForm
     SelectSQL.Strings = (
       
         'select PK, OWNER_USER_PK, TITLE, ALIAS_FORM, CREATE_, MODIFY, WI' +
-        'DTH, HEIGHT, LEFT_ALIGN, LABEL_WIDTH'
+        'DTH, HEIGHT, LEFT_ALIGN, LABEL_WIDTH,'
+      '  coalesce(GUID, uuid_to_char(gen_uuid())) GUID'
       'from DYNAMIC_FORM'
       'where PK = :PK')
     Transaction = FMain.Transact
@@ -1266,6 +1267,11 @@ object FEditForm: TFEditForm
     object dsFormLABEL_WIDTH: TFIBIntegerField
       FieldName = 'LABEL_WIDTH'
     end
+    object dsFormGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
+    end
   end
   object dsFormFields: TpFIBDataSet
     SelectSQL.Strings = (
@@ -1281,7 +1287,9 @@ object FEditForm: TFEditForm
       
         '  f.STYLE_COLUMN, f.EDIT_IN_TABLE, f.SHOW_IN_GROUP_EDIT, f.EXCEL' +
         '_IMPORT, f.MATCH, f.LOCKED, f.GROUP_PK,'
-      '  o.NAME OBJECT_NAME, f.FILTER_GROUP'
+      
+        '  o.NAME OBJECT_NAME, f.FILTER_GROUP, coalesce(f.GUID, uuid_to_c' +
+        'har(gen_uuid())) GUID'
       'from DYNAMIC_FORM_FIELD f'
       '  left join DYNAMIC_FORM_OBJECT_TREE o on o.PK = f.OBJECT_PK'
       'where f.FORM_PK = :PK'
@@ -1401,6 +1409,11 @@ object FEditForm: TFEditForm
     end
     object dsFormFieldsFILTER_GROUP: TFIBIntegerField
       FieldName = 'FILTER_GROUP'
+    end
+    object dsFormFieldsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object dsoFormFields: TDataSource
@@ -1541,6 +1554,10 @@ object FEditForm: TFEditForm
       Size = 300
       Lookup = True
     end
+    object mtFormFieldsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object qEditField: TpFIBQuery
     Transaction = FMain.Transact
@@ -1560,7 +1577,7 @@ object FEditForm: TFEditForm
         '_START_FORM, STYLE_COLUMN,'
       
         '  EDIT_IN_TABLE, SHOW_IN_GROUP_EDIT, EXCEL_IMPORT, MATCH, LOCKED' +
-        ', MODIFY, FILTER_GROUP)'
+        ', MODIFY, FILTER_GROUP, GUID)'
       
         'values (:PK, :OWNER_USER_PK, :GROUP_PK, :GROUP_COLUMN, :ORDER_, ' +
         ':TITLE, :DESCRIPTION,'
@@ -1576,7 +1593,7 @@ object FEditForm: TFEditForm
       
         '  :EDIT_IN_TABLE, :SHOW_IN_GROUP_EDIT, :EXCEL_IMPORT, :MATCH, :L' +
         'OCKED, current_timestamp,'
-      '  :FILTER_GROUP)'
+      '  :FILTER_GROUP, :GUID)'
       'matching (PK)')
     Left = 56
     Top = 208
@@ -1589,7 +1606,9 @@ object FEditForm: TFEditForm
       
         '  STYLE_INTERNAL, IS_VISIBLE, COLUMN_, STYLE_COLUMNS, ADD_VISIBL' +
         'E, COLLAPSED, LEFT_ALIGN,'
-      '  LABEL_WIDTH, CREATE_'
+      
+        '  LABEL_WIDTH, CREATE_, coalesce(GUID, uuid_to_char(gen_uuid()))' +
+        ' GUID'
       'from DYNAMIC_FORM_FIELD_GROUP'
       'where FORM_PK = :PK'
       'order by ORDER_')
@@ -1660,6 +1679,11 @@ object FEditForm: TFEditForm
     end
     object dsGroupsCREATE_: TFIBDateTimeField
       FieldName = 'CREATE_'
+    end
+    object dsGroupsGUID: TFIBStringField
+      FieldName = 'GUID'
+      Size = 36
+      EmptyStrToNull = True
     end
   end
   object mtGroups: TMemTableEh
@@ -1739,6 +1763,10 @@ object FEditForm: TFEditForm
     object mtGroupsCHANGED: TBooleanField
       FieldName = 'CHANGED'
     end
+    object mtGroupsGUID: TStringField
+      FieldName = 'GUID'
+      Size = 36
+    end
   end
   object dsoGroups: TDataSource
     DataSet = mtGroups
@@ -1782,14 +1810,14 @@ object FEditForm: TFEditForm
         'AL, CREATE_, MODIFY, IS_VISIBLE,'
       
         '  COLUMN_, STYLE_COLUMNS, ADD_VISIBLE, COLLAPSED, LEFT_ALIGN, LA' +
-        'BEL_WIDTH)'
+        'BEL_WIDTH, GUID)'
       
         'values (:PK, :PARENT_PK, :OWNER_USER_PK, :FORM_PK, :ORDER_, :TIT' +
         'LE, :DESCRIPTION, :COUNT_COLUMN,'
       
         '  :STYLE_EXTERNAL, :STYLE_INTERNAL, :CREATE_, :MODIFY, :IS_VISIB' +
         'LE, :COLUMN_, :STYLE_COLUMNS,'
-      '  :ADD_VISIBLE, :COLLAPSED, :LEFT_ALIGN, :LABEL_WIDTH)'
+      '  :ADD_VISIBLE, :COLLAPSED, :LEFT_ALIGN, :LABEL_WIDTH, :GUID)'
       'matching (PK)')
     Left = 88
     Top = 208
