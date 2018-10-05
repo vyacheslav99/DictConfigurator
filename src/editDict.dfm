@@ -162,10 +162,6 @@ object FEditDict: TFEditDict
     object tsDict: TTabSheet
       Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -711,7 +707,7 @@ object FEditDict: TFEditDict
             #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093' '#1080#1079' '#1082#1086#1090#1086#1088#1086#1081' '#1073#1091#1076#1091#1090' '#1080#1079#1074#1083#1077#1082#1072#1090#1100#1089#1103' '#1076#1072#1085#1085#1099#1077' '#1076#1083#1103' '#1087#1086#1082#1072#1079#1072' '#1074' '#1089#1087#1088 +
             #1072#1074#1086#1095#1085#1080#1082#1077
           Style = csDropDownList
-          ItemHeight = 0
+          ItemHeight = 13
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
@@ -1234,10 +1230,6 @@ object FEditDict: TFEditDict
     end
     object tsForm: TTabSheet
       Caption = #1043#1083#1072#1074#1085#1072#1103' '#1092#1086#1088#1084#1072
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -2317,10 +2309,6 @@ object FEditDict: TFEditDict
     object tsPermRank: TTabSheet
       Caption = #1055#1088#1072#1074#1072' '#1076#1086#1083#1078#1085#1086#1089#1090#1077#1081
       ImageIndex = 7
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -2820,10 +2808,6 @@ object FEditDict: TFEditDict
     object tsPermRole: TTabSheet
       Caption = #1055#1088#1072#1074#1072' '#1088#1086#1083#1077#1081
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -3392,10 +3376,6 @@ object FEditDict: TFEditDict
     object tsFilterConfig: TTabSheet
       Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1080' '#1092#1080#1083#1100#1090#1088#1086#1074
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -3778,10 +3758,6 @@ object FEditDict: TFEditDict
     object tsFilterGroups: TTabSheet
       Caption = #1043#1088#1091#1087#1087#1099' '#1092#1080#1083#1100#1090#1088#1086#1074
       ImageIndex = 11
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -4009,10 +3985,6 @@ object FEditDict: TFEditDict
     object tsGraph: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1075#1088#1072#1092#1080#1082#1086#1074
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -4574,10 +4546,6 @@ object FEditDict: TFEditDict
     object tsWizard: TTabSheet
       Caption = #1057#1094#1077#1085#1072#1088#1080#1080
       ImageIndex = 9
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
@@ -4878,10 +4846,6 @@ object FEditDict: TFEditDict
     object tsOtherEvents: TTabSheet
       Caption = #1044#1086#1087'. '#1082#1085#1086#1087#1082#1080' ('#1087#1091#1085#1082#1090#1099' '#1084#1077#1085#1102')'
       ImageIndex = 9
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         870
         642)
