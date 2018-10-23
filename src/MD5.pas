@@ -1,6 +1,6 @@
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-Author:       FranÐ·ois PIETTE. Based on work given by Louis S. Berman from
+Author:       François PIETTE. Based on work given by Louis S. Berman from
               BrainTree Ltd, lsb@braintree.com
 Description:  MD5 is an implmentation for the MD5 Message-Digest Algorithm
               as described in RFC-1321

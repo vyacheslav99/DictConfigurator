@@ -102,7 +102,7 @@ var
   imIdx: integer;
 
 begin
-  // СЃРЅР°С‡Р°Р»Р° РґРѕР±Р°РІР»СЏРµРј СѓР·РµР» РїРµСЂРµРґР°РЅРЅРѕРіРѕ РѕР±СЉРµРєС‚Р°
+  // сначала добавляем узел переданного объекта
   if not Assigned(JsonObj) then exit;
 
   if (JsonObj.Key = '') and (JsonObj.Index <> -1) then title := IntToStr(JsonObj.Index)
@@ -135,7 +135,7 @@ begin
   n.SelectedIndex := imIdx{ + 2};
   n.Data := pointer(JsonObj);
 
-  // С‚РµРїРµСЂСЊ РґРѕР±Р°РІРёС‚СЊ РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹
+  // теперь добавить дочерние узлы
   for i := 0 to JsonObj.Count - 1 do AddNodes(n, JsonObj.AsObject(i));
 end;
 
@@ -148,7 +148,7 @@ end;
 procedure TFJsonReader.ALoadTextExecute(Sender: TObject);
 begin
   if Mode = omView then exit;
-  if Application.MessageBox('РўРµРєСѓС‰Р°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° Р±СѓРґРµС‚ РїРµСЂРµР·Р°РїРёСЃР°РЅР°! РџСЂРѕРґРѕР»Р¶РёС‚СЊ?', 'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONWARNING) <> ID_YES then exit;
+  if Application.MessageBox('Текущая структура будет перезаписана! Продолжить?', 'Предупреждение', MB_YESNO + MB_ICONWARNING) <> ID_YES then exit;
 
   mClipLoader.Clear;
   mClipLoader.PasteFromClipboard;
@@ -179,7 +179,7 @@ begin
 
   if FJson.DataType = jdtNull then
   begin
-    // СЃРѕР·РґР°РґРёРј РЅРѕРІС‹Р№
+    // создадим новый
     case cbType.ItemIndex of
       -1: ;
       0: js := '{}';
@@ -196,7 +196,7 @@ begin
     exit;
   end;
 
-  // РёРЅР°С‡Рµ РїСЂР°РІРёРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№
+  // иначе правим существующий
   if (not Assigned(tvJson.Selected)) or (not Assigned(tvJson.Selected.Data)) then exit;
   j := TJson(tvJson.Selected.Data);
 
@@ -224,7 +224,7 @@ begin
   if (not Assigned(tvJson.Selected)) or (not Assigned(tvJson.Selected.Data)) then exit;
   j := TJson(tvJson.Selected.Data);
 
-  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ СѓР·РµР» "' + tvJson.Selected.Text + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox(pchar('Удалить узел "' + tvJson.Selected.Text + '"?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   pj := j.Parent;
   if Assigned(pj) then
@@ -501,11 +501,11 @@ begin
     if j.Key = '' then
     begin
       edKey.Text := IntToStr(j.Index);
-      //lbKey.Caption := 'РРЅРґРµРєСЃ';
+      //lbKey.Caption := 'Индекс';
     end else
     begin
       edKey.Text := j.Key;
-      //lbKey.Caption := 'РљР»СЋС‡';
+      //lbKey.Caption := 'Ключ';
     end;
 
     case j.DataType of

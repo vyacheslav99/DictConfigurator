@@ -294,8 +294,6 @@ object FUserInfo: TFUserInfo
     TabOrder = 0
     OnClick = btnCloseClick
     OnKeyPress = FormKeyPress
-    ExplicitLeft = 331
-    ExplicitTop = 175
   end
   object edUnit: TEdit
     Left = 94
@@ -364,5 +362,28 @@ object FUserInfo: TFUserInfo
     TabOrder = 10
     Text = #1057#1077#1082#1090#1086#1088' '#1088#1072#1079#1074#1080#1090#1080#1103' '#1043#1050
     OnKeyPress = FormKeyPress
+  end
+  object btnCreateGuid: TButton
+    Left = 10
+    Top = 285
+    Width = 85
+    Height = 25
+    Hint = #1055#1088#1086#1089#1090#1086' '#1089#1075#1077#1085#1077#1088#1080#1090#1100' '#1075#1091#1080#1076'. '#1044#1077#1083#1072#1077#1090' '#1095#1077#1088#1077#1079' '#1088#1072#1079' '#1089' '#1095#1077#1088#1090#1086#1095#1082#1086#1081' '#1080' '#1073#1077#1079'.'
+    Anchors = [akRight, akBottom]
+    Cancel = True
+    Caption = #1057#1086#1079#1076#1072#1090#1100' GUID'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 17
+    OnClick = btnCreateGuidClick
+    OnKeyPress = FormKeyPress
+  end
+  object edGuid: TEdit
+    Left = 101
+    Top = 287
+    Width = 225
+    Height = 21
+    ReadOnly = True
+    TabOrder = 18
   end
 end

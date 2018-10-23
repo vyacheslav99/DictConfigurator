@@ -61,7 +61,7 @@ end;
 procedure TFScriptEditor.btnCopyToClipboardClick(Sender: TObject);
 begin
   CopyToClipboard;
-  Application.MessageBox('РЎРєСЂРёРїС‚ СЃРєРѕРїРёСЂРѕРІР°РЅ РІ Р±СѓС„РµСЂ РѕР±РјРµРЅР°', 'РЎРѕРѕР±С‰РµРЅРёРµ', MB_OK + MB_ICONINFORMATION);
+  Application.MessageBox('Скрипт скопирован в буфер обмена', 'Сообщение', MB_OK + MB_ICONINFORMATION);
 end;
 
 procedure TFScriptEditor.btnSaveToFileClick(Sender: TObject);
@@ -95,8 +95,8 @@ end;
 
 procedure TFScriptEditor.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // СЃРµР№С‡Р°СЃ С„РѕСЂРјР° РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РЅРµ РјРѕРґР°Р»СЊРЅРѕ, РїСЂРѕСЃС‚Рѕ РєР°Рє РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅРѕРµ РѕРєРЅРѕ РїРѕ РїСЂРёРЅС†РёРїСѓ РѕС‚РєСЂС‹Р» Рё Р·Р°Р±С‹Р»
-  // РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІ РєР°С‡РµСЃС‚РІРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РґРёР°Р»РѕРіР° РЅРµ Р·Р°Р±СѓРґСЊ Р·Р°РєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ СЌС‚Рѕ
+  // сейчас форма используется не модально, просто как информационное окно по принципу открыл и забыл
+  // при необходимости использовать в качестве модального диалога не забудь закомментировать это
   Action := caFree;
 end;
 

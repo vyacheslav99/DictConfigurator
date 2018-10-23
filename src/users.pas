@@ -287,14 +287,14 @@ begin
   if VarIsNull(pk) then
   begin
     res := false;
-    err := 'РќРµ РІС‹Р±СЂР°РЅ СЃРїСЂР°РІРѕС‡РЅРёРє!';
+    err := 'Не выбран справочник!';
   end else
   begin
     res := FMain.ExecSQL('insert into DYNAMIC_FORM_REF_USER (REF_PK, USER_PK) values (' + VarToStr(pk) + ', ' + dsUsersPK.AsString + ')', err);
     if res then dsUsersEndScroll(dsUsers);
   end;
 
-  if not res then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+  if not res then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFUsers.AAddGroupExecute(Sender: TObject);
@@ -312,14 +312,14 @@ begin
   if VarIsNull(pk) then
   begin
     res := false;
-    err := 'РќРµ РІС‹Р±СЂР°РЅР° РіСЂСѓРїРїР°!';
+    err := 'Не выбрана группа!';
   end else
   begin
     res := FMain.ExecSQL('insert into USERS_USER_GROUPS (GROUP_PK, USER_PK) values (' + VarToStr(pk) + ', ' + dsUsersPK.AsString + ')', err);
     if res then dsUsersEndScroll(dsUsers);
   end;
 
-  if not res then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+  if not res then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFUsers.AAddGroupUpdate(Sender: TObject);
@@ -344,12 +344,12 @@ begin
     begin
       if VarIsNull(fsel.lcbRank.KeyValue) then
       begin
-        err := 'РќРµ РІС‹Р±СЂР°РЅР° РґРѕР»Р¶РЅРѕСЃС‚СЊ';
+        err := 'Не выбрана должность';
         res := false;
       end;
       if VarIsNull(fsel.lcbBranch.KeyValue) then
       begin
-        err := 'РќРµ РІС‹Р±СЂР°РЅРѕ РїРѕРґСЂР°Р·РґРµР»РµРЅРёРµ';
+        err := 'Не выбрано подразделение';
         res := false;
       end;
 
@@ -363,7 +363,7 @@ begin
       end;
 
       if res then dsUsersEndScroll(dsUsers)
-      else Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      else Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
     end;
   finally
     fsel.Free;
@@ -377,10 +377,10 @@ var
 begin
   if (not dsUsers.Active) or (Mode <> omEdit) then exit;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїР»СЊР·РѕРІР°С‚РµР»СЏ
+  // открытие формы редактирования пльзователя
   FUserEditor := TFUserEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FUserEditor.OnClose := OnUserEditorClose;
-  FUserEditor.Caption := 'РќРѕРІС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ';
+  FUserEditor.Caption := 'Новый пользователь';
   FUserEditor.cbRole.ReadOnly := true;
   FUserEditor.cbRole.Color := clBtnFace;
   FUserEditor.cbRole.TabStop := false;
@@ -414,13 +414,13 @@ begin
   if Mode <> omEdit then exit;
   if (not mtUserRefGrant.Active) or mtUserRefGrant.IsEmpty or (mtUserRefGrantTYPE_.AsInteger <> 2) then exit;
 
-  if Application.MessageBox(pchar('Р—Р°Р±СЂР°С‚СЊ РїСЂР°РІР° РЅР° РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ СЃРїСЂР°РІРѕС‡РЅРёРєР° "' + mtUserRefGrantTITLE.AsString +
-    '" Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ "' + dsUsersNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox(pchar('Забрать права на конфигурацию справочника "' + mtUserRefGrantTITLE.AsString +
+    '" у пользователя "' + dsUsersNAME.AsString + '"?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   if FMain.ExecSQL('delete from DYNAMIC_FORM_REF_USER where REF_PK = ' + mtUserRefGrantPK.AsString + ' and USER_PK = ' +
     dsUsersPK.AsString, err) then dsUsersEndScroll(dsUsers)
   else
-    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFUsers.ADelDictUpdate(Sender: TObject);
@@ -436,13 +436,13 @@ begin
   if Mode <> omEdit then exit;
   if (not dsUserGroups.Active) or dsUserGroups.IsEmpty then exit;
 
-  if Application.MessageBox(pchar('РћС‚РІСЏР·Р°С‚СЊ РіСЂСѓРїРїСѓ "' + dsUserGroupsNAME.AsString + '" Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ "' + dsUsersNAME.AsString + '"?'),
-    'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox(pchar('Отвязать группу "' + dsUserGroupsNAME.AsString + '" у пользователя "' + dsUsersNAME.AsString + '"?'),
+    'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   if FMain.ExecSQL('delete from USERS_USER_GROUPS where GROUP_PK = ' + dsUserGroupsPK.AsString + ' and USER_PK = ' +
     dsUsersPK.AsString, err) then dsUsersEndScroll(dsUsers)
   else
-    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFUsers.ADelGroupUpdate(Sender: TObject);
@@ -458,15 +458,15 @@ begin
   if Mode <> omEdit then exit;
   if (not dsUserRanks.Active) or dsUserRanks.IsEmpty then exit;
 
-  if Application.MessageBox(pchar('РћС‚РІСЏР·Р°С‚СЊ РґРѕР»Р¶РЅРѕСЃС‚СЊ "' + dsUserRanksNAME.AsString +
-    '" Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ "' + dsUsersNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox(pchar('Отвязать должность "' + dsUserRanksNAME.AsString +
+    '" у пользователя "' + dsUsersNAME.AsString + '"?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   Screen.Cursor := crSQLWait;
   try
     if FMain.ExecSQL('delete from USER_ROLES where PK = ' + dsUserRanksROLE_PK.AsString, err) then
       dsUsersEndScroll(dsUsers)
     else
-      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -484,11 +484,11 @@ var
 begin
   if (not dsUsers.Active) or dsUsers.IsEmpty or (Mode <> omEdit) then exit;
 
-  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ "' + dsUsersPK.AsString + ' : ' + dsUsersNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+  if Application.MessageBox(pchar('Удалить пользователя "' + dsUsersPK.AsString + ' : ' + dsUsersNAME.AsString + '"?'), 'Подтверждение',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   if not FMain.ExecSQL('delete from USERS where PK = ' + dsUsersPK.AsString, err) then
-    Application.MessageBox(pchar('РћС€РёР±РєР° СѓРґР°Р»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.'#13#10 + err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR)
+    Application.MessageBox(pchar('Ошибка удаления пользователя.'#13#10 + err), 'Ошибка', MB_OK + MB_ICONERROR)
   else
     AFilterExecute(AClearFilter);
 end;
@@ -504,11 +504,11 @@ begin
   if Mode = omView then m := omView
   else m := omEdit;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїР»СЊР·РѕРІР°С‚РµР»СЏ
+  // открытие формы редактирования пльзователя
   if FMain.SetFocusOpenedWindow(dsUsersPK.AsInteger, TFUserEditor.ClassName) then exit;
   FUserEditor := TFUserEditor.Create(Self, cftEditor, m, dsUsersPK.AsVariant, FMain.OnChildFormClose);
   FUserEditor.OnClose := OnUserEditorClose;
-  FUserEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ';
+  FUserEditor.Caption := 'Редактирование пользователя';
   FUserEditor.edPk.Text := dsUsersPK.AsString;
   FUserEditor.edLogin.Text := dsUsersLOGIN.AsString;
   FUserEditor.edName.Text := dsUsersNAME.AsString;
@@ -525,13 +525,13 @@ end;
 
 procedure TFUsers.AEditUserUpdate(Sender: TObject);
 begin
-  // РІ СЂРµР¶РёРјРµ СЂРёРґ РѕРЅР»Рё С„РѕСЂРјР° Р±СѓРґРµС‚ РѕС‚РєСЂС‹РІР°С‚СЊСЃСЏ РЅР° РїСЂРѕСЃРјРѕС‚СЂ
+  // в режиме рид онли форма будет открываться на просмотр
   TAction(Sender).Enabled := dsUsers.Active and (not dsUsers.IsEmpty);
 
   if (TAction(Sender) = AEditUser) and (Mode = omView) then
   begin
-    TAction(Sender).Caption := 'РџСЂРѕСЃРјРѕС‚СЂРµС‚СЊ';
-    TAction(Sender).Hint := 'РџСЂРѕСЃРјРѕС‚СЂРµС‚СЊ РґР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ';
+    TAction(Sender).Caption := 'Просмотреть';
+    TAction(Sender).Hint := 'Просмотреть данные пользователя';
     TAction(Sender).ImageIndex := 8;
   end;
 end;
@@ -650,7 +650,7 @@ begin
   if not VarIsNull(pk) then dsUsers.Locate('PK', pk, []);
 
   //if dsUsers.Filter <> '' then dsUsers.Filtered := true;
-  StatusBar.Panels[1].Text := 'РџРѕР»СЊР·РѕРІР°С‚РµР»РµР№: ' + IntToStr(dsUsers.VisibleRecordCount) + ' / ' + IntToStr(RecCount);
+  StatusBar.Panels[1].Text := 'Пользователей: ' + IntToStr(dsUsers.VisibleRecordCount) + ' / ' + IntToStr(RecCount);
 end;
 
 procedure TFUsers.AResetBaseFilterExecute(Sender: TObject);
@@ -768,7 +768,7 @@ begin
     end;
   end;
 
-  StatusBar.Panels[1].Text := 'РџРѕР»СЊР·РѕРІР°С‚РµР»РµР№: ' + IntToStr(dsUsers.VisibleRecordCount) + ' / ' + IntToStr(RecCount);
+  StatusBar.Panels[1].Text := 'Пользователей: ' + IntToStr(dsUsers.VisibleRecordCount) + ' / ' + IntToStr(RecCount);
 end;
 
 procedure TFUsers.DBGridFillSTFilterListValues(Sender: TCustomDBGridEh; Column: TColumnEh; Items: TStrings; var Processed: Boolean);
@@ -789,7 +789,7 @@ begin
   case Key of
     VK_F3: Find(TDBGridEh(Sender), true);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('Рђ')) or (Key = Ord('Р°'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('А')) or (Key = Ord('а'))) then
         Find(TDBGridEh(Sender));
   end;
 end;
@@ -801,7 +801,7 @@ begin
     VK_RETURN: if ssShift in Shift then AEditUserExecute(AEditUser);
     VK_F3: Find(TDBGridEh(Sender), true);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('Рђ')) or (Key = Ord('Р°'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('А')) or (Key = Ord('а'))) then
         Find(TDBGridEh(Sender));
   end;
 end;
@@ -817,7 +817,7 @@ end;
 
 procedure TFUsers.dsUsersAfterOpen(DataSet: TDataSet);
 begin
-  StatusBar.Panels[1].Text := 'РџРѕР»СЊР·РѕРІР°С‚РµР»РµР№: ' + IntToStr(dsUsers.VisibleRecordCount) + ' / ' + IntToStr(dsUsers.RecordCount);
+  StatusBar.Panels[1].Text := 'Пользователей: ' + IntToStr(dsUsers.VisibleRecordCount) + ' / ' + IntToStr(dsUsers.RecordCount);
 end;
 
 procedure TFUsers.dsUsersEndScroll(DataSet: TDataSet);
@@ -875,7 +875,7 @@ begin
 
   if (not AContinue) or (DBFindDialog.cbFindText.Text = '') then
   begin
-    // РµСЃР»Рё РЅРѕРІС‹Р№, С‚Рѕ РїРѕРєР°Р·Р°С‚СЊ РґРёР°Р»РѕРі
+    // если новый, то показать диалог
     if Assigned(Grid.SelectedField) then col := Grid.FindFieldColumn(Grid.SelectedField.FieldName);
     if Assigned(col) then defCol := col.Title.Caption;
     if DBFindDialog.ShowDialog(Grid, defCol) <> mrOk then exit;
@@ -925,7 +925,7 @@ begin
     dsUsers.SQLs.SelectSQL.Text := Format(GetUsersSql(chbLoadBoss.Checked), ['']);
     dsUsers.Open;
     RecCount := dsUsers.RecordCount;
-    // Р»СѓРєР°РїС‹ С„РёР»СЊС‚СЂРѕРІ
+    // лукапы фильтров
     dsBranch.Open;
     dsDepartment.Open;
     dsService.Open;
@@ -976,23 +976,23 @@ begin
 
   if TFUserEditor(Sender).Success then
   begin
-    // РїСЂРѕРІРµСЂРєРё
-    if Trim(TFUserEditor(Sender).edLogin.Text) = '' then s := 'Р›РѕРіРёРЅ';
+    // проверки
+    if Trim(TFUserEditor(Sender).edLogin.Text) = '' then s := 'Логин';
     if Trim(TFUserEditor(Sender).edName.Text) = '' then
     begin
-      if s = '' then s := 'Р¤РРћ'
-      else s := s + ', Р¤РРћ';
+      if s = '' then s := 'ФИО'
+      else s := s + ', ФИО';
     end;
 
     if s <> '' then
     begin
-      Application.MessageBox(pchar('РќРµ Р·Р°РїРѕР»РЅРµРЅС‹ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ: ' + s), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar('Не заполнены обязательные поля: ' + s), 'Ошибка', MB_OK + MB_ICONERROR);
       TFUserEditor(Sender).Success := false;
       Action := caNone;
       exit;
     end;
 
-    // СЃРѕС…СЂР°РЅСЏРµРј РёР·РјРµРЅРµРЅРёСЏ
+    // сохраняем изменения
     sql := '';
     case TFUserEditor(Sender).Mode of
       omAdd: sql := 'insert into USERS (PK, LOGIN, NAME, EMAIL, DEVELOPER, MODERATOR, ISACTIVE, HOLIDAY, CODE_1C, SHORT_NAME) ' +
@@ -1017,8 +1017,8 @@ begin
     end;
 
     if not FMain.ExecSQL(sql, err) then
-      Application.MessageBox(pchar('РћС€РёР±РєР° ' + VarToStr(iif(TFUserEditor(Sender).Mode = omAdd, 'РґРѕР±Р°РІР»РµРЅРёСЏ', 'РёР·РјРµРЅРµРЅРёСЏ')) +
-        ' РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.'#13#10 + err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR)
+      Application.MessageBox(pchar('Ошибка ' + VarToStr(iif(TFUserEditor(Sender).Mode = omAdd, 'добавления', 'изменения')) +
+        ' пользователя.'#13#10 + err), 'Ошибка', MB_OK + MB_ICONERROR)
     else
       AFilterExecute(AClearFilter);
   end;

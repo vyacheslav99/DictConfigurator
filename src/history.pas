@@ -1,4 +1,4 @@
-unit history;
+﻿unit history;
 
 interface
 
@@ -291,7 +291,7 @@ begin
   end;
 
   Caption := GenCaption('История ' + s, '', Properties.PK, VarToStr(Properties.Descriptor), VarToStr(Properties.Title), FSettings.TreeShowDescriptor);
-  LoadHistory(Ord(Properties.ObjType), id, Properties.Guid);
+  LoadHistory(Ord(Properties.ObjType), id, VarToStr(Properties.Guid));
 end;
 
 end.

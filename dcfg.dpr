@@ -67,7 +67,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'РљРѕРЅС„РёРіСѓСЂР°С‚РѕСЂ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ';
+  Application.Title := 'Конфигуратор справочников';
   Application.CreateForm(TFMain, FMain);
   Application.Run;
 end.

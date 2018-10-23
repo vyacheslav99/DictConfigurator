@@ -73,10 +73,11 @@ var
   FScript: TFScriptEditor;
 
 begin
+  FScript := nil;
   if Mode = omView then exit;
 
   if FSettings.ConfirmSave and
-    (Application.MessageBox('РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РїР°РїРєРё РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+    (Application.MessageBox('Сохранить изменения папки в базу данных?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
 
   if Mode = omEdit then FScript := PrepareScriptForm;
   Success := SaveData;
@@ -165,7 +166,7 @@ begin
     SetPropValues(Properties.PK, Properties.Descriptor, Trim(edFolderName.Text), Properties.ParentDictPK, lcbFolders.KeyValue,
       Properties.Login, Properties.ObjType, Properties.Guid);
 
-  if (err <> '') then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+  if (err <> '') then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFEditFolder.SetProperties(Value: TNodeDictInfo);
@@ -176,7 +177,7 @@ begin
   edFolderPk.Text := VarToStr(Properties.PK);
   edFolderName.Text := VarToStr(Properties.Title);
 
-  if Mode <> omAdd then Caption := GenCaption('РџР°РїРєР°', iif(Mode = omEdit, 'СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ', 'РїСЂРѕСЃРјРѕС‚СЂ'), edFolderPk.Text, '', edFolderName.Text, false);
+  if Mode <> omAdd then Caption := GenCaption('Папка', iif(Mode = omEdit, 'редактирование', 'просмотр'), edFolderPk.Text, '', edFolderName.Text, false);
 end;
 
 procedure TFEditFolder.tbGenSQLClick(Sender: TObject);
@@ -193,8 +194,8 @@ end;
 
 procedure TFEditFolder.tbRefreshClick(Sender: TObject);
 begin
-  if (Mode = omView) or (Application.MessageBox('РџСЂРё РїРµСЂРµР·Р°РіСЂСѓР·РєРµ РґР°РЅРЅС‹С… РїР°РїРєРё РІСЃРµ РЅРµСЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ Р±СѓРґСѓС‚ РїРѕС‚РµСЂСЏРЅС‹! РџСЂРѕРґРѕР»Р¶РёС‚СЊ?',
-    'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES) then _Reload;
+  if (Mode = omView) or (Application.MessageBox('При перезагрузке данных папки все несохраненные изменения будут потеряны! Продолжить?',
+    'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES) then _Reload;
 end;
 
 procedure TFEditFolder._Reload;
@@ -215,7 +216,7 @@ begin
       tbGenSQL.Enabled := false;
       btnRefresh.Enabled := false;
       tbRefresh.Enabled := false;
-      Caption := 'РќРѕРІР°СЏ РїР°РїРєР°';
+      Caption := 'Новая папка';
       edFolderName.ReadOnly := false;
       edFolderName.Color := clWindow;
       lcbFolders.Enabled := true;
@@ -227,7 +228,7 @@ begin
       tbGenSQL.Enabled := true;
       btnRefresh.Enabled := true;
       tbRefresh.Enabled := true;
-      Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РїР°РїРєРё';
+      Caption := 'Редактирование папки';
       edFolderName.ReadOnly := false;
       edFolderName.Color := clWindow;
       lcbFolders.Enabled := true;
@@ -239,7 +240,7 @@ begin
       tbGenSQL.Enabled := true;
       btnRefresh.Enabled := true;
       tbRefresh.Enabled := true;
-      Caption := 'РЎРІРѕР№СЃС‚РІР° РїР°РїРєРё';
+      Caption := 'Свойства папки';
       edFolderName.ReadOnly := true;
       edFolderName.Color := clBtnFace;
       lcbFolders.Enabled := false;

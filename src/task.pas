@@ -138,14 +138,14 @@ begin
 
   if dbgTask.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ Р·Р°РґР°С‡Рё (' + IntToStr(dbgTask.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить все отмеченные задачи (' + IntToStr(dbgTask.SelectedRows.Count) + ')?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgTask.SelectedRows.Delete;
     FMain.TransTask.CommitRetaining;
   end else
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ Р·Р°РґР°С‡Сѓ "' + dsTaskNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить задачу "' + dsTaskNAME.AsString + '"?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dsTask.Delete;
@@ -264,14 +264,14 @@ begin
 
     if (c.DataBase = '') then
     begin
-      Application.MessageBox('Р’РЅРёРјР°РЅРёРµ! РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р” РЅРµ РЅР°СЃС‚СЂРѕРµРЅРѕ.', 'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_OK + MB_ICONWARNING);
+      Application.MessageBox('Внимание! Подключение к БД не настроено.', 'Предупреждение', MB_OK + MB_ICONWARNING);
       exit;
     end;
 
     if (c.Server <> stFirebird) then
     begin
-      Application.MessageBox('Р’РЅРёРјР°РЅРёРµ! РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р” Р·Р°РґР°РЅРѕ РЅРµРІРµСЂРЅРѕ. Р’РѕР·РјРѕР¶РЅР° СЂР°Р±РѕС‚Р° С‚РѕР»СЊРєРѕ СЃ СЃРµСЂРІРµСЂР°РјРё Firebird.',
-        'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_OK + MB_ICONWARNING);
+      Application.MessageBox('Внимание! Подключение к БД задано неверно. Возможна работа только с серверами Firebird.',
+        'Предупреждение', MB_OK + MB_ICONWARNING);
       exit;
     end;
 
@@ -291,7 +291,7 @@ begin
 
     try
       FMain.DBTask.Open;
-      // РїСЂРѕРІРµСЂРёРј, С‡С‚Рѕ РјС‹ РІ РїРѕРґС…РѕРґСЏС‰РµР№ Р‘Р”
+      // проверим, что мы в подходящей БД
       try
         ds := TpFIBDataSet.Create(Self);
         ds.Database := FMain.DBTask;
@@ -300,7 +300,7 @@ begin
         if (not ds.Active) or ds.IsEmpty or ds.Fields.Fields[0].Value = 0 then
         begin
           FMain.DBTask.Close;
-          raise Exception.Create('РџРѕРґРєР»СЋС‡РµРЅРёРµ "' + c.Alias + '" РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ СЂР°Р±РѕС‚Сѓ РїР»Р°РЅРёСЂРѕРІС‰РёРєР° Р·Р°РґР°С‡!');
+          raise Exception.Create('Подключение "' + c.Alias + '" не поддерживает работу планировщика задач!');
         end;
       finally
         ds.Close;
@@ -315,7 +315,7 @@ begin
         else if (Pos('SQL error', e.Message) > 0) or (Pos('Parameter', e.Message) > 0) then err := Format(ProhibMes[3], [e.Message])
         else err := Format(ProhibMes[3], [e.Message]);
 
-        Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+        Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
       end;
     end;
   finally
@@ -409,9 +409,9 @@ begin
     VK_INSERT: if AAdd.Enabled then AAddExecute(AAdd);
     VK_F3: Find(TDBGridEh(Sender), true);
     else begin
-      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('Рђ')) or (Key = Ord('Р°'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('F')) or (Key = Ord('f')) or (Key = Ord('А')) or (Key = Ord('а'))) then
         Find(TDBGridEh(Sender));
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
     end;
   end;
@@ -445,7 +445,7 @@ begin
 
   if (not AContinue) or (DBFindDialog.cbFindText.Text = '') then
   begin
-    // РµСЃР»Рё РЅРѕРІС‹Р№, С‚Рѕ РїРѕРєР°Р·Р°С‚СЊ РґРёР°Р»РѕРі
+    // если новый, то показать диалог
     if Assigned(Grid.SelectedField) then col := Grid.FindFieldColumn(Grid.SelectedField.FieldName);
     if Assigned(col) then defCol := col.Title.Caption;
     if DBFindDialog.ShowDialog(Grid, defCol) <> mrOk then exit;
@@ -471,7 +471,7 @@ procedure TFTask.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if (dsTask.State in [dsEdit, dsInsert]) then
   begin
-    case Application.MessageBox('Р•СЃС‚СЊ РЅРµСЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ! РЎРѕС…СЂР°РЅРёС‚СЊ?', 'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_YESNOCANCEL + MB_ICONQUESTION) of
+    case Application.MessageBox('Есть несохраненные изменения! Сохранить?', 'Предупреждение', MB_YESNOCANCEL + MB_ICONQUESTION) of
       ID_YES:
       begin
         if (dsTask.State in [dsEdit, dsInsert]) then dsTask.Post;
@@ -616,7 +616,7 @@ begin
         end;
       end else
       begin
-        // РЅРµР·Р°РІРµСЂС€РµРЅРЅС‹Рј Р·Р°РґР°С‡Р°Рј РЅР°РґРѕ РѕР±РЅРѕРІРёС‚СЊ РґСЌРґР»Р°Р№РЅ, Р° С‚Рѕ РµРіРѕ РјРѕРіСѓС‚ РґРІРёРіР°С‚СЊ РїРµСЂРёРѕРґРёС‡РµСЃРєРё
+        // незавершенным задачам надо обновить дэдлайн, а то его могут двигать периодически
         if (dsFindTaskSTATUS.AsString <> '2') and (dsFindTaskSTATUS.AsString <> '3') then
         begin
           qEditTaskDeadline.ParamByName('DEADLINE').Value := ds.FieldByName('DEADLINE').Value;
@@ -718,12 +718,12 @@ begin
     ds.Open;
     if ds.Active and not ds.IsEmpty then
     begin
-      StatusBar.Panels[1].Text := 'Р’ СЂР°Р±РѕС‚Рµ: ' + ds.FieldByName('ACTIVE_').AsString;
-      StatusBar.Panels[2].Text := 'Р’ РѕС‡РµСЂРµРґРё: ' + ds.FieldByName('QUEUED').AsString;
-      StatusBar.Panels[3].Text := 'РћР¶РёРґР°РµС‚: ' + ds.FieldByName('WAITING').AsString;
-      StatusBar.Panels[4].Text := 'РџСЂРёРѕСЂРёС‚РµС‚РЅС‹С…: ' + ds.FieldByName('URGENT').AsString;
-      StatusBar.Panels[5].Text := 'РџСЂРёРѕСЂ. РѕС‡РµСЂРµРґСЊ: ' + ds.FieldByName('QUEUED_URGENT').AsString;
-      StatusBar.Panels[6].Text := 'РџСЂРёРѕСЂ. РѕР¶РёРґР°РµС‚: ' + ds.FieldByName('WAITING_URGENT').AsString;
+      StatusBar.Panels[1].Text := 'В работе: ' + ds.FieldByName('ACTIVE_').AsString;
+      StatusBar.Panels[2].Text := 'В очереди: ' + ds.FieldByName('QUEUED').AsString;
+      StatusBar.Panels[3].Text := 'Ожидает: ' + ds.FieldByName('WAITING').AsString;
+      StatusBar.Panels[4].Text := 'Приоритетных: ' + ds.FieldByName('URGENT').AsString;
+      StatusBar.Panels[5].Text := 'Приор. очередь: ' + ds.FieldByName('QUEUED_URGENT').AsString;
+      StatusBar.Panels[6].Text := 'Приор. ожидает: ' + ds.FieldByName('WAITING_URGENT').AsString;
     end;
   finally
     ds.Close;

@@ -102,7 +102,7 @@ end;
 procedure TFGroups.ACommitChangesExecute(Sender: TObject);
 begin
   if Mode <> omEdit then exit;
-  if Application.MessageBox('РџРѕРґС‚РІРµСЂРґРёС‚СЊ С‚СЂР°РЅР·Р°РєС†РёСЋ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox('Подтвердить транзакцию?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   FMain.Transact.CommitRetaining;
   dsGroups.ReopenLocate('PK');
@@ -117,7 +117,7 @@ end;
 procedure TFGroups.ADelGroupExecute(Sender: TObject);
 begin
   if Mode <> omEdit then exit;
-  if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РіСЂСѓРїРїСѓ "' + dsGroupsNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+  if Application.MessageBox(pchar('Удалить группу "' + dsGroupsNAME.AsString + '"?'), 'Подтверждение',
     MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   dsGroups.Delete;
@@ -161,14 +161,14 @@ begin
   if VarIsNull(pk) then
   begin
     res := false;
-    err := 'РќРµ РІС‹Р±СЂР°РЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ!';
+    err := 'Не выбран пользователь!';
   end else
   begin
     res := FMain.ExecSQL('insert into USERS_USER_GROUPS (GROUP_PK, USER_PK) values (' + dsGroupsPK.AsString + ', ' + VarToStr(pk) + ')', err);
     if res then dsGroupsEndScroll(dsGroups);
   end;
 
-  if not res then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+  if not res then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFGroups.ARefreshExecute(Sender: TObject);
@@ -180,7 +180,7 @@ end;
 procedure TFGroups.ARollbackChangesExecute(Sender: TObject);
 begin
   if Mode <> omEdit then exit;
-  if Application.MessageBox('РћС‚РєР°С‚РёС‚СЊ С‚СЂР°РЅР·Р°РєС†РёСЋ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox('Откатить транзакцию?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   FMain.Transact.RollbackRetaining;
   dsGroups.ReopenLocate('PK');
@@ -195,13 +195,13 @@ begin
   if Mode <> omEdit then exit;
   if (not dsGroupUsers.Active) or dsGroupUsers.IsEmpty then exit;
 
-  if Application.MessageBox(pchar('РћС‚РІСЏР·Р°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ "' + dsGroupUsersNAME.AsString + '" РѕС‚ РіСЂСѓРїРїС‹ "' + dsGroupsNAME.AsString + '"?'),
-    'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox(pchar('Отвязать пользователя "' + dsGroupUsersNAME.AsString + '" от группы "' + dsGroupsNAME.AsString + '"?'),
+    'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
   if FMain.ExecSQL('delete from USERS_USER_GROUPS where GROUP_PK = ' + dsGroupUsersGROUP_PK.AsString + ' and USER_PK = ' +
     dsGroupUsersPK.AsString, err) then dsGroupsEndScroll(dsGroups)
   else
-    Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 end;
 
 procedure TFGroups.AUnlinkUserUpdate(Sender: TObject);

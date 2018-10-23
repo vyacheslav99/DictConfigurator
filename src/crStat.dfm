@@ -253,18 +253,9 @@ object FCrStat: TFCrStat
       
         'select NUM, NAME, PROJ_PK, AVG_EVALUATE, DIFF_PLAN_FACT, HOURS, ' +
         'CNT_REQ, CNT_PROJ, OVERDUE from ('
-      '  select 0 NUM,'
       
-        '    case when p.STATUS = 2 and c.FACTHOURS > 3 then '#39#1057#1091#1097#1077#1089#1090#1074#1077#1085#1085#1099 +
-        #1077' '#1076#1086#1088#1072#1073#1086#1090#1082#1080#39
-      
-        '      when p.STATUS = 2 and c.FACTHOURS <= 3 then '#39#1054#1087#1077#1088#1072#1094#1080#1086#1085#1085#1099#1077' ' +
-        #1079#1072#1076#1072#1095#1080#39' else p.NAME'
-      '    end NAME,'
-      '    case when p.STATUS = 2 and c.FACTHOURS > 3 then 59'
-      '      when p.STATUS = 2 and c.FACTHOURS <= 3 then 30 else p.PK'
-      '    end PROJ_PK,'
-      '    sum(c.FACTHOURS) HOURS, avg(c.EVALUATE) AVG_EVALUATE,'
+        '  select 0 NUM, p.NAME, p.PK PROJ_PK, sum(c.FACTHOURS) HOURS, av' +
+        'g(c.EVALUATE) AVG_EVALUATE,'
       
         '    cast(abs(sum(c.FACTHOURS) - sum(c.PLANHOURS)) as double prec' +
         'ision) / sum(c.PLANHOURS) DIFF_PLAN_FACT,'

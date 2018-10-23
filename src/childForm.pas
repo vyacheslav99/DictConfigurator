@@ -26,7 +26,7 @@ type
     procedure SetPropValues(PK: variant; Descriptor: variant; Title: variant; ParentDictPK: variant; FolderPK: variant;
       Login: variant; ObjType: TConfObjectType; FGuid: Variant);
     procedure SetFrameGridOptions(Options: TGridParams); virtual;
-    // РіРµРЅРµСЂР°С†РёСЏ СЃРєСЂРёРїС‚Р° РёР·РјРµРЅРµРЅРёР№
+    // генерация скрипта изменений
     function gcsCheckOption(arr: TStringList; Field: TField; Value: Variant; QuotedString: boolean; EmptyStrToNull: boolean = true; ZeroToNull: boolean = false;
       QuoteSymb: char = ''''): string; overload;
     function gcsCheckOption(arr: TStringList; FieldName: string; OldValue, NewValue: Variant; QuotedString: boolean; EmptyStrToNull: boolean = true;
@@ -74,8 +74,8 @@ var
   ords: array of boolean;
   
 begin
-  // false, smUpEh - РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ (ASC), СЃС‚СЂРµР»РєР° РІРІРµСЂС…, A->Z
-  // true, smDownEh - РїРѕ СѓР±С‹РІР°РЅРёСЋ (DESC), СЃС‚СЂРµР»РєР° РІРЅРёР·, Z->A
+  // false, smUpEh - по возрастанию (ASC), стрелка вверх, A->Z
+  // true, smDownEh - по убыванию (DESC), стрелка вниз, Z->A
 
   for i := 0 to ComponentCount - 1 do
     if Components[i] is TDBGridEh then
@@ -139,7 +139,7 @@ begin
   if NoMDI then FormStyle := fsNormal
   else FormStyle := fsMDIChild;
 
-  // РїРѕР·РёС†РёСЏ
+  // позиция
   Left := 1;
   Top := 1;
 
@@ -153,7 +153,7 @@ begin
   FProperties.PK := AObjectPK;
   RestoreFormState;
 
-  // РїР°СЂР°РјРµС‚СЂС‹ РіСЂРёРґР°
+  // параметры грида
   SetGridsOptions(FSettings.GridOptions);
 end;
 
@@ -254,17 +254,17 @@ var
   ds: TpFIBDataSet;
 
 begin
-  // РїРѕРёСЃРє РІ РєСЌС€Рµ РёРЅРґРµРєСЃР° РїРµСЂРµРјРµРЅРЅРѕР№, РІРѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ СЌС‚РѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ РґР»СЏ СЃРІСЏР·РєРё
-  // РµСЃР»Рё РІ РєСЌС€Рµ РµРµ РЅРµС‚, РґРѕР±Р°РІР»СЏРµС‚ РІ СЃРєСЂРёРїС‚ Рё РѕР±СЉСЏРІР»РµРЅРёРµ Р·Р°РїСЂРѕСЃ РЅР° РІС‹Р±РѕСЂРєСѓ СЌС‚РѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ Рё РІ РєСЌС€ РµРµ РёРјСЏ.
-  // Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ РїРµСЂРµРјРµРЅРЅРѕР№
+  // поиск в кэше индекса переменной, возвращает имя этой переменной для связки
+  // если в кэше ее нет, добавляет в скрипт и объявление запрос на выборку этой переменной и в кэш ее имя.
+  // Возвращает имя переменной
 
-  // Р’С…РѕРґРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹:
-  //  Script, Vars, Cache - РїРѕРЅСЏС‚РЅРѕ
-  //  KeyValue - РєР»СЋС‡РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ - СЃСЃС‹Р»РєР° РЅР° СЂРѕРґРёС‚РµР»СЊСЃРєСѓСЋ Р·Р°РїРёСЃСЊ
-  //  ParamPrefix - РїСЂРµС„РёРєСЃ РґР»СЏ РіРµРЅРµСЂР°С†РёРё РЅР°Р·РІР°РЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ РІ СЃРєСЂРёРїС‚Рµ - РµРµ РёРјСЏ Р±РµР· РёРЅРґРµРєСЃР°
-  //  PkFieldName - РєР»СЋС‡РµРІРѕРµ РїРѕР»Рµ (РѕР±С‡РЅРѕ PK) РёР· СЂРѕРґРёС‚РµР»СЊСЃРєРѕР№ С‚Р°Р±Р»РёС†С‹, РєСѓРґР° СЃСЃС‹Р»Р°РµС‚СЃСЏ KeyValue
-  //  TableName - СЂРѕРґРёС‚РµР»СЊСЃРєР°СЏ С‚Р°Р±Р»РёС†Р° РєСѓРґР° СЃСЃС‹Р»Р°РµС‚СЃСЏ РґРѕС‡РµСЂРЅСЏСЏ (РґР»СЏ РіРµРЅРµСЂР°С†РёРё select Р·Р°РїСЂРѕСЃР°)
-  //  PreExpr - РІС‹СЂР°Р¶РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ РЅР°РґРѕ РґРѕР±Р°РІРёС‚СЊ РїРµСЂРµРґ СЂРµР·СѓР»СЊС‚Р°С‚РѕРј (РЅР°РїСЂРёРјРµСЂ "FEILD = ")
+  // Входные параметры:
+  //  Script, Vars, Cache - понятно
+  //  KeyValue - ключевое значение - ссылка на родительскую запись
+  //  ParamPrefix - префикс для генерации названия переменной в скрипте - ее имя без индекса
+  //  PkFieldName - ключевое поле (обчно PK) из родительской таблицы, куда ссылается KeyValue
+  //  TableName - родительская таблица куда ссылается дочерняя (для генерации select запроса)
+  //  PreExpr - выражение, которое надо добавить перед результатом (например "FEILD = ")
 
   if VarIsNull(KeyValue) then
     result := PreExpr + 'null'
@@ -320,7 +320,7 @@ end;
 
 function TChildForm.GenChangesSQL(Script, Vars: TStringList): boolean;
 begin
-  // СЌС‚РѕС‚ РјРµС‚РѕРґ - С‚РѕС‡РєР° РІС…РѕРґР° РіРµРЅРµСЂР°С†РёРё СЃРєСЂРёРїС‚РѕРІ РёР·РјРµРЅРµРЅРёР№. РРјРµРЅРЅРѕ РµРіРѕ РЅР°РґРѕ РїРµСЂРµРѕРїСЂРµРґРµР»СЏС‚СЊ РІ РґРѕС‡РµСЂРЅРёС… С„РѕСЂРјР°С… РµСЃР»Рё РЅР°РґРѕ СЃРѕР·РґР°С‚СЊ СЌС‚РѕС‚ С„СѓРЅРєС†РёРѕРЅР°Р»
+  // этот метод - точка входа генерации скриптов изменений. Именно его надо переопределять в дочерних формах если надо создать этот функционал
   result := false;
 end;
 
@@ -382,7 +382,7 @@ begin
         FreeAndNil(result);
         { result.smScript.Lines.Add('/*');
         result.smScript.Lines.Add('');
-        result.smScript.Lines.Add('  --== РќРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ РёР·РјРµРЅРµРЅРёР№ РґР»СЏ РіРµРЅРµСЂР°С†РёРё СЃРєСЂРёРїС‚Р° ==--');
+        result.smScript.Lines.Add('  --== Не обнаружено изменений для генерации скрипта ==--');
         result.smScript.Lines.Add('');
         result.smScript.Lines.Add('*/'); }
       end;
@@ -452,7 +452,7 @@ begin
   if FirstProps then OldProperties.Assign(Value);
   FProperties.Assign(Value);
   FirstProps := false;
-  // Сѓ MemTableEh РїРѕС‡РµРјСѓ-С‚Рѕ РїРѕСЃР»Рµ С‚Р°РєРѕРіРѕ СЃРЅРѕСЃРёС‚ РєСЂС‹С€Сѓ Рё РѕРЅ РїРµСЂРµСЃС‚Р°РµС‚ СЃРѕСЂС‚РёСЂРѕРІР°С‚СЊ РїРѕ РЅР°Р¶Р°С‚РёСЋ РЅР° С€Р°РїРєСѓ РєРѕР»РѕРЅРєРё
+  // у MemTableEh почему-то после такого сносит крышу и он перестает сортировать по нажатию на шапку колонки
   //RestoreGridSort;
   ClearGridSort;
 end;
@@ -496,7 +496,7 @@ begin
       FScript.smScript.Lines.Add('');
       FScript.smScript.Lines.Add('/*');
       FScript.smScript.Lines.Add('');
-      FScript.smScript.Lines.Add('  --== РќРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ РёР·РјРµРЅРµРЅРёР№ РґР»СЏ РіРµРЅРµСЂР°С†РёРё СЃРєСЂРёРїС‚Р° ==--');
+      FScript.smScript.Lines.Add('  --== Не обнаружено изменений для генерации скрипта ==--');
       FScript.smScript.Lines.Add('');
       FScript.smScript.Lines.Add('*/');
     end;

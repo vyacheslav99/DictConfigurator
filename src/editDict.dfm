@@ -2757,14 +2757,6 @@ object FEditDict: TFEditDict
           item
             Checkboxes = True
             EditButtons = <>
-            FieldName = 'CONFIG_'
-            Footers = <>
-            Title.Hint = #1050#1086#1085#1092#1080#1075#1091#1088#1080#1088#1086#1074#1072#1085#1080#1077
-            Width = 50
-          end
-          item
-            Checkboxes = True
-            EditButtons = <>
             FieldName = 'EXPORT'
             Footers = <>
             Title.Hint = #1069#1082#1089#1087#1086#1088#1090
@@ -3253,14 +3245,6 @@ object FEditDict: TFEditDict
           item
             Checkboxes = True
             EditButtons = <>
-            FieldName = 'CONFIG_'
-            Footers = <>
-            Title.Hint = #1050#1086#1085#1092#1080#1075#1091#1088#1080#1088#1086#1074#1072#1085#1080#1077
-            Width = 50
-          end
-          item
-            Checkboxes = True
-            EditButtons = <>
             FieldName = 'EXPORT'
             Footers = <>
             Title.Hint = #1069#1082#1089#1087#1086#1088#1090
@@ -3290,10 +3274,6 @@ object FEditDict: TFEditDict
     object tsStartForm: TTabSheet
       Caption = #1057#1090#1072#1088#1090#1086#1074#1072#1103' '#1092#1086#1088#1084#1072
       ImageIndex = 5
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pStartForm: TPanel
         Left = 0
         Top = 0
@@ -3333,10 +3313,6 @@ object FEditDict: TFEditDict
     object tsGroupEditForm: TTabSheet
       Caption = #1060#1086#1088#1084#1072' '#1043#1088#1091#1087#1087#1086#1074#1086#1075#1086' '#1088#1077#1076'.'
       ImageIndex = 6
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -5200,10 +5176,6 @@ object FEditDict: TFEditDict
     object tsDummy: TTabSheet
       Caption = 'tsDummy'
       ImageIndex = 8
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
   end
   object btnRefresh: TBitBtn
@@ -6610,7 +6582,7 @@ object FEditDict: TFEditDict
     SelectSQL.Strings = (
       
         'select p.PK, p.ROLE_PK, r.NAME ROLE_NAME, p.ADD_, p.EDIT_, p.DEL' +
-        '_, p.VIEW_REF, p.CONFIG_, p.VIEW_,'
+        '_, p.VIEW_REF, /*p.CONFIG_,*/ p.VIEW_,'
       
         '  p.EXPORT, p.IMPORT, p.GRID_SAVE, coalesce(p.GUID, uuid_to_char' +
         '(gen_uuid())) GUID'
@@ -6645,9 +6617,6 @@ object FEditDict: TFEditDict
     end
     object dsPermRolesVIEW_REF: TFIBIntegerField
       FieldName = 'VIEW_REF'
-    end
-    object dsPermRolesCONFIG_: TFIBIntegerField
-      FieldName = 'CONFIG_'
     end
     object dsPermRolesVIEW_: TFIBIntegerField
       FieldName = 'VIEW_'
@@ -6702,9 +6671,6 @@ object FEditDict: TFEditDict
     end
     object mtPermRolesVIEW_REF: TIntegerField
       FieldName = 'VIEW_REF'
-    end
-    object mtPermRolesCONFIG_: TIntegerField
-      FieldName = 'CONFIG_'
     end
     object mtPermRolesVIEW_: TIntegerField
       FieldName = 'VIEW_'
@@ -6769,11 +6735,11 @@ object FEditDict: TFEditDict
       
         'update or insert into DYNAMIC_FORM_PERMISSIONS (PK, REFERENCE_PK' +
         ', ROLE_PK, ADD_, EDIT_, DEL_, '
-      '  VIEW_REF, VIEW_, CONFIG_, EXPORT, IMPORT, GRID_SAVE, GUID)'
+      '  VIEW_REF, VIEW_, EXPORT, IMPORT, GRID_SAVE, GUID)'
       
         'values (:PK, :REFERENCE_PK, :ROLE_PK, :ADD_, :EDIT_, :DEL_, :VIE' +
-        'W_REF, :VIEW_, :CONFIG_,'
-      '  :EXPORT, :IMPORT, :GRID_SAVE, :GUID)'
+        'W_REF, :VIEW_, :EXPORT, '
+      '  :IMPORT, :GRID_SAVE, :GUID)'
       'matching (PK)')
     Left = 480
     Top = 235
@@ -6782,7 +6748,7 @@ object FEditDict: TFEditDict
     SelectSQL.Strings = (
       
         'select p.PK, p.ROLE_PK, u.NAME ROLE_NAME, p.ADD_, p.EDIT_, p.DEL' +
-        '_, p.VIEW_REF, p.CONFIG_, p.VIEW_,'
+        '_, p.VIEW_REF, /*p.CONFIG_,*/ p.VIEW_,'
       
         '  p.EXPORT, p.IMPORT, p.GRID_SAVE, coalesce(p.GUID, uuid_to_char' +
         '(gen_uuid())) GUID'
@@ -6817,9 +6783,6 @@ object FEditDict: TFEditDict
     end
     object dsPermRanksVIEW_REF: TFIBIntegerField
       FieldName = 'VIEW_REF'
-    end
-    object dsPermRanksCONFIG_: TFIBIntegerField
-      FieldName = 'CONFIG_'
     end
     object dsPermRanksVIEW_: TFIBIntegerField
       FieldName = 'VIEW_'
@@ -6869,9 +6832,6 @@ object FEditDict: TFEditDict
     object mtPermRanksVIEW_REF: TIntegerField
       FieldName = 'VIEW_REF'
     end
-    object mtPermRanksCONFIG_: TIntegerField
-      FieldName = 'CONFIG_'
-    end
     object mtPermRanksVIEW_: TIntegerField
       FieldName = 'VIEW_'
     end
@@ -6918,11 +6878,11 @@ object FEditDict: TFEditDict
       
         'update or insert into DYNAMIC_FORM_PERM_RANKS (PK, REFERENCE_PK,' +
         ' ROLE_PK, ADD_, EDIT_, DEL_, '
-      '  VIEW_REF, VIEW_, CONFIG_, EXPORT, IMPORT, GRID_SAVE, GUID)'
+      '  VIEW_REF, VIEW_, EXPORT, IMPORT, GRID_SAVE, GUID)'
       
         'values (:PK, :REFERENCE_PK, :ROLE_PK, :ADD_, :EDIT_, :DEL_, :VIE' +
-        'W_REF, :VIEW_, :CONFIG_,'
-      '  :EXPORT, :IMPORT, :GRID_SAVE, :GUID)'
+        'W_REF, :VIEW_, :EXPORT, '
+      '  :IMPORT, :GRID_SAVE, :GUID)'
       'matching (PK)')
     Left = 512
     Top = 235

@@ -2,7 +2,7 @@ object FMain: TFMain
   Left = 0
   Top = 0
   Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1090#1086#1088' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1086#1074
-  ClientHeight = 857
+  ClientHeight = 853
   ClientWidth = 1102
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -61,12 +61,12 @@ object FMain: TFMain
   object Splitter1: TSplitter
     Left = 450
     Top = 0
-    Height = 816
+    Height = 812
     ExplicitHeight = 595
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 838
+    Top = 834
     Width = 1102
     Height = 19
     Panels = <
@@ -93,13 +93,13 @@ object FMain: TFMain
     Left = 0
     Top = 0
     Width = 450
-    Height = 816
+    Height = 812
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
     object Splitter2: TSplitter
       Left = 0
-      Top = 583
+      Top = 579
       Width = 450
       Height = 3
       Cursor = crVSplit
@@ -156,7 +156,7 @@ object FMain: TFMain
       Left = 0
       Top = 30
       Width = 450
-      Height = 553
+      Height = 549
       ActivePage = tsOnFolder
       Align = alClient
       MultiLine = True
@@ -184,7 +184,7 @@ object FMain: TFMain
           Left = 0
           Top = 0
           Width = 442
-          Height = 513
+          Height = 509
           Align = alClient
           HideSelection = False
           Images = ilTree
@@ -217,7 +217,7 @@ object FMain: TFMain
           Left = 0
           Top = 0
           Width = 442
-          Height = 513
+          Height = 509
           Align = alClient
           HideSelection = False
           Images = ilTree
@@ -250,7 +250,7 @@ object FMain: TFMain
           Left = 0
           Top = 0
           Width = 442
-          Height = 513
+          Height = 509
           Align = alClient
           HideSelection = False
           Images = ilTree
@@ -282,7 +282,7 @@ object FMain: TFMain
           Left = 0
           Top = 0
           Width = 442
-          Height = 513
+          Height = 509
           Align = alClient
           HideSelection = False
           Images = ilTree
@@ -307,7 +307,7 @@ object FMain: TFMain
           Left = 0
           Top = 0
           Width = 442
-          Height = 513
+          Height = 509
           Align = alClient
           HideSelection = False
           Images = ilTree
@@ -329,7 +329,7 @@ object FMain: TFMain
     end
     object dbgObjectInfo: TDBGridEh
       Left = 0
-      Top = 586
+      Top = 582
       Width = 450
       Height = 230
       Align = alBottom
@@ -377,7 +377,7 @@ object FMain: TFMain
   end
   object WindowBar: TJvTabBar
     Left = 0
-    Top = 816
+    Top = 812
     Width = 1102
     Height = 22
     Align = alBottom
@@ -838,7 +838,7 @@ object FMain: TFMain
     Left = 144
     Top = 64
     Bitmap = {
-      494C010136009000D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010136009000E40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000E0000000010020000000000000E0
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2697,7 +2697,7 @@ object FMain: TFMain
     Left = 176
     Top = 64
     Bitmap = {
-      494C01010A001400E80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400F40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4049,7 +4049,7 @@ object FMain: TFMain
     Left = 207
     Top = 64
     Bitmap = {
-      494C01011A003C00D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01011A003C00E40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000007000000001002000000000000070
       000000000000000000000000000000000000FAFAFAFFE1E1E1FFCDCDCDFFADAD
       ADFF878787FF7E7E7EFF868686FFBDBDBDFFF6F6F6FF00000000000000000000

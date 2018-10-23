@@ -43,7 +43,7 @@ type
     procedure SetHeight(value: integer);
     function GetLabel(index: integer): TStaticText;
     procedure SetEditMode(value: boolean);
-    //СЂРµР°РєС†РёСЏ РЅР° СЃРѕР±С‹С‚РёСЏ
+    //реакция на события
     procedure FieldObjChange(Sender: TObject);
     procedure ExprObjChange(Sender: TObject);
     procedure ValueObjChange(Sender: TObject);
@@ -196,7 +196,7 @@ const
   CTRLHEIGHT = 21;
   FILLRECLIMIT = 10000;
   LOOKUPFIELDSDELIM = ';';
-  EMPTY_VALUE = '<РџРЈРЎРўРћ>';
+  EMPTY_VALUE = '<ПУСТО>';
 
 function iif(Switch: boolean; iftrue: variant; iffalse: variant): variant;
 begin
@@ -210,9 +210,9 @@ function GetExpression(s: string): TExpression;
 begin
   if s = '=' then result := exEqual
   else if s = '<>' then result := exNotEqual
-  else if (UpperCase(s) = 'LIKE') or (AnsiLowerCase(s) = 'СЃРѕРґРµСЂР¶РёС‚') then result := exLike
-  else if (UpperCase(s) = 'NOT LIKE') or (AnsiLowerCase(s) = 'РЅРµ СЃРѕРґРµСЂР¶РёС‚') then result := exNotLike
-  else if (UpperCase(s) = 'IN') or (AnsiLowerCase(s) = 'РѕРґРёРЅ РёР·') then result := exIn
+  else if (UpperCase(s) = 'LIKE') or (AnsiLowerCase(s) = 'содержит') then result := exLike
+  else if (UpperCase(s) = 'NOT LIKE') or (AnsiLowerCase(s) = 'не содержит') then result := exNotLike
+  else if (UpperCase(s) = 'IN') or (AnsiLowerCase(s) = 'один из') then result := exIn
   else if s = '>' then result := exLarge
   else if s = '<' then result := exSmall
   else if s = '>=' then result := exEqLarge
@@ -251,8 +251,8 @@ end;
 function GetConcat(s: string): TConcat;
 begin
   result := ccOr;
-  if (UpperCase(s) = 'OR') or (AnsiUpperCase(s) = 'РР›Р') then result := ccOr
-  else if (UpperCase(s) = 'AND') or (AnsiUpperCase(s) = 'Р') then result := ccAnd;
+  if (UpperCase(s) = 'OR') or (AnsiUpperCase(s) = 'ИЛИ') then result := ccOr
+  else if (UpperCase(s) = 'AND') or (AnsiUpperCase(s) = 'И') then result := ccAnd;
 end;
 
 function FindColByFieldName(Grid: TDBGridEh; FieldName: string): TColumnEh;
@@ -290,24 +290,24 @@ var
 
 begin
   if not Assigned(AParent) then
-    raise Exception.Create('РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ СЃС‚СЂРѕРєСѓ, РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РѕР±СЉРµРєС‚ РІР»Р°РґРµР»РµС† СЌР»РµРјРµРЅС‚Р°!');
+    raise Exception.Create('Не удалось создать строку, отсутствует объект владелец элемента!');
 
   inherited Create;
   ExprItems := TStringList.Create;
-  ExprItems.Add('<РЅРµС‚>');
+  ExprItems.Add('<нет>');
   ExprItems.Add('=');
   ExprItems.Add('<>');
-  ExprItems.Add('СЃРѕРґРµСЂР¶РёС‚');
-  ExprItems.Add('РЅРµ СЃРѕРґРµСЂР¶РёС‚');
-  ExprItems.Add('РѕРґРёРЅ РёР·');
+  ExprItems.Add('содержит');
+  ExprItems.Add('не содержит');
+  ExprItems.Add('один из');
   ExprItems.Add('>');
   ExprItems.Add('<');
   ExprItems.Add('>=');
   ExprItems.Add('<=');
   ExprItems.Add('is');
   ConcItems := TStringList.Create;
-  ConcItems.Add('РР›Р');
-  ConcItems.Add('Р');
+  ConcItems.Add('ИЛИ');
+  ConcItems.Add('И');
   FOKeyItems := TStringList.Create;
 
   FieldObj := TComboBox.Create(AParent);
@@ -482,7 +482,7 @@ end;
 
 function TRecordEx.GetLabel(index: integer): TStaticText;
 begin
-  if (index < 0) or (index >= Length(FLabels)) then raise Exception.Create('РРЅРґРµРєСЃ РјРµС‚РєРё РІС‹С€РµР» Р·Р° РіСЂР°РЅРёС†С‹ РјР°СЃСЃРёРІР°!');
+  if (index < 0) or (index >= Length(FLabels)) then raise Exception.Create('Индекс метки вышел за границы массива!');
   result := FLabels[index];
 end;
 
@@ -691,7 +691,7 @@ begin
     Grid.Columns[i].Field.Visible := Grid.Columns[i].Visible;
   end;
 
-  // РїРѕР»СЏ, РїРѕ РєРѕС‚РѕСЂС‹Рј РЅРµС‚ РєРѕР»РѕРЅРѕРє РІ РіСЂРёРґРµ
+  // поля, по которым нет колонок в гриде
   for i := 0 to Grid.DataSource.DataSet.Fields.Count - 1 do
   begin
     col := FindColByFieldName(Grid, Grid.DataSource.DataSet.Fields.Fields[i].FieldName);
@@ -799,7 +799,7 @@ begin
       if Length(s) <= 0 then break;
     end;
     
-  //С‚РµРїРµСЂСЊ СЃРёРјС‹РѕР» %
+  //теперь симыол %
   if Length(s) > 0 then
     while (s[1] = '%') do
     begin
@@ -822,7 +822,7 @@ var
 
 begin
   if (not Assigned(Grid.DataSource)) or (not Assigned(Grid.DataSource.DataSet)) then
-    raise Exception.Create('РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РЅР°Р±РѕСЂ РґР°РЅРЅС‹С… РґР»СЏ С„РёР»СЊС‚СЂР°С†РёРё!');
+    raise Exception.Create('Отсутствует набор данных для фильтрации!');
 
   FString := '';
   FGrid := Grid;
@@ -870,8 +870,8 @@ begin
       end;
     except
       on e: Exception do
-        Application.MessageBox(pchar('РћС€РёР±РєР° РІ СЃС‚СЂРѕРєРµ С„РёР»СЊС‚СЂР°! Р—Р°РґР°РЅРѕ РЅРµРІРµСЂРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ РґР»СЏ РѕРґРЅРѕРіРѕ РёР· РїРѕР»РµР№!'#13#10 + e.Message),
-          'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+        Application.MessageBox(pchar('Ошибка в строке фильтра! Задано неверное выражение для одного из полей!'#13#10 + e.Message),
+          'Ошибка', MB_OK + MB_ICONERROR);
     end;
   end;
   Action := caHide;
@@ -1026,8 +1026,8 @@ begin
     end;
   except
     on e: Exception do
-      Application.MessageBox(pchar('РћС€РёР±РєР° РїСЂРё РѕРїСЂРµРґРµР»РµРЅРёРё С‚РµРєСѓС‰РµРіРѕ С„РёР»СЊС‚СЂР°! Р’РѕР·РјРѕР¶РЅРѕСЃС‚СЊ РґРѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ С„РёР»СЊС‚СЂ Рє С‚РµРєСѓС‰РµРјСѓ Р±СѓРґРµС‚ РЅРµРґРѕСЃС‚СѓРїРЅР°. ' +
-        'РЎРѕРѕР±С‰РµРЅРёРµ РѕС€РёР±РєРё:'#13#10 + e.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar('Ошибка при определении текущего фильтра! Возможность добавить новый фильтр к текущему будет недоступна. ' +
+        'Сообщение ошибки:'#13#10 + e.Message), 'Ошибка', MB_OK + MB_ICONERROR);
   end;
 
   conditions.Free;
@@ -1098,7 +1098,7 @@ begin
 
   while i <= Length(s) do
   begin
-    if s[i] = #39 then //РѕРґРёРЅР°СЂРЅР°СЏ РєР°РІС‹С‡РєР° '
+    if s[i] = #39 then //одинарная кавычка '
       bracket := not bracket;
     if (not bracket) and ((s[i] = '=') or (s[i] = '<') or (s[i] = '>')) then
     begin
@@ -1205,8 +1205,8 @@ begin
     Width := 50;
     Top := ATop;
     Height := CTRLHEIGHT;
-    Items.Add('Р');
-    Items.Add('РР›Р');
+    Items.Add('И');
+    Items.Add('ИЛИ');
     Style := csDropDownList;
     ItemIndex := 0;
     Visible := true;
@@ -1239,10 +1239,10 @@ begin
       ValueObj1 := TComboBox.Create(AParent);
       ValueObj1.Parent := AParent;
       TComboBox(ValueObj1).Style := csDropDownList;
-      TComboBox(ValueObj1).Items.Add('СЂР°РІРЅРѕ');
-      TComboBox(ValueObj1).Items.Add('РЅРµ СЂР°РІРЅРѕ');
-      TComboBox(ValueObj1).Items.Add('СЃРѕРґРµСЂР¶РёС‚');
-      TComboBox(ValueObj1).Items.Add('РЅРµ СЃРѕРґРµСЂР¶РёС‚');
+      TComboBox(ValueObj1).Items.Add('равно');
+      TComboBox(ValueObj1).Items.Add('не равно');
+      TComboBox(ValueObj1).Items.Add('содержит');
+      TComboBox(ValueObj1).Items.Add('не содержит');
       TComboBox(ValueObj1).ItemIndex := 0;
       TComboBox(ValueObj1).OnChange := CtrlChange;
       ValueObj1.Width := 90;
@@ -1438,7 +1438,7 @@ begin
 
   if Assigned(ExLabel1) then
   begin
-    ExLabel1.Caption := 'СЃ';
+    ExLabel1.Caption := 'с';
     ExLabel1.Height := 13;
     ExLabel1.Top := ATop + 2;
     ExLabel1.Left := 239;
@@ -1450,7 +1450,7 @@ begin
 
   if Assigned(ExLabel2) then
   begin
-    ExLabel2.Caption := 'РїРѕ';
+    ExLabel2.Caption := 'по';
     ExLabel2.Height := 13;
     ExLabel2.Top := ATop + 2;
     ExLabel2.Left := 397;

@@ -1,4 +1,4 @@
-// СЋРЅРёС‚ РѕР±РµСЂС‚РєР° РґР»СЏ СЂР°Р·Р»РёС‡РЅС‹С… Р°Р»РіРѕСЂРёС‚РјРѕРІ С€РёС„СЂРѕРІР°РЅРёСЏ РґР°РЅРЅС‹С…
+// юнит обертка для различных алгоритмов шифрования данных
 
 unit CryptUtils;
 
@@ -7,11 +7,11 @@ interface
 uses
   SysUtils, Classes, {DES, RC6,} MD5, MD5Utils, AES;
 
-// РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹
+// дополнительные методы
 function StrToBytesS(s: string; HEX: boolean; Delim: char = #0): string;
 function BytesSToStr(sBytes: string; HEX: boolean; Delim: char = #0): string;
 
-//AES С€РёС„СЂРѕРІР°РЅРёРµ
+//AES шифрование
 procedure EncAESStream(Dest, Source: TStream; Key: string; KeySizeMode: byte);
 procedure DecAESStream(Dest, Source: TStream; Key: string; KeySizeMode: byte);
 function EncAES(Source, Key: string; KeySizeMode: byte): string;

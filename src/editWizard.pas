@@ -357,7 +357,7 @@ begin
         mt.Edit;
       end else
       begin
-        if Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°! Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+        if Application.MessageBox('Редактируемая запись была удалена! Восстановить?', 'Подтверждение',
           MB_YESNO + MB_ICONWARNING) = ID_YES then
         begin
           mt.Append;
@@ -394,7 +394,7 @@ begin
         mt.Edit;
       end else
       begin
-        if Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°! Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+        if Application.MessageBox('Редактируемая запись была удалена! Восстановить?', 'Подтверждение',
           MB_YESNO + MB_ICONWARNING) = ID_YES then
         begin
           mt.Append;
@@ -423,7 +423,7 @@ begin
         mtWizardStates.Edit;
       end else
       begin
-        if Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°! Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+        if Application.MessageBox('Редактируемая запись была удалена! Восстановить?', 'Подтверждение',
           MB_YESNO + MB_ICONWARNING) = ID_YES then
         begin
           mtWizardStates.Append;
@@ -518,7 +518,7 @@ begin
         mtStatesCross.Edit;
       end else
       begin
-        if Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°! Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+        if Application.MessageBox('Редактируемая запись была удалена! Восстановить?', 'Подтверждение',
           MB_YESNO + MB_ICONWARNING) = ID_YES then
         begin
           mtStatesCross.Append;
@@ -557,7 +557,7 @@ begin
       ds.Edit;
     end else
     begin
-      Application.MessageBox('Р РµРґР°РєС‚РёСЂСѓРµРјР°СЏ Р·Р°РїРёСЃСЊ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°!', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox('Редактируемая запись была удалена!', 'Ошибка', MB_OK + MB_ICONERROR);
       exit;
     end;
 
@@ -588,10 +588,11 @@ var
   FScript: TFScriptEditor;
 
 begin
+  FScript := nil;
   if Mode = omView then exit;
 
   if FSettings.ConfirmSave and
-    (Application.MessageBox('РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РЎС†РµРЅР°СЂРёСЏ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
+    (Application.MessageBox('Сохранить изменения Сценария в базу данных?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES) then exit;
 
   if Mode = omEdit then FScript := PrepareScriptForm;
 
@@ -611,7 +612,7 @@ procedure TFEditWizard.dbgWizardStatesColumns5EditButtonClick(Sender: TObject; v
 
 begin
  { col := FindColumnByFieldName(dbgWizardStates, 'FIELD_JSON');
-  OpenJsonEditor(mtWizardStatesFIELD_JSON, 'РЎРѕСЃС‚РѕСЏРЅРёРµ: ' + mtWizardStatesDESCRIPTOR_.AsString + '  ' + mtWizardStatesFORM_TITLE.AsString +
+  OpenJsonEditor(mtWizardStatesFIELD_JSON, 'Состояние: ' + mtWizardStatesDESCRIPTOR_.AsString + '  ' + mtWizardStatesFORM_TITLE.AsString +
     ' : ' + col.Title.Hint); }
 end;
 
@@ -636,7 +637,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddStateClick(sbAddState);
     VK_RETURN: if ssShift in Shift then sbEditStateClick(sbEditState);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -652,7 +653,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddScenSlotClick(sbAddScenSlot);
     VK_RETURN: if ssShift in Shift then sbEditScenSlotClick(sbEditScenSlot);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -668,7 +669,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddScenSlotValClick(sbAddScenSlotVal);
     VK_RETURN: if ssShift in Shift then sbEditScenSlotValClick(sbEditScenSlotVal);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -684,7 +685,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddCrossClick(sbAddCross);
     VK_RETURN: if ssShift in Shift then sbEditCrossClick(sbEditCross);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -700,7 +701,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddStateSlotClick(sbAddStateSlot);
     VK_RETURN: if ssShift in Shift then sbEditStateSlotClick(sbEditStateSlot);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -716,7 +717,7 @@ begin
     VK_INSERT: if (not (ssShift in Shift)) and (not (ssCtrl in Shift)) then sbAddStateSlotValClick(sbAddStateSlotVal);
     VK_RETURN: if ssShift in Shift then sbEditStateSlotValClick(sbEditStateSlotVal);
     else
-      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Р¤')) or (Key = Ord('С„'))) then
+      if (ssCtrl in Shift) and ((Key = Ord('A')) or (Key = Ord('a')) or (Key = Ord('Ф')) or (Key = Ord('ф'))) then
         TDBGridEh(Sender).SelectedRows.SelectAll;
   end;
 end;
@@ -786,13 +787,13 @@ begin
   sl := TStringList.Create;
 
   try
-    // СѓРґР°Р»РµРЅРёРµ
+    // удаление
     result := gcsGenDeleteSQL(Script, Deleted, 'WIZARD_SATES_SLOTS', 'PK');
 
     bm := Data.GetBookmark;
     Data.DisableControls;
 
-    // РґРѕР±Р°РІР»РµРЅРёРµ
+    // добавление
     Data.First;
     while not Data.Eof do
     begin
@@ -830,7 +831,7 @@ begin
       Data.Next;
     end;
 
-    // РѕР±РЅРѕРІР»РµРЅРёРµ
+    // обновление
     Data.First;
     while not Data.Eof do
     begin
@@ -883,13 +884,13 @@ begin
   sl := TStringList.Create;
 
   try
-    // СѓРґР°Р»РµРЅРёРµ
+    // удаление
     result := gcsGenDeleteSQL(Script, Deleted, 'WIZARD_SC_SLOT_VAL', 'PK');
 
     bm := Data.GetBookmark;
     Data.DisableControls;
 
-    // РґРѕР±Р°РІР»РµРЅРёРµ
+    // добавление
     Data.First;
     while not Data.Eof do
     begin
@@ -914,7 +915,7 @@ begin
       Data.Next;
     end;
 
-    // РѕР±РЅРѕРІР»РµРЅРёРµ
+    // обновление
     Data.First;
     while not Data.Eof do
     begin
@@ -959,13 +960,13 @@ begin
   sl := TStringList.Create;
 
   try
-    // СѓРґР°Р»РµРЅРёРµ
+    // удаление
     result := gcsGenDeleteSQL(Script, DeletedCross, 'WIZARD_SATES_CROSS', 'PK');
 
     bm := mtStatesCross.GetBookmark;
     mtStatesCross.DisableControls;
 
-    // РґРѕР±Р°РІР»РµРЅРёРµ
+    // добавление
     mtStatesCross.First;
     while not mtStatesCross.Eof do
     begin
@@ -1000,7 +1001,7 @@ begin
       mtStatesCross.Next;
     end;
 
-    // РѕР±РЅРѕРІР»РµРЅРёРµ
+    // обновление
     mtStatesCross.First;
     while not mtStatesCross.Eof do
     begin
@@ -1050,13 +1051,13 @@ begin
   sl := TStringList.Create;
 
   try
-    // СѓРґР°Р»РµРЅРёРµ
+    // удаление
     result := gcsGenDeleteSQL(Script, DeletedStates, 'WIZARD_SATES', 'PK');
 
     bm := mtWizardStates.GetBookmark;
     mtWizardStates.DisableControls;
 
-    // РґРѕР±Р°РІР»РµРЅРёРµ
+    // добавление
     mtWizardStates.First;
     while not mtWizardStates.Eof do
     begin
@@ -1091,7 +1092,7 @@ begin
       mtWizardStates.Next;
     end;
 
-    // РѕР±РЅРѕРІР»РµРЅРёРµ
+    // обновление
     mtWizardStates.First;
     while not mtWizardStates.Eof do
     begin
@@ -1423,7 +1424,7 @@ end;
 
 procedure TFEditWizard.mtWizardStatesAfterScroll(DataSet: TDataSet);
 begin
-  // РІ mtStatesCross (РєРЅРѕРїРєРё СЃРѕСЃС‚РѕСЏРЅРёСЏ) Р·Р°Р»РёС‚С‹ РґР°РЅРЅС‹Рµ РїРѕ РІСЃРµРј WizardStates, С‚СѓС‚ РЅР°РґРѕ С‚РѕР»СЊРєРѕ С„РёР»СЊС‚СЂРѕРІР°С‚СЊ РёС…
+  // в mtStatesCross (кнопки состояния) залиты данные по всем WizardStates, тут надо только фильтровать их
   if mtStatesCross.Active then
   begin
     if mtStatesCross.State in [dsEdit, dsInsert] then mtStatesCross.Post;
@@ -1436,7 +1437,7 @@ begin
     mtStatesCross.Filtered := true;
   end;
 
-  // С‚РѕР¶Рµ СЃР°РјРѕРµ РґР»СЏ mtStateSlots (СЃР»РѕС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёСЏ)
+  // тоже самое для mtStateSlots (слоты состояния)
   if mtStateSlots.Active then
   begin
     if mtStateSlots.State in [dsEdit, dsInsert] then mtStateSlots.Post;
@@ -1460,7 +1461,7 @@ procedure TFEditWizard.mtWizardStatesBeforePost(DataSet: TDataSet);
 begin
   if not IsLoadingGrid then
   begin
-    //if mtWizardStatesFORM_PK.IsNull then raise Exception.Create('РќРµ РІСЃРµ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ Р·Р°РїРѕР»РЅРµРЅС‹!');
+    //if mtWizardStatesFORM_PK.IsNull then raise Exception.Create('Не все обязательные поля заполнены!');
     mtWizardStatesCHANGED.AsBoolean := true;
     if mtWizardStatesGUID.IsNull then mtWizardStatesGUID.AsString := CreateGuid;
   end;
@@ -1482,7 +1483,7 @@ end;
 
 procedure TFEditWizard.mtScenSlotsAfterScroll(DataSet: TDataSet);
 begin
-  // РІ mtScenSlotVal (Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р° СЃС†РµРЅР°СЂРёСЏ) Р·Р°Р»РёС‚С‹ РґР°РЅРЅС‹Рµ РїРѕ РІСЃРµРј СЃР»РѕС‚Р°Рј СЃС†РµРЅР°СЂРёСЏ, РЅР°РґРѕ РёС… С„РёР»СЊС‚СЂРѕРІР°С‚СЊ
+  // в mtScenSlotVal (значения слота сценария) залиты данные по всем слотам сценария, надо их фильтровать
   if mtScenSlotVal.Active then
   begin
     if mtScenSlotVal.State in [dsEdit, dsInsert] then mtScenSlotVal.Post;
@@ -1547,7 +1548,7 @@ procedure TFEditWizard.mtStatesCrossBeforePost(DataSet: TDataSet);
 begin
   if not IsLoadingGrid then
   begin
-    if mtStatesCrossPK_PREW.IsNull then raise Exception.Create('РќРµ РІСЃРµ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ Р·Р°РїРѕР»РЅРµРЅС‹!');
+    if mtStatesCrossPK_PREW.IsNull then raise Exception.Create('Не все обязательные поля заполнены!');
     mtStatesCrossCHANGED.AsBoolean := true;
     if mtStatesCrossGUID.IsNull then mtStatesCrossGUID.AsString := CreateGuid;
   end;
@@ -1555,7 +1556,7 @@ end;
 
 procedure TFEditWizard.mtStateSlotsAfterScroll(DataSet: TDataSet);
 begin
-  // РІ mtStateSlotVal (Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р° СЃРѕСЃС‚РѕСЏРЅРёСЏ) Р·Р°Р»РёС‚С‹ РґР°РЅРЅС‹Рµ РїРѕ РІСЃРµРј СЃР»РѕС‚Р°Рј СЃРѕСЃС‚РѕСЏРЅРёСЏ РІ СЃС†РµРЅР°СЂРёРё, РЅР°РґРѕ РёС… С„РёР»СЊС‚СЂРѕРІР°С‚СЊ
+  // в mtStateSlotVal (значения слота состояния) залиты данные по всем слотам состояния в сценарии, надо их фильтровать
   if mtStateSlotVal.Active then
   begin
     if mtStateSlotVal.State in [dsEdit, dsInsert] then mtStateSlotVal.Post;
@@ -1591,9 +1592,9 @@ begin
   begin
     if mt.State in [dsEdit, dsInsert] then
     begin
-      case Application.MessageBox(pchar('РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ РґР°РЅРЅС‹Рµ, РїРѕРєР° С‚Р°Р±Р»РёС†Р° СЃР»РѕС‚РѕРІ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ! РЎРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ ' +
-        'РёР»Рё РѕС‚РјРµРЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ. РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ [YES], РѕРјРµРЅРёС‚СЊ [NO], РёР»Рё РѕС‚Р»РѕР¶РёС‚СЊ СЃРѕС…СЂР°РЅРµРЅРёРµ С„РѕСЂРјС‹ [CANCEL] ' +
-        '(СЃРѕС…СЂР°РЅРёС‚СЊ СЌС‚Рё РґР°РЅРЅС‹Рµ РјРѕР¶РЅРѕ Р±СѓРґРµС‚ РїРѕР·Р¶Рµ)?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNOCANCEL + MB_ICONQUESTION) of
+      case Application.MessageBox(pchar('Невозможно сохранить данные, пока таблица слотов в режиме редактирования! Сначала нужно сохранить ' +
+        'или отменить изменения в таблице. Сохранить изменения [YES], оменить [NO], или отложить сохранение формы [CANCEL] ' +
+        '(сохранить эти данные можно будет позже)?'), 'Подтверждение', MB_YESNOCANCEL + MB_ICONQUESTION) of
         ID_YES: mt.Post;
         ID_NO: mt.Cancel;
         ID_CANCEL:
@@ -1621,9 +1622,9 @@ begin
   begin
     if mt.State in [dsEdit, dsInsert] then
     begin
-      case Application.MessageBox(pchar('РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ РґР°РЅРЅС‹Рµ, РїРѕРєР° С‚Р°Р±Р»РёС†Р° Р·РЅР°С‡РµРЅРёР№ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ! РЎРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ ' +
-        'РёР»Рё РѕС‚РјРµРЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ. РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ [YES], РѕРјРµРЅРёС‚СЊ [NO], РёР»Рё РѕС‚Р»РѕР¶РёС‚СЊ СЃРѕС…СЂР°РЅРµРЅРёРµ С„РѕСЂРјС‹ [CANCEL] ' +
-        '(СЃРѕС…СЂР°РЅРёС‚СЊ СЌС‚Рё РґР°РЅРЅС‹Рµ РјРѕР¶РЅРѕ Р±СѓРґРµС‚ РїРѕР·Р¶Рµ)?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNOCANCEL + MB_ICONQUESTION) of
+      case Application.MessageBox(pchar('Невозможно сохранить данные, пока таблица значений в режиме редактирования! Сначала нужно сохранить ' +
+        'или отменить изменения в таблице. Сохранить изменения [YES], оменить [NO], или отложить сохранение формы [CANCEL] ' +
+        '(сохранить эти данные можно будет позже)?'), 'Подтверждение', MB_YESNOCANCEL + MB_ICONQUESTION) of
         ID_YES: mt.Post;
         ID_NO: mt.Cancel;
         ID_CANCEL:
@@ -1645,9 +1646,9 @@ begin
   begin
     if mtWizardStates.State in [dsEdit, dsInsert] then
     begin
-      case Application.MessageBox(pchar('РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ РґР°РЅРЅС‹Рµ, РїРѕРєР° С‚Р°Р±Р»РёС†Р° СЃРѕСЃС‚РѕСЏРЅРёР№ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ! РЎРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ ' +
-        'РёР»Рё РѕС‚РјРµРЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ. РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ [YES], РѕРјРµРЅРёС‚СЊ [NO], РёР»Рё РѕС‚Р»РѕР¶РёС‚СЊ СЃРѕС…СЂР°РЅРµРЅРёРµ С„РѕСЂРјС‹ [CANCEL] ' +
-        '(СЃРѕС…СЂР°РЅРёС‚СЊ СЌС‚Рё РґР°РЅРЅС‹Рµ РјРѕР¶РЅРѕ Р±СѓРґРµС‚ РїРѕР·Р¶Рµ)?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNOCANCEL + MB_ICONQUESTION) of
+      case Application.MessageBox(pchar('Невозможно сохранить данные, пока таблица состояний в режиме редактирования! Сначала нужно сохранить ' +
+        'или отменить изменения в таблице. Сохранить изменения [YES], оменить [NO], или отложить сохранение формы [CANCEL] ' +
+        '(сохранить эти данные можно будет позже)?'), 'Подтверждение', MB_YESNOCANCEL + MB_ICONQUESTION) of
         ID_YES: mtWizardStates.Post;
         ID_NO: mtWizardStates.Cancel;
         ID_CANCEL:
@@ -1694,9 +1695,9 @@ begin
   begin
     if mtStatesCross.State in [dsEdit, dsInsert] then
     begin
-      case Application.MessageBox(pchar('РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ РґР°РЅРЅС‹Рµ, РїРѕРєР° С‚Р°Р±Р»РёС†Р° РєРЅРѕРїРѕРє РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ! РЎРЅР°С‡Р°Р»Р° РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ ' +
-        'РёР»Рё РѕС‚РјРµРЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ. РЎРѕС…СЂР°РЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ [YES], РѕРјРµРЅРёС‚СЊ [NO], РёР»Рё РѕС‚Р»РѕР¶РёС‚СЊ СЃРѕС…СЂР°РЅРµРЅРёРµ С„РѕСЂРјС‹ [CANCEL] ' +
-        '(СЃРѕС…СЂР°РЅРёС‚СЊ СЌС‚Рё РґР°РЅРЅС‹Рµ РјРѕР¶РЅРѕ Р±СѓРґРµС‚ РїРѕР·Р¶Рµ)?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNOCANCEL + MB_ICONQUESTION) of
+      case Application.MessageBox(pchar('Невозможно сохранить данные, пока таблица кнопок в режиме редактирования! Сначала нужно сохранить ' +
+        'или отменить изменения в таблице. Сохранить изменения [YES], оменить [NO], или отложить сохранение формы [CANCEL] ' +
+        '(сохранить эти данные можно будет позже)?'), 'Подтверждение', MB_YESNOCANCEL + MB_ICONQUESTION) of
         ID_YES: mtStatesCross.Post;
         ID_NO: mtStatesCross.Cancel;
         ID_CANCEL:
@@ -1725,7 +1726,7 @@ begin
   if Trim(edDescriptor.Text) = '' then
   begin
     result := false;
-    Application.MessageBox('Р”РµСЃРєСЂРёРїС‚РѕСЂ СЃС†РµРЅР°СЂРёСЏ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј!', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    Application.MessageBox('Дескриптор сценария не может быть пустым!', 'Ошибка', MB_OK + MB_ICONERROR);
     exit;
   end;
 
@@ -1750,7 +1751,7 @@ begin
     else result := false;
   end;
 
-  if (err <> '') then Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+  if (err <> '') then Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
 
   if result then
   begin
@@ -1771,18 +1772,18 @@ begin
 
   if Mode = omView then exit;
 
-  // СѓРґР°Р»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёР№
+  // удаление состояний
   if DeletedStates.Count > 0 then
   begin
     if not FMain.ExecSQL('delete from WIZARD_SATES where PK in (' + TextToString(DeletedStates.Text) + ')', err) then
     begin
-      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
       exit;
     end;
     DeletedStates.Clear;
   end;
 
-  // РІСЃС‚Р°РІРєР°/РѕР±РЅРѕРІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёР№
+  // вставка/обновление состояний
   try
     mtWizardStates.First;
     while not mtWizardStates.Eof do
@@ -1812,21 +1813,21 @@ begin
       mtWizardStates.Next;
     end;
   except
-    on E: Exception do Application.MessageBox(pchar(E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    on E: Exception do Application.MessageBox(pchar(E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
   end;
 
-  // СѓРґР°Р»РµРЅРёРµ РєРЅРѕРїРѕРє РІРёР·Р°СЂРґРѕРІ
+  // удаление кнопок визардов
   if DeletedCross.Count > 0 then
   begin
     if not FMain.ExecSQL('delete from WIZARD_SATES_CROSS where PK in (' + TextToString(DeletedCross.Text) + ')', err) then
     begin
-      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
       exit;
     end;
     DeletedCross.Clear;
   end;
 
-  // РІСЃС‚Р°РІРєР°/РѕР±РЅРѕРІР»РµРЅРёРµ РєРЅРѕРїРѕРє РІРёР·Р°СЂРґРѕРІ
+  // вставка/обновление кнопок визардов
   try
     mtStatesCross.DisableControls;
     mtStatesCross.Filtered := false;
@@ -1852,15 +1853,15 @@ begin
       mtStatesCross.Next;
     end;
   except
-    on E: Exception do Application.MessageBox(pchar(E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    on E: Exception do Application.MessageBox(pchar(E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
   end;
   mtStatesCross.EnableControls;
   mtStatesCross.Filtered := true;
 
-  // СЃРѕС…СЂР°РЅСЏРµРј СЃР»РѕС‚С‹ СЃС†РµРЅР°СЂРёСЏ (Рё РёС… Р·РЅР°С‡РµРЅРёСЏ)
+  // сохраняем слоты сценария (и их значения)
   SaveSlots(mtScenSlots, DeletedSlots);
   SaveSlotVals(mtScenSlotVal, DeletedSlotVals);
-  // СЃРѕС…СЂР°РЅСЏРµРј СЃР»РѕС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёР№ (Рё РёС… Р·РЅР°С‡РµРЅРёСЏ)
+  // сохраняем слоты состояний (и их значения)
   SaveSlots(mtStateSlots, DeletedSlots);
   SaveSlotVals(mtStateSlotVal, DeletedSlotVals);
 end;
@@ -1875,18 +1876,18 @@ begin
 
   if Mode = omView then exit;
 
-  // СѓРґР°Р»РµРЅРёРµ СЃР»РѕС‚РѕРІ
+  // удаление слотов
   if DelList.Count > 0 then
   begin
     if not FMain.ExecSQL('delete from WIZARD_SATES_SLOTS where PK in (' + TextToString(DelList.Text) + ')', err) then
     begin
-      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
       exit;
     end;
     DelList.Clear;
   end;
 
-  // РІСЃС‚Р°РІРєР°/РѕР±РЅРѕРІР»РµРЅРёРµ СЃР»РѕС‚РѕРІ
+  // вставка/обновление слотов
   f := MemTable.Filtered;
   try
     MemTable.DisableControls;
@@ -1917,7 +1918,7 @@ begin
       MemTable.Next;
     end;
   except
-    on E: Exception do Application.MessageBox(pchar(E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    on E: Exception do Application.MessageBox(pchar(E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
   end;
   MemTable.EnableControls;
   MemTable.Filtered := f;
@@ -1932,18 +1933,18 @@ begin
 
   if Mode = omView then exit;
 
-  // СѓРґР°Р»РµРЅРёРµ Р·РЅР°С‡РµРЅРёР№ СЃР»РѕС‚РѕРІ
+  // удаление значений слотов
   if DelList.Count > 0 then
   begin
     if not FMain.ExecSQL('delete from WIZARD_SC_SLOT_VAL where PK in (' + TextToString(DelList.Text) + ')', err) then
     begin
-      Application.MessageBox(pchar(err), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+      Application.MessageBox(pchar(err), 'Ошибка', MB_OK + MB_ICONERROR);
       exit;
     end;
     DelList.Clear;
   end;
 
-  // РІСЃС‚Р°РІРєР°/РѕР±РЅРѕРІР»РµРЅРёРµ Р·РЅР°С‡РµРЅРёР№ СЃР»РѕС‚РѕРІ
+  // вставка/обновление значений слотов
   try
     MemTable.DisableControls;
     MemTable.Filtered := false;
@@ -1964,7 +1965,7 @@ begin
       MemTable.Next;
     end;
   except
-    on E: Exception do Application.MessageBox(pchar(E.Message), 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    on E: Exception do Application.MessageBox(pchar(E.Message), 'Ошибка', MB_OK + MB_ICONERROR);
   end;
   MemTable.EnableControls;
   MemTable.Filtered := true;
@@ -1977,13 +1978,13 @@ begin
 
   if dbgScenSlots.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ СЃР»РѕС‚С‹ (' + IntToStr(dbgScenSlots.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить все отмеченные слоты (' + IntToStr(dbgScenSlots.SelectedRows.Count) + ')?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgScenSlots.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ СЃР»РѕС‚ "' + mtScenSlotsNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить слот "' + mtScenSlotsNAME.AsString + '"?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     mtScenSlots.Delete;
@@ -1997,13 +1998,13 @@ begin
 
   if dbgScenSlotVal.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р° (' + IntToStr(dbgScenSlotVal.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить все отмеченные значения слота (' + IntToStr(dbgScenSlotVal.SelectedRows.Count) + ')?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgScenSlotVal.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+    if Application.MessageBox(pchar('Удалить значение слота?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
     mtScenSlotVal.Delete;
   end;
 end;
@@ -2015,13 +2016,13 @@ begin
 
   if dbgWizardStates.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ (' + IntToStr(dbgWizardStates.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить все отмеченные состояния (' + IntToStr(dbgWizardStates.SelectedRows.Count) + ')?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgWizardStates.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ "' + mtWizardStatesPK.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить состояние "' + mtWizardStatesPK.AsString + '"?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     mtWizardStates.Delete;
@@ -2035,13 +2036,13 @@ begin
 
   if dbgStateSlots.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ СЃР»РѕС‚С‹ (' + IntToStr(dbgStateSlots.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить все отмеченные слоты (' + IntToStr(dbgStateSlots.SelectedRows.Count) + ')?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgStateSlots.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ СЃР»РѕС‚ "' + mtStateSlotsNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить слот "' + mtStateSlotsNAME.AsString + '"?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     mtStateSlots.Delete;
@@ -2055,13 +2056,13 @@ begin
 
   if dbgStateSlotVal.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р° (' + IntToStr(dbgStateSlotVal.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить все отмеченные значения слота (' + IntToStr(dbgStateSlotVal.SelectedRows.Count) + ')?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgStateSlotVal.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+    if Application.MessageBox(pchar('Удалить значение слота?'), 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
     mtStateSlotVal.Delete;
   end;
 end;
@@ -2073,13 +2074,13 @@ begin
 
   if dbgStatesCross.SelectedRows.Count > 1 then
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РІСЃРµ РѕС‚РјРµС‡РµРЅРЅС‹Рµ РєРЅРѕРїРєРё (' + IntToStr(dbgStatesCross.SelectedRows.Count) + ')?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить все отмеченные кнопки (' + IntToStr(dbgStatesCross.SelectedRows.Count) + ')?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     dbgStatesCross.SelectedRows.Delete;
   end else
   begin
-    if Application.MessageBox(pchar('РЈРґР°Р»РёС‚СЊ РєРЅРѕРїРєСѓ "' + mtStatesCrossNAME.AsString + '"?'), 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ',
+    if Application.MessageBox(pchar('Удалить кнопку "' + mtStatesCrossNAME.AsString + '"?'), 'Подтверждение',
       MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
 
     mtStatesCross.Delete;
@@ -2103,13 +2104,13 @@ begin
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования слота
   if FMain.SetFocusOpenedWindow(mtScenSlotsPK.AsInteger, TFSlotEditor.ClassName) then exit;
   FSlotEditor := TFSlotEditor.Create(Self, cftEditor, m, mtScenSlotsPK.AsVariant, FMain.OnChildFormClose);
   FSlotEditor.OnClose := OnSlotEditorClose;
   FSlotEditor.EditingRec := mtScenSlots.GetBookmark;
   FSlotEditor.IsScenSlot := true;
-  FSlotEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃР»РѕС‚Р° СЃС†РµРЅР°СЂРёСЏ';
+  FSlotEditor.Caption := 'Редактирование слота сценария';
   FSlotEditor.edPk.Text := mtScenSlotsPK.AsString;
   FSlotEditor.edName.Text := mtScenSlotsNAME.AsString;
   if mtScenSlotsSLOT_TYPE.IsNull then FSlotEditor.cbType.ItemIndex := -1
@@ -2135,13 +2136,13 @@ begin
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования значения слота
   if FMain.SetFocusOpenedWindow(mtScenSlotValPK.AsInteger, TFSlotValEditor.ClassName) then exit;
   FSlotValEditor := TFSlotValEditor.Create(Self, cftEditor, m, mtScenSlotValPK.AsVariant, FMain.OnChildFormClose);
   FSlotValEditor.OnClose := OnSlotValEditorClose;
   FSlotValEditor.EditingRec := mtScenSlotVal.GetBookmark;
   FSlotValEditor.IsScenSlot := true;
-  FSlotValEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°';
+  FSlotValEditor.Caption := 'Редактировать значение слота';
   FSlotValEditor.edPk.Text := mtScenSlotValPK.AsString;
   FSlotValEditor.edCross.Value := mtScenSlotValCROSS_PK.AsVariant;
   FSlotValEditor.edSlotValue.Text := mtScenSlotValSLOT_VALUE.AsString;
@@ -2165,13 +2166,13 @@ begin
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЃС†РµРЅР°СЂРёСЏ
+  // открытие формы редактирования состояния сценария
   if FMain.SetFocusOpenedWindow(mtWizardStatesPK.AsInteger, TFStateEditor.ClassName) then exit;
   FStateEditor := TFStateEditor.Create(Self, cftEditor, m, mtWizardStatesPK.AsVariant, FMain.OnChildFormClose);
   FStateEditor.OnClose := OnStateEditorClose;
   FStateEditor.dsoForm.DataSet := dsStateForms;
   FStateEditor.EditingRec := mtWizardStates.GetBookmark;
-  FStateEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЃС†РµРЅР°СЂРёСЏ';
+  FStateEditor.Caption := 'Редактирование состояния сценария';
   FStateEditor.edPk.Text := mtWizardStatesPK.AsString;
   FStateEditor.edDescriptor.Text := mtWizardStatesDESCRIPTOR_.AsString;
   FStateEditor.lcbForm.KeyValue := mtWizardStates.FieldByName('FORM_PK').Value;
@@ -2203,13 +2204,13 @@ begin
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования слота
   if FMain.SetFocusOpenedWindow(mtStateSlotsPK.AsInteger, TFSlotEditor.ClassName) then exit;
   FSlotEditor := TFSlotEditor.Create(Self, cftEditor, m, mtStateSlotsPK.AsVariant, FMain.OnChildFormClose);
   FSlotEditor.OnClose := OnSlotEditorClose;
   FSlotEditor.EditingRec := mtStateSlots.GetBookmark;
   FSlotEditor.IsScenSlot := false;
-  FSlotEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃР»РѕС‚Р° СЃРѕСЃС‚РѕСЏРЅРёСЏ';
+  FSlotEditor.Caption := 'Редактирование слота состояния';
   FSlotEditor.edPk.Text := mtStateSlotsPK.AsString;
   FSlotEditor.edName.Text := mtStateSlotsNAME.AsString;
   if mtStateSlotsSLOT_TYPE.IsNull then FSlotEditor.cbType.ItemIndex := -1
@@ -2235,13 +2236,13 @@ begin
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования значения слота
   if FMain.SetFocusOpenedWindow(mtStateSlotValPK.AsInteger, TFSlotValEditor.ClassName) then exit;
   FSlotValEditor := TFSlotValEditor.Create(Self, cftEditor, m, mtStateSlotValPK.AsVariant, FMain.OnChildFormClose);
   FSlotValEditor.OnClose := OnSlotValEditorClose;
   FSlotValEditor.EditingRec := mtStateSlotVal.GetBookmark;
   FSlotValEditor.IsScenSlot := false;
-  FSlotValEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°';
+  FSlotValEditor.Caption := 'Редактировать значение слота';
   FSlotValEditor.edPk.Text := mtStateSlotValPK.AsString;
   FSlotValEditor.edCross.Value := mtStateSlotValCROSS_PK.AsVariant;
   FSlotValEditor.edSlotValue.Text := mtStateSlotValSLOT_VALUE.AsString;
@@ -2299,12 +2300,12 @@ begin
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РєРЅРѕРїРєРё
+  // открытие формы редактирования кнопки
   if FMain.SetFocusOpenedWindow(mtStatesCrossPK.AsInteger, TFCrossEditor.ClassName) then exit;
   FCrossEditor := TFCrossEditor.Create(Self, cftEditor, m, mtStatesCrossPK.AsVariant, FMain.OnChildFormClose);
   FCrossEditor.OnClose := OnCrossEditorClose;
   FCrossEditor.EditingRec := mtStatesCross.GetBookmark;
-  FCrossEditor.Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РєРЅРѕРїРєРё';
+  FCrossEditor.Caption := 'Редактирование кнопки';
   FCrossEditor.edPk.Text := mtStatesCrossPK.AsString;
   FCrossEditor.edName.Text := mtStatesCrossNAME.AsString;
   FCrossEditor.edNextState.Value := mtStatesCrossPK_NEXT.AsVariant;
@@ -2323,12 +2324,12 @@ var
 begin
   if Mode = omView then exit;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования слота
   FSlotEditor := TFSlotEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FSlotEditor.OnClose := OnSlotEditorClose;
   FSlotEditor.EditingRec := nil;
   FSlotEditor.IsScenSlot := true;
-  FSlotEditor.Caption := 'РќРѕРІС‹Р№ СЃР»РѕС‚ СЃС†РµРЅР°СЂРёСЏ';
+  FSlotEditor.Caption := 'Новый слот сценария';
   FSlotEditor.edPk.Text := '';
   FSlotEditor.edName.Text := '';
   FSlotEditor.cbType.ItemIndex := 0;
@@ -2345,17 +2346,17 @@ begin
   if (not mtScenSlots.Active) or mtScenSlots.IsEmpty then exit;
   if mtScenSlotsPK.IsNull then
   begin
-    Application.MessageBox('РџРµСЂРµРґ С‚РµРј РєР°Рє РґРѕР±Р°РІР»СЏС‚СЊ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°, СЃРѕС…СЂР°РЅРёС‚Рµ СЌС‚РѕС‚ СЃР»РѕС‚ РІ Р‘Р”!', 'РћС€РёР±РєР°',
+    Application.MessageBox('Перед тем как добавлять значение слота, сохраните этот слот в БД!', 'Ошибка',
       MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования значения слота
   FSlotValEditor := TFSlotValEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FSlotValEditor.OnClose := OnSlotValEditorClose;
   FSlotValEditor.EditingRec := nil;
   FSlotValEditor.IsScenSlot := true;
-  FSlotValEditor.Caption := 'РќРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°';
+  FSlotValEditor.Caption := 'Новое значение слота';
   FSlotValEditor.edPk.Text := '';
   FSlotValEditor.edCross.Value := Null;
   FSlotValEditor.edSlotValue.Text := '';
@@ -2368,12 +2369,12 @@ var
 
 begin
   if Mode = omView then exit;
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЃС†РµРЅР°СЂРёСЏ
+  // открытие формы редактирования состояния сценария
   FStateEditor := TFStateEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FStateEditor.OnClose := OnStateEditorClose;
   FStateEditor.dsoForm.DataSet := dsStateForms;
   FStateEditor.EditingRec := nil;
-  FStateEditor.Caption := 'РќРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ';
+  FStateEditor.Caption := 'Новое состояние';
   FStateEditor.edPk.Text := '';
   FStateEditor.edDescriptor.Text := '';
   FStateEditor.lcbForm.KeyValue := Null;
@@ -2396,17 +2397,17 @@ begin
   if (not mtWizardStates.Active) or mtWizardStates.IsEmpty then exit;
   if mtWizardStatesPK.IsNull then
   begin
-    Application.MessageBox('РџРµСЂРµРґ С‚РµРј РєР°Рє РґРѕР±Р°РІР»СЏС‚СЊ СЃР»РѕС‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ, СЃРѕС…СЂР°РЅРёС‚Рµ СЌС‚Рѕ СЃРѕСЃС‚РѕСЏРЅРёРµ СЃС†РµРЅР°СЂРёСЏ РІ Р‘Р”!', 'РћС€РёР±РєР°',
+    Application.MessageBox('Перед тем как добавлять слот состояния, сохраните это состояние сценария в БД!', 'Ошибка',
       MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования слота
   FSlotEditor := TFSlotEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FSlotEditor.OnClose := OnSlotEditorClose;
   FSlotEditor.EditingRec := nil;
   FSlotEditor.IsScenSlot := false;
-  FSlotEditor.Caption := 'РќРѕРІС‹Р№ СЃР»РѕС‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ';
+  FSlotEditor.Caption := 'Новый слот состояния';
   FSlotEditor.edPk.Text := '';
   FSlotEditor.edName.Text := '';
   FSlotEditor.cbType.ItemIndex := 0;
@@ -2423,17 +2424,17 @@ begin
   if (not mtStateSlots.Active) or mtStateSlots.IsEmpty then exit;
   if mtStateSlotsPK.IsNull then
   begin
-    Application.MessageBox('РџРµСЂРµРґ С‚РµРј РєР°Рє РґРѕР±Р°РІР»СЏС‚СЊ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°, СЃРѕС…СЂР°РЅРёС‚Рµ СЌС‚РѕС‚ СЃР»РѕС‚ РІ Р‘Р”!', 'РћС€РёР±РєР°',
+    Application.MessageBox('Перед тем как добавлять значение слота, сохраните этот слот в БД!', 'Ошибка',
       MB_OK + MB_ICONERROR);
     exit;
   end;
 
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ СЃР»РѕС‚Р°
+  // открытие формы редактирования значения слота
   FSlotValEditor := TFSlotValEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FSlotValEditor.OnClose := OnSlotValEditorClose;
   FSlotValEditor.EditingRec := nil;
   FSlotValEditor.IsScenSlot := false;
-  FSlotValEditor.Caption := 'РќРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃР»РѕС‚Р°';
+  FSlotValEditor.Caption := 'Новое значение слота';
   FSlotValEditor.edPk.Text := '';
   FSlotValEditor.edCross.Value := Null;
   FSlotValEditor.edSlotValue.Text := '';
@@ -2449,17 +2450,17 @@ begin
   if (not mtWizardStates.Active) or mtWizardStates.IsEmpty then exit;
   if mtWizardStatesPK.IsNull then
   begin
-    Application.MessageBox('РџРµСЂРµРґ С‚РµРј РєР°Рє РґРѕР±Р°РІР»СЏС‚СЊ РєРЅРѕРїРєСѓ, СЃРѕС…СЂР°РЅРёС‚Рµ СЌС‚Рѕ СЃРѕСЃС‚РѕСЏРЅРёРµ СЃС†РµРЅР°СЂРёСЏ РІ Р‘Р”!', 'РћС€РёР±РєР°',
+    Application.MessageBox('Перед тем как добавлять кнопку, сохраните это состояние сценария в БД!', 'Ошибка',
       MB_OK + MB_ICONERROR);
     exit;
   end;
   
-  // РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РєРЅРѕРїРєРё
+  // открытие формы редактирования кнопки
   AutoIncOrder;
   FCrossEditor := TFCrossEditor.Create(Self, cftEditor, omAdd, Null, FMain.OnChildFormClose);
   FCrossEditor.OnClose := OnCrossEditorClose;
   FCrossEditor.EditingRec := nil;
-  FCrossEditor.Caption := 'РќРѕРІР°СЏ РєРЅРѕРїРєР°';
+  FCrossEditor.Caption := 'Новая кнопка';
   FCrossEditor.edPk.Text := '';
   FCrossEditor.edName.Text := '';
   FCrossEditor.edButtonOrder.Value := mtStatesCrossBUTTON_ORDER.Tag;
@@ -2480,14 +2481,14 @@ begin
     dsWizardScen.ParamByName('PK').Value := Properties.PK;
     dsWizardScen.Open;
     if dsWizardScen.IsEmpty then
-      raise Exception.Create('РќРµ РЅР°Р№РґРµРЅ СЃС†РµРЅР°СЂРёР№ СЃ PK ' + VarToStr(Properties.PK) + ' (РґРµСЃРєСЂРёРїС‚РѕСЂ ' + VarToStr(Properties.Descriptor) +
-        ')! Р’РѕР·РјРѕР¶РЅРѕ РѕРЅ Р±С‹Р» РїРµСЂРµСЃРѕР·РґР°РЅ Рё РµРіРѕ PK РїРѕРјРµРЅСЏР»СЃСЏ.');
+      raise Exception.Create('Не найден сценарий с PK ' + VarToStr(Properties.PK) + ' (дескриптор ' + VarToStr(Properties.Descriptor) +
+        ')! Возможно он был пересоздан и его PK поменялся.');
     Properties.Guid := dsWizardScenGUID.AsVariant;
     edPk.Text := VarToStr(Properties.PK);
     edPk.Text := VarToStr(Properties.PK);
     edDescriptor.Text := VarToStr(Properties.Descriptor);
     edName.Text := VarToStr(Properties.Title);
-    Caption := GenCaption('РЎС†РµРЅР°СЂРёР№', iif(Mode = omEdit, 'СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ', 'РїСЂРѕСЃРјРѕС‚СЂ'), edPk.Text, edDescriptor.Text, edName.Text,
+    Caption := GenCaption('Сценарий', iif(Mode = omEdit, 'редактирование', 'просмотр'), edPk.Text, edDescriptor.Text, edName.Text,
       FSettings.TreeShowDescriptor);
     lcbDict.KeyValue := dsWizardScenREF_PK.Value;
     cbScenType.ItemIndex := cbScenType.Items.IndexOf(dsWizardScenSCEN_TYPE.AsString);
@@ -2516,8 +2517,8 @@ end;
 
 procedure TFEditWizard.tbRefreshClick(Sender: TObject);
 begin
-  if (Mode = omView) or (Application.MessageBox('РџСЂРё РїРµСЂРµР·Р°РіСЂСѓР·РєРµ РґР°РЅРЅС‹С… СЃС†РµРЅР°СЂРёСЏ РІСЃРµ РЅРµСЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ Р±СѓРґСѓС‚ РїРѕС‚РµСЂСЏРЅС‹! РџСЂРѕРґРѕР»Р¶РёС‚СЊ?',
-    'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) = ID_YES) then _Reload;
+  if (Mode = omView) or (Application.MessageBox('При перезагрузке данных сценария все несохраненные изменения будут потеряны! Продолжить?',
+    'Подтверждение', MB_YESNO + MB_ICONQUESTION) = ID_YES) then _Reload;
 end;
 
 procedure TFEditWizard._Reload;
@@ -2538,7 +2539,7 @@ begin
       tbGenSQL.Enabled := false;
       btnRefresh.Enabled := false;
       tbRefresh.Enabled := false;
-      Caption := 'РќРѕРІС‹Р№ СЃС†РµРЅР°СЂРёР№';
+      Caption := 'Новый сценарий';
       edDescriptor.ReadOnly := false;
       edDescriptor.Color := clWindow;
       edName.ReadOnly := false;
@@ -2580,7 +2581,7 @@ begin
       tbGenSQL.Enabled := true;
       btnRefresh.Enabled := true;
       tbRefresh.Enabled := true;
-      Caption := 'Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃС†РµРЅР°СЂРёСЏ';
+      Caption := 'Редактирование сценария';
       edDescriptor.ReadOnly := false;
       edDescriptor.Color := clWindow;
       edName.ReadOnly := false;
@@ -2622,7 +2623,7 @@ begin
       tbGenSQL.Enabled := true;
       btnRefresh.Enabled := true;
       tbRefresh.Enabled := true;
-      Caption := 'РЎРІРѕР№СЃС‚РІР° СЃС†РµРЅР°СЂРёСЏ';
+      Caption := 'Свойства сценария';
       edDescriptor.ReadOnly := true;
       edDescriptor.Color := clBtnFace;
       edName.ReadOnly := true;

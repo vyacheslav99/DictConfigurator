@@ -58,7 +58,7 @@ procedure TFConnect.btnConnectClick(Sender: TObject);
 begin
   if (cbConnection.ItemIndex = -1) or (FSettings.ConnByIndex[SelectedIndex].Server <> stFirebird) then
   begin
-    Application.MessageBox('Р’ РєР°С‡РµСЃС‚РІРµ РѕСЃРЅРѕРІРЅРѕРіРѕ РјРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ Firebird СЃРµСЂРІРµСЂ!', 'РћС€РёР±РєР°', MB_OK + MB_ICONERROR);
+    Application.MessageBox('В качестве основного можно использовать только Firebird сервер!', 'Ошибка', MB_OK + MB_ICONERROR);
     exit;
   end;
 

@@ -84,7 +84,7 @@ end;
 
 procedure TFGridSettings.btnResetClick(Sender: TObject);
 begin
-  if Application.MessageBox('РЎР±СЂРѕСЃРёС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё РєРѕР»РѕРЅРѕРє С‚Р°Р±Р»РёС†С‹?', 'РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
+  if Application.MessageBox('Сбросить настройки колонок таблицы?', 'Подтверждение', MB_YESNO + MB_ICONQUESTION) <> ID_YES then exit;
   rslt := rReset;
   Close;
 end;
@@ -119,7 +119,7 @@ begin
   if (not Assigned(GridFrom)) or (not Assigned(GridTo)) then exit;
   GridTo.FrozenCols := 0;
   
-  // РєРѕРїРёСЂСѓРµРј РєРѕР»РѕРЅРєРё
+  // копируем колонки
   if CanCreateColumns then
     GridTo.Columns.Assign(GridFrom.Columns)
   else
@@ -134,7 +134,7 @@ begin
       colTo.Width := colFrom.Width;
     end;
 
-  // РєРѕРїРёСЂСѓРµРј СЃРІРѕР№СЃС‚РІР° РіСЂРёРґР°
+  // копируем свойства грида
   GridTo.FrozenCols := GridFrom.FrozenCols;
 end;
 
@@ -235,7 +235,7 @@ begin
   ChangeEnabled(true);
   edCaption.Text := Col.Title.Caption;
   edHint.Text := Col.Title.Hint;
-  GroupBox1.Caption := ' РЎРІРѕР№СЃС‚РІР° СЃС‚РѕР»Р±С†Р° [' + Col.FieldName + '] ';
+  GroupBox1.Caption := ' Свойства столбца [' + Col.FieldName + '] ';
   edWidth.Value := Col.Width;
   CurrColumn := Col;
 end;
@@ -247,7 +247,7 @@ var
   lw: TListView;
 
 begin
-  // СЃРЅР°С‡Р°Р»Р° СЃС‚Р°РІРёРј РѕР±С‰РёРµ СЃРІРѕР№СЃС‚РІР° РіСЂРёРґР°
+  // сначала ставим общие свойства грида
   floading := true;
   ChangeEnabled(false);
   try
@@ -256,7 +256,7 @@ begin
     edFixed.MaxValue := FDBGrid.Columns.Count;
     edFixed.Value := FDBGrid.FrozenCols;
 
-    // С‚РµРїРµСЂСЊ РїСЂРѕРµРґРµРјСЃСЏ РїРѕ СЃС‚РѕР»Р±С†Р°Рј
+    // теперь проедемся по столбцам
     for i := 0 to FDBGrid.Columns.Count - 1 do
     begin
       col := FDBGrid.Columns.Items[i];
@@ -349,10 +349,10 @@ begin
       if Pos('Fixed', e.Message) > 0 then
       begin
         col.Visible := true;
-        s := 'РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°С„РёРєСЃРёСЂРѕРІР°РЅРЅС‹С… СЃС‚РѕР»Р±С†РѕРІ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РјРµРЅСЊС€Рµ РєРѕР»РёС‡РµСЃС‚РІР° РІРёРґРёРјС‹С….';
+        s := 'Количество зафиксированных столбцов должно быть меньше количества видимых.';
       end else
         s := e.Message;
-      Application.MessageBox(pchar(s), 'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_OK + MB_ICONWARNING);
+      Application.MessageBox(pchar(s), 'Предупреждение', MB_OK + MB_ICONWARNING);
     end;
   end;
   

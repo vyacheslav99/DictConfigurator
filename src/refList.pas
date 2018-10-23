@@ -101,7 +101,7 @@ procedure TFRefList.btnOpenAllClick(Sender: TObject);
 begin
   if dsRefList.Active and (dsRefList.RecordCount > 10) then
   begin
-    Application.MessageBox('Р’С‹ С…РѕС‚РёС‚Рµ СЃР»РёС€РєРѕРј РјРЅРѕРіРѕ! РќРµ Р»СѓС‡С€Рµ Р»Рё СѓС‚РѕС‡РЅРёС‚СЊ СѓСЃР»РѕРІРёСЏ РїРѕРёСЃРєР°?', 'РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ', MB_OK + MB_ICONWARNING);
+    Application.MessageBox('Вы хотите слишком много! Не лучше ли уточнить условия поиска?', 'Предупреждение', MB_OK + MB_ICONWARNING);
     exit;
   end;
 
